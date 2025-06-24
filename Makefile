@@ -6,7 +6,7 @@
 #    By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/24 08:18:44 by kbaridon          #+#    #+#              #
-#    Updated: 2025/06/24 11:54:51 by kbaridon         ###   ########.fr        #
+#    Updated: 2025/06/24 15:12:26 by kbaridon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ SRCDIR = srcs
 NAME = webserv
 HEADER = $(SRCDIR)/include/Webserv.hpp
 
-SRC = main.cpp utils.cpp request.cpp
+SRC = main.cpp utils.cpp wait_request.cpp
 
 OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 

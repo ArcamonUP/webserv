@@ -1,19 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   request.cpp                                        :+:      :+:    :+:   */
+/*   wait_request.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 12:01:18 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/24 15:19:00 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <unistd.h>
 #include <sys/epoll.h>
-#include <map>
 #include <cstdio>
 #include "Webserv.hpp"
 
@@ -22,20 +21,19 @@
 
 std::string get_request(int connection)
 {
-	char			buffer[100];
-	int				bytesRead;
-	std::string 	result;
+	char buffer[4096];
+	std::string result;
 
-	bytesRead = 1;
-	result = "";
-	while (bytesRead > 0)
+	while (true)
 	{
-		bytesRead = read(connection, buffer, 100);
+		ssize_t bytesRead = recv(connection, buffer, sizeof(buffer), 0);
+		if (bytesRead <= 0)
+			break;
 		result.append(buffer, bytesRead);
-		if (result.find("\r\n\r\n") != std::string::npos)
+		if (bytesRead < (ssize_t)sizeof(buffer))
 			break ;
 	}
-	return (result);
+	return result;
 }
 
 int accept_new(int server_fd, sockaddr_in sockaddr, epoll_event &ev, int epoll_fd)
@@ -61,7 +59,7 @@ void answer(epoll_event *events)
 	int client_fd = events->data.fd;
 
 	std::string request = get_request(client_fd);
-	std::cout << "> Request from " << client_fd << ":\n" << request << std::endl;
+	std::cout << "> Request from client:\n" << request << std::endl;
 	std::string response =
 		"HTTP/1.1 200 OK\r\n"
 		"Content-Type: text/plain\r\n"
@@ -77,7 +75,6 @@ int	wait_request(int fd, sockaddr_in sockaddr)
 {
 	int	epoll_fd, nbfds;
 	epoll_event ev, events[MAX_EVENTS];
-	std::map<int, std::string> client_buffers;
 
 	epoll_fd = epoll_create(1);
 	if (epoll_fd == -1)
@@ -88,7 +85,7 @@ int	wait_request(int fd, sockaddr_in sockaddr)
 		return (std::perror("epoll_ctl"), 1);
 	while (true)
 	{
-		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1); //Max events: se baser sur NGINX
 		if (nbfds == -1) {
 			std::perror("epoll_wait");
 			break ;
