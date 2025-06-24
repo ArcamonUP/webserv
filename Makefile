@@ -6,31 +6,33 @@
 #    By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/24 08:18:44 by kbaridon          #+#    #+#              #
-#    Updated: 2025/06/24 08:19:13 by kbaridon         ###   ########.fr        #
+#    Updated: 2025/06/24 11:54:51 by kbaridon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 GREEN=\033[0;32m
 ORANGE=\033[38;5;214m
 CPP = c++
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98
-NAME = 
-HEADER = 
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I $(SRCDIR)/include
+SRCDIR = srcs
 
-SRC = 
+NAME = webserv
+HEADER = $(SRCDIR)/include/Webserv.hpp
 
-OBJ = $(SRC:.cpp=.o)
+SRC = main.cpp utils.cpp request.cpp
+
+OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 
 all:		$(NAME)
 
 $(NAME):	$(OBJ)
 			@echo "$(ORANGE)Compiling webserv...";
-			@$(CPP) $(CPPLAGS) $(OBJ) -o $(NAME)
+			@$(CPP) $(CPPFLAGS) $(OBJ) -o $(NAME)
 			@echo "$(GREEN)Compilation completed !"
 
 
 %.o:	%.cpp
-			@$(CPP) $(CPPLAGS) -c $< -o $@
+			@$(CPP) $(CPPFLAGS) -c $< -o $@
 
 $(OBJ):		$(HEADER)
 
