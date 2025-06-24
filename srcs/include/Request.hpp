@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:06:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 15:47:47 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/24 17:52:43 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define REQUEST_HPP
 
 #include <iostream>
+#include <vector>
 
 class Request
 {
@@ -21,6 +22,8 @@ class Request
 		std::string method;
 		std::string	uri;
 		double		http_version;
+		std::vector<std::pair<std::string, std::string> > headers;
+		std::string	body;
 		bool		error;
 		Request();
 	public:
@@ -28,6 +31,16 @@ class Request
 		Request(const Request &copy);
 		~Request();
 		Request	&operator=(const Request &src);
+
+		std::string	getMethod() const;
+		std::string getUri() const;
+		double		getHttpVersion() const;
+		std::string	getHeaderMap() const;
+		std::string	getHeaderValue(std::string key) const;
+		std::string	getBody() const;
+		bool		getError() const;
 };
+
+std::ostream &operator<<(std::ostream &stream, Request const &request);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 15:19:00 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/24 18:02:04 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <sys/epoll.h>
 #include <cstdio>
 #include "Webserv.hpp"
+#include "Request.hpp"
 
 # define MAX_EVENTS 32
 # define NO_FLAGS 0
@@ -59,7 +60,7 @@ void answer(epoll_event *events)
 	int client_fd = events->data.fd;
 
 	std::string request = get_request(client_fd);
-	std::cout << "> Request from client:\n" << request << std::endl;
+	std::cout << "> Request from client:\n" << Request(request);
 	std::string response =
 		"HTTP/1.1 200 OK\r\n"
 		"Content-Type: text/plain\r\n"
