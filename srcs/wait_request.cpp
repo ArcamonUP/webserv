@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wait_request.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 18:02:04 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/24 19:47:00 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,29 @@
 #include <unistd.h>
 #include <sys/epoll.h>
 #include <cstdio>
+#include <stdlib.h>
+#include <errno.h>
+#include <fcntl.h>
 #include "Webserv.hpp"
 #include "Request.hpp"
 
 # define MAX_EVENTS 32
 # define NO_FLAGS 0
+
+static std::string get_file_body(const Request& request)
+{
+	char buffer[4096];
+	std::string file_path = "." + request.getUri();
+	std::cout << file_path << std::endl;
+	int fd = open(file_path.c_str(), O_RDONLY);
+	if (fd < 0)
+		std::cout << errno << std::endl, std::exit(EXIT_FAILURE);
+	int read_ret = read(fd, buffer, sizeof(buffer));
+	if (read_ret < 0)
+		std::exit(EXIT_FAILURE);
+	std::string result(buffer, read_ret);
+	return (result);
+}
 
 std::string get_request(int connection)
 {
@@ -60,14 +78,55 @@ void answer(epoll_event *events)
 	int client_fd = events->data.fd;
 
 	std::string request = get_request(client_fd);
-	std::cout << "> Request from client:\n" << Request(request);
-	std::string response =
+	std::cout << "raw request : \n" << request << std::endl;
+	Request curr_req(request);
+	std::cout << "parsed request : \n" << curr_req << std::endl;
+	std::string response;
+	if (curr_req.getMethod() == "GET" && !curr_req.getUri().empty())
+	{
+		std::string file_body;
+		try
+		{
+			file_body = get_file_body(curr_req);
+			response = 
+			"HTTP/1.1 200 OK\r\n"
+			"Content-Type: text/html\r\n"
+			"Content-Length: ";
+			std::ostringstream oss;
+			oss << file_body.length();
+			response += oss.str();
+			response += "\r\n";
+			response += "Connection: close\r\n";
+			response += "\r\n";
+			response += file_body;
+			// response += "\n";
+		}
+		catch(const std::exception& e)
+		{
+			response =
+			"HTTP/1.1 404 Not Found\r\n"
+			"Connection: close\r\n"
+			"\r\n"
+			"Resource not found !\n";
+		}
+	}
+	else if (curr_req.getMethod() == "POST")
+	{
+		std::string data = curr_req.getBody();
+		std::cout << data << std::endl;
+		response =
 		"HTTP/1.1 200 OK\r\n"
 		"Content-Type: text/plain\r\n"
-		"Content-Length: 12\r\n"
-		"Connection: close\r\n"
-		"\r\n"
-		"Hello world\n";
+		"Content-Length: ";
+		std::ostringstream oss;
+		oss << data.length();
+		response += oss.str();
+		response += "\r\n";
+		response += "Connection: close\r\n";
+		response += "\r\n";
+		response += data;
+		// response += "\n";
+	}
 	send(client_fd, response.c_str(), response.size(), NO_FLAGS);
 	close(client_fd);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:06:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 17:52:43 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/24 19:07:13 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include <iostream>
 #include <vector>
+#include <exception>
+#include <sstream>
 
 class Request
 {
@@ -39,6 +41,8 @@ class Request
 		std::string	getHeaderValue(std::string key) const;
 		std::string	getBody() const;
 		bool		getError() const;
+
+		class ResourceNotFoundException : public std::exception {};
 };
 
 std::ostream &operator<<(std::ostream &stream, Request const &request);
