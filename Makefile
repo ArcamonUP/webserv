@@ -6,7 +6,7 @@
 #    By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/24 08:18:44 by kbaridon          #+#    #+#              #
-#    Updated: 2025/06/24 15:35:30 by pmateo           ###   ########.fr        #
+#    Updated: 2025/06/24 16:18:01 by kbaridon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,9 +18,9 @@ CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I $(SRCDIR)/include
 SRCDIR = srcs
 
 NAME = webserv
-HEADER = $(SRCDIR)/include/Webserv.hpp
+HEADER = $(SRCDIR)/include/Webserv.hpp $(SRCDIR)/include/Request.hpp
 
-SRC = main.cpp utils.cpp wait_request.cpp
+SRC = main.cpp utils.cpp wait_request.cpp Request.cpp
 
 OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 
