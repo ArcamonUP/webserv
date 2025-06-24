@@ -3,15 +3,16 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+         #
+#    By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/24 08:18:44 by kbaridon          #+#    #+#              #
-#    Updated: 2025/06/24 15:12:26 by kbaridon         ###   ########.fr        #
+#    Updated: 2025/06/24 15:35:30 by pmateo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 GREEN=\033[0;32m
 ORANGE=\033[38;5;214m
+RESET=\033[0m
 CPP = c++
 CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I $(SRCDIR)/include
 SRCDIR = srcs
@@ -26,9 +27,9 @@ OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 all:		$(NAME)
 
 $(NAME):	$(OBJ)
-			@echo "$(ORANGE)Compiling webserv...";
+			@echo "$(ORANGE)Compiling webserv...$(RESET)";
 			@$(CPP) $(CPPFLAGS) $(OBJ) -o $(NAME)
-			@echo "$(GREEN)Compilation completed !"
+			@echo "$(GREEN)Compilation completed !$(RESET)"
 
 
 %.o:	%.cpp
@@ -37,14 +38,14 @@ $(NAME):	$(OBJ)
 $(OBJ):		$(HEADER)
 
 clean:
-			@echo "$(ORANGE)Cleaning objects..."
+			@echo "$(ORANGE)Cleaning objects...$(RESET)"
 			@rm -rf $(OBJ)
-			@echo "$(GREEN)Cleaning of objects completed !"
+			@echo "$(GREEN)Cleaning of objects completed !$(RESET)"
 
 fclean:		clean
-			@echo "$(ORANGE)Cleaning executables..."
+			@echo "$(ORANGE)Cleaning executables...$(RESET)"
 			@rm -rf $(NAME)
-			@echo "$(GREEN)Cleaning of executables completed !"
+			@echo "$(GREEN)Cleaning of executables completed !$(RESET)"
 
 re:			fclean $(NAME)
 
