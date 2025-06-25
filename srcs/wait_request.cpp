@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/25 15:00:43 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/06/25 15:33:23 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ int accept_new(int server_fd, sockaddr_in sockaddr, epoll_event &ev, int epoll_f
 		return (std::perror("epoll_ctl"), close(client_fd), 1);
 	return (0);
 }
+
+// void	handle_answer(Rquest& curr_request)
 
 void answer(epoll_event *events)
 {
