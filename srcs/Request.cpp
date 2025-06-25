@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:12:36 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 19:07:24 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/06/25 16:10:05 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,31 +87,19 @@ static std::string	trim(std::string str) {
 
 static std::string get_next_line(std::string &request)
 {
-    size_t start = request.find_first_not_of(" \t\n\r");
-    if (start != std::string::npos)
-        request = request.substr(start);
-    else
-	{
-        request.clear();
-        return ("");
-    }
-    size_t end = request.find_first_of("\r\n");
+    size_t end = request.find("\r\n");
     std::string line;
     if (end != std::string::npos) {
         line = request.substr(0, end);
-        size_t skip = 1;
-        if (request[end] == '\r' && end + 1 < request.size() && request[end + 1] == '\n')
-            skip = 2;
-        request = request.substr(end + skip);
+        request = request.substr(end + 2);
     }
-	else
-	{
-        line.swap(request);
+    else
+    {
+        line = request;
         request.clear();
     }
     return line;
 }
-
 
 Request::Request() {}
 Request::~Request() {}
@@ -125,18 +113,21 @@ Request::Request(std::string request)
 		this->error = true;
 	else
 		this->error = false;
-	std::string line = "\n";
-	while (!line.empty())
+	request = request.substr(request.find_first_not_of(" \t\n\r"));
+	std::string line = get_next_line(request);
+	while (!line.empty() && line != "\r\n")
 	{
-		line = get_next_line(request);
-		size_t	mid = line.find(':');
-		if (mid == std::string::npos)
-			continue ;
+		size_t mid = line.find(':');
+		if (mid == std::string::npos) {
+			line = get_next_line(request);
+			continue;
+		}
 		std::string key = trim(line.substr(0, mid));
 		std::string value = trim(line.substr(mid + 1));
-		this->headers.push_back(std::make_pair(key, value));
+		headers.push_back(std::make_pair(key, value));
+		line = get_next_line(request);
 	}
-	this->body = trim(request);
+	this->body.swap(request);
 }
 
 Request::Request(const Request &copy) {

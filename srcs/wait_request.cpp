@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wait_request.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/25 15:33:23 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/06/25 16:12:48 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,6 @@ void answer(epoll_event *events)
 	else if (curr_req.getMethod() == "POST")
 	{
 		std::string data = curr_req.getBody();
-		std::cout << data << std::endl;
 		response =
 		"HTTP/1.1 200 OK\r\n"
 		"Content-Type: text/plain\r\n"
