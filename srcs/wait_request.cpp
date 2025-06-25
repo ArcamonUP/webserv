@@ -57,6 +57,11 @@ int accept_new(int server_fd, sockaddr_in sockaddr, epoll_event &ev, int epoll_f
 	return (0);
 }
 
+void cgi()
+{
+	
+}
+
 void answer(epoll_event *events)
 {
 	int client_fd = events->data.fd;
