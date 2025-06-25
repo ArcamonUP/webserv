@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 12:46:05 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/25 12:05:56 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int	main()
 	int			sockfd;
 	int			opt = 1;
 
+	//On aura besoin de check ac/av: ./webserv conf_file
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1)
 		return (std::perror("socket"), 1);
