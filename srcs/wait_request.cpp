@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wait_request.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/25 16:12:48 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/26 01:18:49 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,19 @@
 #include <errno.h>
 #include <fcntl.h>
 #include "Webserv.hpp"
-#include "Request.hpp"
+#include "Message.hpp"
 
 # define MAX_EVENTS 32
 # define NO_FLAGS 0
 
-static std::string get_file_body(const Request& request)
+static std::string get_file_body(const Message& request)
 {
 	char buffer[4096];
 	std::string file_path = "." + request.getUri();
 	std::cout << file_path << std::endl;
 	int fd = open(file_path.c_str(), O_RDONLY);
 	if (errno == ENOENT)
-		throw Request::ResourceNotFoundException();
+		throw Message::ResourceNotFoundException();
 	else if (fd < 0)
 		std::cout << errno << std::cout, std::exit(EXIT_FAILURE);
 	int read_ret = read(fd, buffer, sizeof(buffer));
@@ -75,18 +75,22 @@ int accept_new(int server_fd, sockaddr_in sockaddr, epoll_event &ev, int epoll_f
 	return (0);
 }
 
-// void	handle_answer(Rquest& curr_request)
+// void	handle_response(Request& curr_request)
+// {
+// 	if (curr_request.getMethod() == "GET" && !curr_request.getUri().empty())
+// 		// 
+// }
 
-void answer(epoll_event *events)
+void response(epoll_event *events)
 {
 	int client_fd = events->data.fd;
 
 	std::string request = get_request(client_fd);
 	std::cout << "raw request : \n" << request << std::endl;
-	Request curr_req(request);
+	Message curr_req(request);
 	std::cout << "parsed request : \n" << curr_req << std::endl;
 	std::string response;
-	if (curr_req.getMethod() == "GET" && !curr_req.getUri().empty())
+	if (curr_req.getMethodOrStatus() == "GET" && !curr_req.getUri().empty())
 	{
 		std::string file_body;
 		try
@@ -114,7 +118,7 @@ void answer(epoll_event *events)
 			"Resource not found !\n";
 		}
 	}
-	else if (curr_req.getMethod() == "POST")
+	else if (curr_req.getMethodOrStatus() == "POST")
 	{
 		std::string data = curr_req.getBody();
 		response =
@@ -158,7 +162,7 @@ int	wait_request(int fd, sockaddr_in sockaddr)
 			if (events[i].data.fd == fd)
 				accept_new(fd, sockaddr, ev, epoll_fd);
 			else
-				answer(events);
+				response(events);
 		}
 	}
 	(close(fd), close(epoll_fd));
