@@ -16,6 +16,8 @@
 #include <cstdio>
 #include "Webserv.hpp"
 #include "Request.hpp"
+#include <fstream>
+#include <sstream> 
 
 # define MAX_EVENTS 32
 # define NO_FLAGS 0
@@ -61,13 +63,38 @@ void answer(epoll_event *events)
 
 	std::string request = get_request(client_fd);
 	std::cout << "> Request from client:\n" << Request(request);
+	
+	std::ifstream file("srcs/www/index.html");
+	if (!file.is_open())
+	{
+		std::string error_response =
+            "HTTP/1.1 500 Internal Server Error\r\n"
+            "Content-Type: text/plain\r\n"
+            "Content-Length: 21\r\n"
+            "Connection: close\r\n"
+            "\r\n"
+            "Erreur serveur interne";
+        send(client_fd, error_response.c_str(), error_response.size(), 0);
+        close(client_fd);
+        return;
+	}
+	std::istreambuf_iterator<char> begin(file);
+	std::istreambuf_iterator<char> end;
+	std::string html_body(begin, end);
+					
+	file.close();
+
+	std::ostringstream oss;
+	oss << html_body.size();
+
 	std::string response =
-		"HTTP/1.1 200 OK\r\n"
-		"Content-Type: text/plain\r\n"
-		"Content-Length: 12\r\n"
-		"Connection: close\r\n"
-		"\r\n"
-		"Hello world\n";
+	"HTTP/1.1 200 OK\r\n"
+	"Content-Type: text/html\r\n"
+	"Content-Length: " + oss.str() + "\r\n"
+	"connecton: close\r\n"
+	"\r\n" + 
+	html_body;
+
 	send(client_fd, response.c_str(), response.size(), NO_FLAGS);
 	close(client_fd);
 }
