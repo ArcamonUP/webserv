@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 19:47:00 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/06/25 15:00:43 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,10 @@ static std::string get_file_body(const Request& request)
 	std::string file_path = "." + request.getUri();
 	std::cout << file_path << std::endl;
 	int fd = open(file_path.c_str(), O_RDONLY);
-	if (fd < 0)
-		std::cout << errno << std::endl, std::exit(EXIT_FAILURE);
+	if (errno == ENOENT)
+		throw Request::ResourceNotFoundException();
+	else if (fd < 0)
+		std::cout << errno << std::cout, std::exit(EXIT_FAILURE);
 	int read_ret = read(fd, buffer, sizeof(buffer));
 	if (read_ret < 0)
 		std::exit(EXIT_FAILURE);
@@ -99,7 +101,7 @@ void answer(epoll_event *events)
 			response += "Connection: close\r\n";
 			response += "\r\n";
 			response += file_body;
-			// response += "\n";
+			response += "\n";
 		}
 		catch(const std::exception& e)
 		{
@@ -125,7 +127,7 @@ void answer(epoll_event *events)
 		response += "Connection: close\r\n";
 		response += "\r\n";
 		response += data;
-		// response += "\n";
+		response += "\n";
 	}
 	send(client_fd, response.c_str(), response.size(), NO_FLAGS);
 	close(client_fd);
