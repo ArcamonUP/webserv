@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/26 16:39:43 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/26 16:47:12 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,12 @@ static std::string readFile(const std::string& path)
 }
 
 Config::~Config() {}
+Config::Config() {}
 
 Config::Config(const std::string &path)
 {
 	std::string	raw = readFile(path);
-	
+	throw (Config::InvalidFileException());
 }
 
 Config::Config(const Config &copy) {

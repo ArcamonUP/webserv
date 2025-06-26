@@ -60,7 +60,7 @@ const std::string	&LocationConfig::getIndex() const {
 	return (this->index);
 }
 
-const bool	LocationConfig::getAutoIndex() const {
+bool	LocationConfig::getAutoIndex() const {
 	return (this->autoindex);
 }
 

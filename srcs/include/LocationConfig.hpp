@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:27 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/26 16:38:15 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/26 16:43:57 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class LocationConfig
 		const std::string&				getPath() const;
 		const std::string&				getRoot() const;
 		const std::string&				getIndex() const;
-		const bool						getAutoIndex() const;
+		bool							getAutoIndex() const;
 		const std::string&				getCgiExtension() const;
 		const std::string&				getCgiPath() const;
 		const std::string&				getUploadPath() const;

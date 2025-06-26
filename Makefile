@@ -6,7 +6,7 @@
 #    By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/24 08:18:44 by kbaridon          #+#    #+#              #
-#    Updated: 2025/06/26 16:41:41 by kbaridon         ###   ########.fr        #
+#    Updated: 2025/06/26 16:48:34 by kbaridon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ NAME = webserv
 HEADER = $(SRCDIR)/include/Webserv.hpp $(SRCDIR)/include/Config.hpp \
 $(SRCDIR)/include/ServerConfig.hpp $(SRCDIR)/include/LocationConfig.hpp
 
-SRC = main.cpp utils.cpp
+SRC = main.cpp utils.cpp ServerConfig.cpp Config.cpp LocationConfig.cpp
 
 OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 

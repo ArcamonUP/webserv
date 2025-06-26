@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/26 11:47:04 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/26 16:48:39 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,5 +47,5 @@ int	main(int ac, char **av)
 		return (std::perror("bind"), 1);
 	if (listen(sockfd, SOMAXCONN) < 0)
 		return (std::perror("listen"), 1);
-	return (wait_request(sockfd, sockaddr));
+	return (std::perror("Done"), 0);
 }

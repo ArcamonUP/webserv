@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:42 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/26 16:39:17 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/26 16:46:58 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ class Config
 {
 	private:
 		ServerConfig	server;
+		Config();
 	public:
 		Config(const std::string& path);
 		Config(const Config &copy);
