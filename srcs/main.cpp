@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/25 12:05:56 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/26 11:47:04 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,25 @@
 #include <iostream>
 #include <cstdio>
 #include "Webserv.hpp"
+#include "Config.hpp"
 
 # define PORTS 8080
 
-int	main()
+int	main(int ac, char **av)
 {
 	sockaddr_in	sockaddr;
 	int			sockfd;
 	int			opt = 1;
 
-	//On aura besoin de check ac/av: ./webserv conf_file
+	if (ac != 2 || !endsWith(av[1], ".conf")) {
+		std::cerr << "Respect the format: ./webserv [file].conf" << std::endl;
+		return (1);
+	}
+	try {Config conf = Config(av[1]);}
+	catch (const std::exception &e) {
+		std::cerr << e.what() << std::endl;
+		return (1);
+	}
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1)
 		return (std::perror("socket"), 1);
