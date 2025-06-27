@@ -10,14 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <unistd.h>
-#include <sys/epoll.h>
-#include <cstdio>
-#include "Webserv.hpp"
-#include "Request.hpp"
-#include <fstream>
-#include <sstream> 
+
+#include "include/Webserv.hpp"
+
+
 
 # define MAX_EVENTS 32
 # define NO_FLAGS 0
@@ -57,12 +53,72 @@ int accept_new(int server_fd, sockaddr_in sockaddr, epoll_event &ev, int epoll_f
 	return (0);
 }
 
-void cgi()
+
+// static std::string get_file_body(const Request& request)
+// {
+// 	char buffer[4096];
+// 	std::string file_path = "." + request.getUri();
+// 	std::cout << file_path << std::endl;
+// 	int fd = open(file_path.c_str(), O_RDONLY);
+// 	if (fd < 0)
+// 	std::cout << errno << std::endl, std::exit(EXIT_FAILURE);
+// 	int read_ret = read(fd, buffer, sizeof(buffer));
+// 	if (read_ret < 0)
+// 	std::exit(EXIT_FAILURE);
+// 	std::string result(buffer, read_ret);
+// 	return (result);
+// }
+
+int cgi(Request &req, int client_fd)
 {
+	std::string uri = "srcs/cgi" + req.getUri();
+	std::string meth = "REQUEST_METHOD=" + req.getMethod();
+	char *argv[] = {(char*)"/usr/bin/python3", (char*)uri.c_str(), NULL};
+	char *envp[] = {(char*)meth.c_str(), NULL};
+
+	int pipefd[2];
+	if (pipe(pipefd) == -1)
+		return std::perror("pipe"), 1;
 	
+	pid_t pid = fork();
+	if (pid == -1)
+		return std::perror("fork"), 1;
+	if (pid == 0)
+	{
+		dup2(pipefd[1], STDOUT_FILENO);
+		close(pipefd[0]);
+		execve(argv[0], argv, envp);
+	}
+	else {
+		close(pipefd[1]);
+		char buffer [4096];
+		size_t count;
+		std::string output;
+		while((count = read(pipefd[0], buffer, sizeof(buffer))) > 0)
+		{
+			output.append(buffer, count);
+		}
+		int status;
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status)) 
+		{
+			int code_retour = WEXITSTATUS(status);
+			std::cout << "Error children : " << code_retour << std::endl;
+    	}
+		std::cout << output << std::endl;
+
+		std::string response =
+			"HTTP/1.1 200 OK\r\n"
+			"Content-Type: text/html\r\n"
+			"Content-Length: " + int_to_string(output.size()) + "\r\n"
+			"Connection: close\r\n"
+			"\r\n" +  output;
+		send(client_fd, response.c_str(), response.size(), 0);
+	}
+	return 0;
 }
 
-void answer(epoll_event *events)
+void homepage(epoll_event *events)
 {
 	int client_fd = events->data.fd;
 
@@ -73,15 +129,15 @@ void answer(epoll_event *events)
 	if (!file.is_open())
 	{
 		std::string error_response =
-            "HTTP/1.1 500 Internal Server Error\r\n"
-            "Content-Type: text/plain\r\n"
-            "Content-Length: 21\r\n"
-            "Connection: close\r\n"
-            "\r\n"
-            "Erreur serveur interne";
-        send(client_fd, error_response.c_str(), error_response.size(), 0);
-        close(client_fd);
-        return;
+			"HTTP/1.1 500 Internal Server Error\r\n"
+			"Content-Type: text/plain\r\n"
+			"Content-Length: 21\r\n"
+			"Connection: close\r\n"
+			"\r\n"
+			"Erreur serveur interne";
+		send(client_fd, error_response.c_str(), error_response.size(), 0);
+		close(client_fd);
+		return;
 	}
 	std::istreambuf_iterator<char> begin(file);
 	std::istreambuf_iterator<char> end;
@@ -103,6 +159,52 @@ void answer(epoll_event *events)
 	send(client_fd, response.c_str(), response.size(), NO_FLAGS);
 	close(client_fd);
 }
+
+void answer(epoll_event *events)
+{
+	int client_fd = events->data.fd;
+
+	std::string request = get_request(client_fd);
+	std::cout << "raw request : \n" << request << std::endl;
+	Request curr_req(request);
+	std::cout << "parsed request : \n" << curr_req << std::endl;
+	std::string response;
+	
+	if (curr_req.getMethod() == "GET" && curr_req.getUri() == "/script.py")
+		{
+			if (cgi(curr_req, client_fd) == 0)
+				return close(client_fd), (void)0;
+			std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
+		}
+	else if (curr_req.getMethod() == "GET" && curr_req.getUri().empty())
+	{
+		homepage(events);
+	}
+	else if (curr_req.getMethod() == "POST")
+	{
+		std::string data = curr_req.getBody();
+		std::cout << data << std::endl;
+		response =
+		"HTTP/1.1 200 OK\r\n"
+		"Content-Type: text/plain\r\n"
+		"Content-Length: ";
+		std::ostringstream oss;
+		oss << data.length();
+		response += oss.str();
+		response += "\r\n";
+		response += "Connection: close\r\n";
+		response += "\r\n";
+		response += data;
+		// response += "\n";
+		send(client_fd, response.c_str(), response.size(), NO_FLAGS);
+		close(client_fd);
+	}
+	else {
+		std::cout << "\n\n\n\n\n\nERRRRRRRRRRRRROOOOOR\n\n\n\n\n\n";
+		close(client_fd);
+	}
+}
+
 
 int	wait_request(int fd, sockaddr_in sockaddr)
 {

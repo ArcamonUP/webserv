@@ -15,6 +15,18 @@
 
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <sstream> 
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <unistd.h>
+#include <sys/epoll.h>
+#include <cstdio>
 
 class Request
 {

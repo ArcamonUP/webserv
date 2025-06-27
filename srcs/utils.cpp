@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
+#include "include/Webserv.hpp"
 #include <fcntl.h>
 
 int	make_not_blocking_socket(int fd)
@@ -25,4 +25,11 @@ int	make_not_blocking_socket(int fd)
 	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
 		return (-1);
 	return (0);
+}
+
+std::string int_to_string(size_t value) 
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
 }

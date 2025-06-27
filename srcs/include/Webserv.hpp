@@ -14,11 +14,14 @@
 # define WEBSERV_HPP
 
 # include <netinet/in.h>
+# include "Request.hpp"
 
 //utils.cpp
 int	make_not_blocking_socket(int fd);
 
 //request.cpp
 int	wait_request(int fd, sockaddr_in sockaddr);
+
+std::string int_to_string(size_t value);
 
 #endif
