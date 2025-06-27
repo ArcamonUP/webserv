@@ -60,6 +60,10 @@ const std::string	&LocationConfig::getIndex() const {
 	return (this->index);
 }
 
+const std::string	&LocationConfig::getRedirect() const {
+	return (this->redirect);
+}
+
 bool	LocationConfig::getAutoIndex() const {
 	return (this->autoindex);
 }
@@ -78,4 +82,31 @@ const std::string	&LocationConfig::getUploadPath() const {
 
 const std::vector<std::string>	&LocationConfig::getAllowedMethods() const {
 	return (this->allowed_methods);
+}
+
+std::ostream &operator<<(std::ostream &stream, const LocationConfig &src) {
+	stream << "    Path: " << src.getPath() << std::endl;
+	stream << "    Root: " << src.getRoot() << std::endl;
+	stream << "    Index: " << src.getIndex() << std::endl;
+	stream << "    Autoindex: " << (src.getAutoIndex() ? "on" : "off") << std::endl;
+
+	const std::vector<std::string>& methods = src.getAllowedMethods();
+	if (!methods.empty()) {
+		stream << "    Allowed Methods: ";
+		for (size_t i = 0; i < methods.size(); ++i) {
+			if (i > 0) stream << ", ";
+				stream << methods[i];
+		}
+		stream << std::endl;
+	}
+	if (!src.getCgiExtension().empty()) {
+		stream << "    CGI: " << src.getCgiExtension() << " -> " << src.getCgiPath() << std::endl;
+	}
+	if (!src.getRedirect().empty()) {
+		stream << "    Redirect: " << src.getRedirect() << std::endl;
+	}
+	if (!src.getUploadPath().empty()) {
+		stream << "    Upload Path: " << src.getUploadPath() << std::endl;
+	}
+	return (stream);
 }

@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:42 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/26 16:46:58 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/27 12:33:54 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 class Config
 {
 	private:
-		ServerConfig	server;
+		std::vector<ServerConfig>	servers;
 		Config();
 	public:
 		Config(const std::string& path);
@@ -27,14 +27,14 @@ class Config
 		~Config();
 		Config &operator=(const Config &src);
 		
-		ServerConfig	getServer(void) const;
+		std::vector<ServerConfig>	getServer(void) const;
 		
 		class	InvalidFileException : public std::exception {
 			public: virtual const char *what() const throw();
 		};
 };
 
-//std::ostream &operator<<(std::ostream &stream, const Config &conf);
+std::ostream &operator<<(std::ostream &stream, const Config &conf);
 
 #endif
 

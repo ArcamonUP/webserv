@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/26 16:48:39 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/27 12:35:29 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,10 @@ int	main(int ac, char **av)
 		std::cerr << "Respect the format: ./webserv [file].conf" << std::endl;
 		return (1);
 	}
-	try {Config conf = Config(av[1]);}
+	try {
+		Config conf = Config(av[1]);
+		std::cout << conf;
+	}
 	catch (const std::exception &e) {
 		std::cerr << e.what() << std::endl;
 		return (1);
