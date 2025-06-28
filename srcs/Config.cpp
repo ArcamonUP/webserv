@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/28 12:35:45 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/28 12:56:22 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,30 +33,6 @@ static std::string readFile(const std::string& path)
 	if (n < 0)
 		throw Config::InvalidFileException();
 	return (out);
-}
-
-static int	ft_atoi(const std::string value)
-{
-	std::size_t	i = 0;
-	int			sign = 1;
-	long		result = 0;
-
-	while (i < value.length() && (value[i] == ' ' || value[i] == '\t' || value[i] == '\n'
-		|| value[i] == '\v' || value[i] == '\f' || value[i] == '\r'))
-		i++;
-	if (i < value.length() && (value[i] == '-' || value[i] == '+'))
-	{
-		if (value[i] == '-')
-			sign = -1;
-		i++;
-	}
-	while (i < value.length() && value[i] >= '0' && value[i] <= '9')
-	{
-		result = result * 10 + (value[i] - '0');
-		i++;
-	}
-
-	return (static_cast<int>(sign * result));
 }
 
 static std::string	getToken(std::string file, size_t *pos)
@@ -112,8 +88,7 @@ static size_t	ft_convert(std::string str)
 	char suf = str[str.size() - 1];
 	if (!std::isdigit(static_cast<unsigned char>(suf)))
 	{
-		switch (suf)
-		{
+		switch (suf) {
 			case 'K': case 'k': mul = 1024ULL; break;
 			case 'M': case 'm': mul = 1024ULL * 1024ULL; break;
 			case 'G': case 'g': mul = 1024ULL * 1024ULL * 1024ULL; break;
@@ -121,26 +96,15 @@ static size_t	ft_convert(std::string str)
 		}
 		str.erase(str.size() - 1);
 	}
-		if (str.empty())
+	if (str.empty())
 		throw std::invalid_argument("invalid max_size_body: missing numeric value");
 	int val = ft_atoi(str);
 	if (val < 0)
 		throw std::invalid_argument("invalid max_size_body: value must be positive");
-	
 	size_t result = static_cast<size_t>(val) * mul;
-		if (result / mul != static_cast<size_t>(val))
+	if (result / mul != static_cast<size_t>(val))
 		throw std::invalid_argument("invalid max_size_body: value too large");
-	return result;
-}
-
-static bool	is_all_digit(std::string str)
-{
-	for (size_t i = 0; i < str.size(); i++)
-	{
-		if (str[i] < '0' || str[i] > '9')
-			return (false);
-	}
-	return (true);
+	return (result);
 }
 
 static ServerConfig getPages(std::string raw, size_t *pos, ServerConfig result)
@@ -157,10 +121,9 @@ static ServerConfig getPages(std::string raw, size_t *pos, ServerConfig result)
 		skipSpacesComments(raw, pos);
 		if (*pos >= raw.length())
 			throw(Config::InvalidFileException());
-		if (!is_all_digit(token))
-		{
+		if (!is_all_digit(token)) {
 			if (token.empty())
-				throw std::invalid_argument("Unexpected end of line while parsing error_page directive.");
+				throw (std::invalid_argument("Unexpected end of line while parsing error_page directive."));
 			std::string url = token;
 			for (size_t i = 0; i < code_list.size(); ++i)
 				error_pages[code_list[i]] = url;
@@ -168,10 +131,9 @@ static ServerConfig getPages(std::string raw, size_t *pos, ServerConfig result)
 			result.setErrorPages(error_pages);
 			return (result);
 		}
-		else
-			code_list.push_back(ft_atoi(token));
+		code_list.push_back(ft_atoi(token));
 	}
-	throw std::invalid_argument("Missing URL for error_page directive.");
+	throw (std::invalid_argument("Missing URL for error_page directive."));
 }
 static LocationConfig	getCgi(std::string raw, size_t *pos, LocationConfig loc)
 {
@@ -245,8 +207,6 @@ static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationCon
 	if (key == "autoindex") {
 		if (getToken(raw, pos) == "on")
 			loc.setAutoIndex(true);
-		else
-			loc.setAutoIndex(false);
 		return (skipLine(raw, pos), loc);
 	}
 	if (key == "cgi")
@@ -378,7 +338,8 @@ std::vector<ServerConfig>	Config::getServer(void) const {
 	return (this->servers);
 }
 
-void Config::validateConfiguration() {
+void Config::validateConfiguration()
+{
 	for (size_t i = 0; i < servers.size(); ++i) {
 		for (size_t j = i + 1; j < servers.size(); ++j) {
 			if (servers[i].getPort() == servers[j].getPort() && 
@@ -403,7 +364,8 @@ void Config::validateConfiguration() {
 	}
 }
 
-std::ostream &operator<<(std::ostream &stream, const Config &src) {
+std::ostream &operator<<(std::ostream &stream, const Config &src)
+{
 	stream << "=== WEBSERV CONFIGURATION ===" << std::endl;
 	stream << "Number of servers: " << src.getServer().size() << std::endl;
 	
@@ -419,4 +381,3 @@ std::ostream &operator<<(std::ostream &stream, const Config &src) {
 char const *Config::InvalidFileException::what(void) const throw() {
 	return ("Invalid configuration file.");
 }
-

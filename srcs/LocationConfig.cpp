@@ -56,7 +56,6 @@ void	LocationConfig::setUploadPath(const std::string &up) {
 }
 
 void	LocationConfig::setAllowedMethods(const std::vector<std::string> &m) {
-	// Validation des méthodes HTTP
 	for (size_t i = 0; i < m.size(); ++i) {
 		const std::string &method = m[i];
 		if (method != "GET" && method != "POST" && method != "DELETE" && 

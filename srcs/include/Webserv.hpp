@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/26 15:05:10 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/28 12:51:36 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 int			make_not_blocking_socket(int fd);
 bool		endsWith(const std::string &str, const std::string &suffix);
 std::string	trim(const std::string &s);
+int			ft_atoi(const std::string value);
+bool		is_all_digit(std::string str);
 
 //request.cpp
 int		wait_request(int fd, sockaddr_in sockaddr);
