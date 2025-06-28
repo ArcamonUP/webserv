@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:42 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/27 12:33:54 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/28 12:36:38 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,11 @@ class Config
 		
 		std::vector<ServerConfig>	getServer(void) const;
 		
+		void	validateConfiguration();
+		
 		class	InvalidFileException : public std::exception {
-			public: virtual const char *what() const throw();
+			public: 
+				const char *what() const throw();
 		};
 };
 

@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:27 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/27 12:32:02 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/06/28 12:34:26 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class LocationConfig
 		std::vector<std::string>	allowed_methods;
 
 	public:
+		LocationConfig();
 		void	setPath(const std::string& p);
 		void	setRoot(const std::string& root);
 		void	setIndex(const std::string& i);
