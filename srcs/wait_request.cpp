@@ -72,12 +72,26 @@ int accept_new(int server_fd, sockaddr_in sockaddr, epoll_event &ev, int epoll_f
 int cgi(Request &req, int client_fd)
 {
 	std::string uri = "srcs/cgi" + req.getUri();
-	std::string meth = "REQUEST_METHOD=" + req.getMethod();
+	std::string method = "REQUEST_METHOD=" + req.getMethod();
+	std::string content_type = "CONTENT_TYPE=" + req.getHeaderValue("Content-Type");
+	std::string content_length = "CONTENT_LENGTH=" + req.getHeaderValue("Content-Length");
+	std::string script_name = "SCRIPT_NAME=" + req.getUri();
+
+
+	char *envp[] = {
+		(char *)method.c_str(),
+		(char *)content_type.c_str(),
+		(char *)content_length.c_str(),
+		(char *)script_name.c_str(),
+		NULL
+	};
+	
 	char *argv[] = {(char*)"/usr/bin/python3", (char*)uri.c_str(), NULL};
-	char *envp[] = {(char*)meth.c_str(), NULL};
 
 	int pipefd[2];
-	if (pipe(pipefd) == -1)
+	int input_pipe[2];
+
+	if (pipe(pipefd) == -1 || pipe(input_pipe) == -1)
 		return std::perror("pipe"), 1;
 	
 	pid_t pid = fork();
@@ -86,7 +100,14 @@ int cgi(Request &req, int client_fd)
 	if (pid == 0)
 	{
 		dup2(pipefd[1], STDOUT_FILENO);
+		dup2(input_pipe[0], STDIN_FILENO);
+		close(input_pipe[1]); 
 		close(pipefd[0]);
+		if (req.getMethod() == "POST")
+		{
+			std::string body = req.getBody();
+			write(STDIN_FILENO, body.c_str(), body.size());
+		}
 		execve(argv[0], argv, envp);
 	}
 	else {
@@ -94,6 +115,16 @@ int cgi(Request &req, int client_fd)
 		std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
 		std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
 		close(pipefd[1]);
+		close(input_pipe[0]);
+
+		if (req.getMethod() == "POST") 
+		{
+			std::string body = req.getBody();
+			write(input_pipe[1], body.c_str(), body.size());
+		}
+		close(input_pipe[1]);
+
+		
 		char buffer [4096];
 		size_t count;
 		std::string output;
@@ -173,7 +204,7 @@ void answer(epoll_event *events)
 	std::cout << "parsed request : \n" << curr_req << std::endl;
 	std::string response;
 	
-	if (curr_req.getUri() == "/script.py")
+	if (curr_req.getUri() == "/script.py" || curr_req.getUri() == "/upload.py")
 	{
 			std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
 			if (cgi(curr_req, client_fd) == 0)
