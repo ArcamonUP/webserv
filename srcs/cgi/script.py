@@ -13,10 +13,11 @@ def main():
     elif method == 'POST':
         content_length = int(os.environ.get('CONTENT_LENGTH', 0))
         post_data = sys.stdin.read(content_length) if content_length > 0 else ''
-        print("<html><body>")
+        print('<html><body><head><meta charset="UTF-8"></head>')
         print("<h1>Requête POST reçue</h1>")
         print(f"<p>Données reçues : {post_data}</p>")
         print("</body></html>")
+
     else:
         print("<html><body><h1>Méthode inconnue</h1></body></html>")
 

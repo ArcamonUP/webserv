@@ -90,6 +90,9 @@ int cgi(Request &req, int client_fd)
 		execve(argv[0], argv, envp);
 	}
 	else {
+		std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
+		std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
+		std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
 		close(pipefd[1]);
 		char buffer [4096];
 		size_t count;
@@ -123,7 +126,7 @@ void homepage(epoll_event *events)
 	int client_fd = events->data.fd;
 
 	std::string request = get_request(client_fd);
-	std::cout << "> Request from client:\n" << Request(request);
+	// std::cout << "> Request from client:\n" << Request(request);
 	
 	std::ifstream file("srcs/www/index.html");
 	if (!file.is_open())
@@ -170,14 +173,16 @@ void answer(epoll_event *events)
 	std::cout << "parsed request : \n" << curr_req << std::endl;
 	std::string response;
 	
-	if (curr_req.getMethod() == "GET" && curr_req.getUri() == "/script.py")
-		{
+	if (curr_req.getUri() == "/script.py")
+	{
+			std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
 			if (cgi(curr_req, client_fd) == 0)
 				return close(client_fd), (void)0;
-			std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
 		}
 	else if (curr_req.getMethod() == "GET" && curr_req.getUri().empty())
 	{
+			std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;
+
 		homepage(events);
 	}
 	else if (curr_req.getMethod() == "POST")
@@ -200,7 +205,6 @@ void answer(epoll_event *events)
 		close(client_fd);
 	}
 	else {
-		std::cout << "\n\n\n\n\n\nERRRRRRRRRRRRROOOOOR\n\n\n\n\n\n";
 		close(client_fd);
 	}
 }
