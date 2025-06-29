@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/06/29 17:11:26 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/06/29 23:59:20 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,53 +15,52 @@
 #include "Message.hpp"
 #include <map>
 
-#define RESPONSE_NB 15
-
 class Response : public Message
 {
 	private:
-		int _status;
+		int _status = 0;
 		typedef void (*ResponseFunction)();
 		static std::map<int, ResponseFunction> builders;
 	
 	public:
-		Response(int status);
+		Response();
 		Response(const Response &copy);
 		~Response();
 		Response 		&operator=(const Response &src);
 
 		void			process();
 
-		void			setStatus(const std::string status);
+		void			setStatus(const int status);
 		
-		std::string		getStatus() const;
+		int				getStatus() const;
 		const char *	getSerializedResponse() const;
+
+		static	void	initBuilders();
 
 		//STATUS FUNCTIONS
 		//2xx : SUCCESS RESPONSE
-		void	Ok();
-		void	Created();
-		void	Accepted();
+		void	Ok();						//200
+		void	Created();					//201
+		void	Accepted();					//202
 		
 		//3xx : REDIRECTION RESPONSE
-		void	MovedPermanently();
+		void	MovedPermanently(); 		//301
 		
 		//4xx : CLIENT ERROR RESPONSE
-		void	BadRequest();
-		void	Forbidden();
-		void	NotFound();
-		void	LengthRequired();
-		void	UriTooLong();
-		void	ImATeapot();
-		void	TooManyRequest();
+		void	BadRequest();				//400
+		void	Forbidden();				//403
+		void	NotFound();					//404
+		void	MethodNotAllowed();			//405
+		void	LengthRequired();			//411
+		void	UriTooLong();				//414
+		void	ImATeapot();				//418
+		void	TooManyRequest();			//429
 
 		//5xx : SERVER ERROR RESPONSE
-		void	InternalServerError();
-		void	NotImplemented();
-		void	ServiceUnavailable();
-		void	HttpVersionNotSupported();
-
-		static	void	initBuilders();
+		void	InternalServerError();		//500
+		void	NotImplemented();			//501
+		void	ServiceUnavailable();		//503
+		void	HttpVersionNotSupported();	//504
 
 		class ResourceNotFoundException : public std::exception {};
 };
