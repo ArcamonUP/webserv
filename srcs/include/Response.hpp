@@ -6,21 +6,26 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/06/27 19:26:41 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/06/29 17:11:26 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Message.hpp"
+#include <map>
+
+#define RESPONSE_NB 15
 
 class Response : public Message
 {
 	private:
-		std::string _status;
+		int _status;
+		typedef void (*ResponseFunction)();
+		static std::map<int, ResponseFunction> builders;
 	
 	public:
-		Response();
+		Response(int status);
 		Response(const Response &copy);
 		~Response();
 		Response 		&operator=(const Response &src);
@@ -31,6 +36,32 @@ class Response : public Message
 		
 		std::string		getStatus() const;
 		const char *	getSerializedResponse() const;
+
+		//STATUS FUNCTIONS
+		//2xx : SUCCESS RESPONSE
+		void	Ok();
+		void	Created();
+		void	Accepted();
+		
+		//3xx : REDIRECTION RESPONSE
+		void	MovedPermanently();
+		
+		//4xx : CLIENT ERROR RESPONSE
+		void	BadRequest();
+		void	Forbidden();
+		void	NotFound();
+		void	LengthRequired();
+		void	UriTooLong();
+		void	ImATeapot();
+		void	TooManyRequest();
+
+		//5xx : SERVER ERROR RESPONSE
+		void	InternalServerError();
+		void	NotImplemented();
+		void	ServiceUnavailable();
+		void	HttpVersionNotSupported();
+
+		static	void	initBuilders();
 
 		class ResourceNotFoundException : public std::exception {};
 };
