@@ -33,6 +33,7 @@ class Request
 	private:
 		std::string method;
 		std::string	uri;
+		std::string content_length;
 		double		http_version;
 		std::vector<std::pair<std::string, std::string> > headers;
 		std::string	body;

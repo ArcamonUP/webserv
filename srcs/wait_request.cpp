@@ -203,8 +203,8 @@ void answer(epoll_event *events)
 	std::cout << "raw request : \n" << request << std::endl;
 	Request curr_req(request);
 	std::cout << "parsed request : \n" << curr_req << std::endl;
-	std::string response;
 	
+	std::string response;
 	if (curr_req.getUri() == "/script.py" || curr_req.getUri() == "/upload.py")
 	{
 			std::cout << "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST" << std::endl;

@@ -51,6 +51,7 @@ if "monfichier" in form and form["monfichier"].filename:
     <div class="center-box">
         <h2>✅ Fichier reçu avec succès !</h2>
         <p>Nom du fichier : <strong>{safe_filename}</strong></p>
+        
     </div>
 </body>
 </html>""")

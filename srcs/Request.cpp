@@ -114,14 +114,35 @@ static std::string get_next_line(std::string &request)
 }
 
 
+std::string get_content_length(std::string &request)
+{
+	size_t start = request.find("Content-Length");
+	if (start != std::string::npos)
+	{
+		size_t end = request.find("\n", start);
+		return request.substr(start + 16, end - (start + 16));
+	}
+	return "";
+}
+
+
+std::string get_body(const std::string& request) 
+{
+    size_t pos = request.find("\r\n\r\n");
+    if (pos == std::string::npos)
+        return ""; 
+    return request.substr(pos + 4);
+}
 Request::Request() {}
 Request::~Request() {}
 
 Request::Request(std::string request)
 {
+	std::string body_req = request;
 	this->method = get_first_word(request);
 	this->uri = get_first_word(request);
 	this->http_version = get_http_version(request);
+	this->content_length = get_content_length(request);
 	if (this->method.empty() || this->uri.empty() || this->http_version == 0)
 		this->error = true;
 	else
@@ -137,7 +158,10 @@ Request::Request(std::string request)
 		std::string value = trim(line.substr(mid + 1));
 		this->headers.push_back(std::make_pair(key, value));
 	}
-	this->body = trim(request);
+
+	this->body = get_body(body_req);
+	
+
 }
 
 Request::Request(const Request &copy) {
