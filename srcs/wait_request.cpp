@@ -77,6 +77,7 @@ int cgi(Request &req, int client_fd)
 	std::string content_length = "CONTENT_LENGTH=" + req.getHeaderValue("Content-Length");
 	std::string script_name = "SCRIPT_NAME=" + req.getUri();
 
+	std::cout << content_length << "     " << content_type << "          " << req.getBody() << std::endl;
 
 	char *envp[] = {
 		(char *)method.c_str(),
