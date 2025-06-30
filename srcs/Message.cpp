@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:12:36 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/26 01:34:03 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/06/30 18:07:19 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,15 +130,6 @@ Message::Message(std::string request) : _type(REQUEST)
 	this->_body.swap(request);
 }
 
-Message::Message(const Message &copy) : _type(copy._type) {
-	*this = copy;
-}
-
-void	Message::setMethodOrStatus(const std::string method)
-{
-	this->_method_or_status = method;
-}
-
 void	Message::setUri(const std::string uri)
 {
 	this->_uri = uri;
@@ -225,7 +216,6 @@ bool	Message::getError() const {
 Message &Message::operator=(const Message &src) {
 	if (this != &src)
 	{
-		this->_method_or_status = src._method_or_status;
 		this->_uri = src._uri;
 		this->_http_version = src._http_version;
 		this->_error = src._error;

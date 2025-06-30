@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/06/29 23:59:20 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/06/30 23:18:58 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,24 +18,29 @@
 class Response : public Message
 {
 	private:
-		int _status = 0;
-		typedef void (*ResponseFunction)();
-		static std::map<int, ResponseFunction> builders;
+		int _status_code = 0;
+		std::string _status_name;
+		typedef void (Response::*ResponseFunction)();
+		static std::map<int, ResponseFunction> _builders;
 	
 	public:
 		Response();
+		Response(const int status_code, const std::string status_name);
 		Response(const Response &copy);
 		~Response();
-		Response 		&operator=(const Response &src);
+		Response 			&operator=(const Response &src);
 
-		void			process();
+		void				process();
 
-		void			setStatus(const int status);
+		void				setStatusCode(const int status_code);
+		void				setStatusName(const std::string status_name);
 		
-		int				getStatus() const;
-		const char *	getSerializedResponse() const;
+		int					getStatusCode() const;
+		int					getStatusName() const;
+		const std::string	getSerializedHeaders() const;
+		const char *		getSerializedResponse() const;
 
-		static	void	initBuilders();
+		static	void		initBuilders();
 
 		//STATUS FUNCTIONS
 		//2xx : SUCCESS RESPONSE
