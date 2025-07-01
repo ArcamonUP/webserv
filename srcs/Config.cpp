@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/01 11:51:03 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/01 14:55:37 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ static std::string	getToken(std::string file, size_t *pos)
 		result += file[*pos];
 		(*pos)++;
 	}
-	// Éviter les tokens trop longs (sécurité)
 	if (result.length() > 1024)
 		throw std::invalid_argument("Token too long: potential buffer overflow");
 	return (result);
