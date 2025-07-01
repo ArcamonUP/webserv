@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:42 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/28 12:36:38 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/01 13:21:06 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ class Config
 {
 	private:
 		std::vector<ServerConfig>	servers;
-		Config();
 	public:
+		Config();
 		Config(const std::string& path);
 		Config(const Config &copy);
 		~Config();

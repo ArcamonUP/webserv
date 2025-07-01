@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/28 11:22:15 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/01 13:24:47 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 
 int	main(int ac, char **av)
 {
+	Config conf;
 	sockaddr_in	sockaddr;
 	int			sockfd;
 	int			opt = 1;
@@ -28,14 +29,12 @@ int	main(int ac, char **av)
 		std::cerr << "Respect the format: ./webserv [file].conf" << std::endl;
 		return (1);
 	}
-	try {
-		Config conf = Config(av[1]);
-		std::cout << conf;
-	}
+	try {conf = Config(av[1]);}
 	catch (const std::exception &e) {
 		std::cerr << e.what() << std::endl;
 		return (1);
 	}
+	std::cout << conf << std::endl;
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1)
 		return (std::perror("socket"), 1);
@@ -45,7 +44,7 @@ int	main(int ac, char **av)
 		return (std::perror("fcntl"), 1);
 	sockaddr.sin_family = AF_INET;
 	sockaddr.sin_addr.s_addr = INADDR_ANY;
-	sockaddr.sin_port = htons(PORTS);
+	sockaddr.sin_port = htons(conf.getServer()[0].getPort());
 	if (bind(sockfd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) < 0)
 		return (std::perror("bind"), 1);
 	if (listen(sockfd, SOMAXCONN) < 0)
