@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/28 12:56:22 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/01 11:51:03 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,9 @@ static std::string	getToken(std::string file, size_t *pos)
 		result += file[*pos];
 		(*pos)++;
 	}
+	// Éviter les tokens trop longs (sécurité)
+	if (result.length() > 1024)
+		throw std::invalid_argument("Token too long: potential buffer overflow");
 	return (result);
 }
 
@@ -188,17 +191,46 @@ static LocationConfig	getMethods(std::string raw, size_t *pos, LocationConfig lo
 	return (loc);
 }
 
-static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationConfig loc, std::string key)
+static LocationConfig	getUpload(std::string raw, size_t *pos, LocationConfig loc)
 {
-	std::string	value;
-	std::string	possibles_str[] = {"root", "index", "redirect", "upload_path"};
-	void		(LocationConfig::*functions[])(const std::string &value) = {&LocationConfig::setRoot, &LocationConfig::setIndex, \
-		&LocationConfig::setRedirect, &LocationConfig::setUploadPath};
+	std::string status;
+	std::string	path;
 
 	skipSpacesComments(raw, pos);
 	if (*pos >= raw.length())
 		throw(Config::InvalidFileException());
-	for (size_t i = 0; i < 4; i++) {
+	
+	status = getToken(raw, pos);
+	if (status.empty() || status == ";" || (status != "on" && status != "off"))
+		throw std::invalid_argument("Missing upload status in upload directive.");
+	skipSpacesComments(raw, pos);
+	if (status == "on")
+		loc.setUploadStatus(true);
+	else if (getToken(raw, pos) != ";")
+		return (skipLine(raw, pos), loc);
+	else
+		return (loc);
+	if (*pos >= raw.length())
+		throw(Config::InvalidFileException());
+	path = getToken(raw, pos);
+	if ((path.empty() || path == ";"))
+		throw std::invalid_argument("Missing upload path in upload directive.");
+	loc.setUploadPath(path);
+	skipLine(raw, pos);
+	return (loc);
+}
+
+static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationConfig loc, std::string key)
+{
+	std::string	value;
+	std::string	possibles_str[] = {"root", "index", "redirect"};
+	void		(LocationConfig::*functions[])(const std::string &value) = {&LocationConfig::setRoot, &LocationConfig::setIndex, \
+		&LocationConfig::setRedirect};
+
+	skipSpacesComments(raw, pos);
+	if (*pos >= raw.length())
+		throw(Config::InvalidFileException());
+	for (size_t i = 0; i < 3; i++) {
 		if (possibles_str[i] == key) {
 			(loc.*functions[i])(getToken(raw, pos));
 			return (skipLine(raw, pos), loc);
@@ -213,6 +245,8 @@ static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationCon
 		return (getCgi(raw, pos, loc));
 	if (key == "methods")
 		return(getMethods(raw, pos, loc));
+	if (key == "upload")
+		return (getUpload(raw, pos, loc));
 	std::cerr << "webserv: unknow directive '" << key << "'" << " inside a location block." << std::endl; 
 	throw(Config::InvalidFileException());
 }

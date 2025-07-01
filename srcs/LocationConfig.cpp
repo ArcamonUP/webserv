@@ -12,7 +12,9 @@
 
 #include "LocationConfig.hpp"
 
-LocationConfig::LocationConfig() : path(""), root(""), index("index.html"), redirect(""), autoindex(false), cgi_extension(""), cgi_path(""), upload_path(""), allowed_methods()
+LocationConfig::LocationConfig() : path(""), root(""), index("index.html"), \
+redirect(""), autoindex(false), cgi_extension(""), cgi_path(""), \
+upload_status(false), upload_path(""), allowed_methods()
 {
 	allowed_methods.push_back("GET");
 }
@@ -51,17 +53,20 @@ void	LocationConfig::setCgiPath(const std::string &cgi_p) {
 	this->cgi_path = cgi_p;
 }
 
+void    LocationConfig::setUploadStatus(bool st) {
+    this->upload_status = st;
+}
+
 void	LocationConfig::setUploadPath(const std::string &up) {
 	this->upload_path = up;
 }
 
 void	LocationConfig::setAllowedMethods(const std::vector<std::string> &m) {
-	for (size_t i = 0; i < m.size(); ++i) {
+	for (size_t i = 0; i < m.size(); ++i)
+	{
 		const std::string &method = m[i];
-		if (method != "GET" && method != "POST" && method != "DELETE" && 
-			method != "PUT" && method != "HEAD" && method != "OPTIONS") {
-			throw std::invalid_argument("Invalid HTTP method: " + method);
-		}
+		if (method != "GET" && method != "POST" && method != "DELETE" && method != "HEAD")
+			throw (std::invalid_argument("Invalid HTTP method: " + method));
 	}
 	this->allowed_methods = m;
 }
@@ -92,6 +97,10 @@ const std::string	&LocationConfig::getCgiExtension() const {
 
 const std::string	&LocationConfig::getCgiPath() const {
 	return (this->cgi_path);
+}
+
+bool    LocationConfig::getUploadStatus() const {
+    return (this->upload_status);
 }
 
 const std::string	&LocationConfig::getUploadPath() const {
@@ -143,10 +152,10 @@ std::ostream &operator<<(std::ostream &stream, const LocationConfig &src) {
     } else {
         stream << "    Redirect: [NOT SET]" << std::endl;
     }
-    if (!src.getUploadPath().empty()) {
-        stream << "    Upload Path: " << src.getUploadPath() << std::endl;
+    if (src.getUploadStatus() == true) {
+        stream << "    Upload: " << "on -> " << src.getUploadPath() << std::endl;
     } else {
-        stream << "    Upload Path: [NOT SET]" << std::endl;
+        stream << "    Upload: off" << std::endl;
     }
     return (stream);
 }

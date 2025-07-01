@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:27 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/28 12:34:26 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/01 11:32:17 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class LocationConfig
 		bool						autoindex;
 		std::string					cgi_extension;
 		std::string					cgi_path;
+		bool						upload_status;
 		std::string					upload_path;
 		std::vector<std::string>	allowed_methods;
 
@@ -38,6 +39,7 @@ class LocationConfig
 		void	setAutoIndex(const bool autoi);
 		void	setCgiExtension(const std::string& cgi_e);
 		void	setCgiPath(const std::string& cgi_p);
+		void	setUploadStatus(bool st);
 		void	setUploadPath(const std::string& up);
 		void	setAllowedMethods(const std::vector<std::string>& m);
 
@@ -48,6 +50,7 @@ class LocationConfig
 		bool							getAutoIndex() const;
 		const std::string&				getCgiExtension() const;
 		const std::string&				getCgiPath() const;
+		bool							getUploadStatus() const;
 		const std::string&				getUploadPath() const;
 		const std::vector<std::string>&	getAllowedMethods() const;
 };
