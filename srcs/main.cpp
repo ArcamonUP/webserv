@@ -49,5 +49,5 @@ int	main(int ac, char **av)
 		return (std::perror("bind"), 1);
 	if (listen(sockfd, SOMAXCONN) < 0)
 		return (std::perror("listen"), 1);
-	return (std::perror("Done"), 0);
+	return (wait_request(sockfd, sockaddr));
 }
