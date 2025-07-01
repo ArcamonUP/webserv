@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/01 14:55:45 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:26:51 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "Webserv.hpp"
 #include "Request.hpp"
 
-# define MAX_EVENTS 32
+# define MAX_EVENTS 512
 # define NO_FLAGS 0
 
 std::string get_request(int connection)
@@ -86,7 +86,7 @@ int	wait_request(int fd, sockaddr_in sockaddr)
 		return (std::perror("epoll_ctl"), 1);
 	while (true)
 	{
-		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1); //Max events: se baser sur NGINX
+		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
 		if (nbfds == -1) {
 			std::perror("epoll_wait");
 			break ;
