@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:42:58 by pmateo            #+#    #+#             */
-/*   Updated: 2025/06/27 18:40:46 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/02 21:16:52 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ class Request : public Message
 {
 	private:
 		std::string _method;
+		std::string	_uri;
 		std::string	_serialized_request;
 	
 	public:
@@ -49,3 +50,9 @@ inline std::ostream &operator<<(std::ostream &stream, Request const &request)
 	"--> Error: " << request.getError() << std::endl;
 			return (stream);
 }
+
+std::string 	get_first_word(std::string &message);
+double 			str_to_double(const std::string &s);
+double			get_http_version(std::string &message);
+std::string		trim(std::string str);
+std::string 	get_next_line(std::string &message);

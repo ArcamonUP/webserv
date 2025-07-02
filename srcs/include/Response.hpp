@@ -6,20 +6,20 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/06/30 23:18:58 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/02 21:26:01 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Message.hpp"
-#include <map>
 
 class Response : public Message
 {
 	private:
 		int _status_code = 0;
 		std::string _status_name;
+		std::string	_error_json;
 		typedef void (Response::*ResponseFunction)();
 		static std::map<int, ResponseFunction> _builders;
 	
@@ -34,11 +34,18 @@ class Response : public Message
 
 		void				setStatusCode(const int status_code);
 		void				setStatusName(const std::string status_name);
+		void				setContentLength(const std::string length);
+		void				setContentType(const std::string type);
+		void				setDate(); // Using getDate()
+		void				setLocation(const std::string location);
 		
 		int					getStatusCode() const;
-		int					getStatusName() const;
+		std::string			getStatusName() const;
+		std::string 		getDate() const;
 		const std::string	getSerializedHeaders() const;
-		const char *		getSerializedResponse() const;
+		const char *		getSerializedResponse();
+
+		std::string 		createJsonError(const std::string& error, const std::string& message);
 
 		static	void		initBuilders();
 
@@ -71,8 +78,7 @@ class Response : public Message
 };
 
 inline std::ostream &operator<<(std::ostream &stream, Response const &response) {
-	stream << "--> Method: " << response.getStatus() << std::endl << \
-	"--> Uri: " << response.getUri() << std::endl << \
+	stream << "--> Status: " << response.getStatusCode() << " " << response.getStatusName() << std::endl << \
 	"--> Http Version: " << response.getHttpVersion() << std::endl << \
 	"--> Headers/Value: " << std::endl << response.getHeaderMap() << \
 	"--> Body: " << response.getBody() << std::endl << \
