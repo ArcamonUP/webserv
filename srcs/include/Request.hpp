@@ -22,6 +22,7 @@ class Request
 		std::string method;
 		std::string	uri;
 		double		http_version;
+		std::string content_length;
 		std::vector<std::pair<std::string, std::string> > headers;
 		std::string	body;
 		bool		error;

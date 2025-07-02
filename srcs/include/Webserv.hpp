@@ -14,7 +14,20 @@
 # define WEBSERV_HPP
 
 # include <netinet/in.h>
-# include <iostream>
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <sstream> 
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <unistd.h>
+#include <sys/epoll.h>
+#include <cstdio>
 
 //utils.cpp
 int			make_not_blocking_socket(int fd);
@@ -25,5 +38,5 @@ bool		is_all_digit(std::string str);
 
 //request.cpp
 int		wait_request(int fd, sockaddr_in sockaddr);
-
+std::string int_to_string(size_t value);
 #endif

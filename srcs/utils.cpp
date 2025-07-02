@@ -76,3 +76,10 @@ bool	is_all_digit(std::string str)
 	}
 	return (true);
 }
+
+std::string int_to_string(size_t value) 
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
+}
