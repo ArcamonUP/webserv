@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/02 11:42:59 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/02 15:42:21 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ static LocationConfig	getCgi(std::string raw, size_t *pos, LocationConfig loc)
 	if (path.empty() || path == ";")
 		throw std::invalid_argument("Missing CGI path in cgi directive.");
 
-	if (access(path.c_str(), F_OK) == -1 || access(path.c_str(), X_OK) == -1)
+	if (access(path.c_str(), F_OK) == -1)
 		throw std::invalid_argument("CGI path isn't valid: " + path);
 	loc.setCgiExtension(extension);
 	loc.setCgiPath(path);

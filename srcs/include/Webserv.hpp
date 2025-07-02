@@ -6,13 +6,14 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/28 12:51:36 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:22:22 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
 
+# include "Config.hpp"
 # include <netinet/in.h>
 #include <iostream>
 #include <vector>
@@ -37,6 +38,6 @@ int			ft_atoi(const std::string value);
 bool		is_all_digit(std::string str);
 
 //request.cpp
-int		wait_request(int fd, sockaddr_in sockaddr);
+int		wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf);
 std::string int_to_string(size_t value);
 #endif

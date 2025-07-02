@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/01 16:26:51 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:32:49 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <cstdio>
 #include "Webserv.hpp"
 #include "Request.hpp"
-
 
 # define MAX_EVENTS 512
 # define NO_FLAGS 0
@@ -151,14 +150,13 @@ int cgi(Request &req, int client_fd)
 	return 0;
 }
 
-void homepage(epoll_event *events)
+void homepage(epoll_event *events, ServerConfig conf)
 {
 	int client_fd = events->data.fd;
 
 	std::string request = get_request(client_fd);
 	// std::cout << "> Request from client:\n" << Request(request);
-	
-	std::ifstream file("srcs/www/index.html");
+	std::ifstream file((conf.getRoot() + "/" + conf.getIndex()).c_str());
 	if (!file.is_open())
 	{
 		std::string error_response =
@@ -193,25 +191,40 @@ void homepage(epoll_event *events)
 	close(client_fd);
 }
 
-void answer(epoll_event *events)
+bool	is_cgi(ServerConfig conf, Request req)
 {
+	std::string	p1, p2, p3;
+	size_t		n1, n2, n3;
+
+	p1 = conf.getLocations()[1].getCgiPath();
+	p2 = conf.getLocations()[2].getCgiPath();
+	p3 = conf.getLocations()[3].getCgiPath();
+
+	n1 = p1.find_last_of('/');
+	n2 = p2.find_last_of('/');
+	n3 = p3.find_last_of('/');
+
+	std::string uri = req.getUri();
+	return (uri == p1.substr(n1) || uri == p2.substr(n2) || uri == p3.substr(n3));
+}
+
+void answer(epoll_event *events, ServerConfig conf)
+{
+	std::string response;
 	int client_fd = events->data.fd;
 
 	std::string request = get_request(client_fd);
 	std::cout << "raw request : \n" << request << std::endl;
 	Request curr_req(request);
 	std::cout << "parsed request : \n" << curr_req << std::endl;
-	
-	std::string response;
-	if (curr_req.getUri() == "/script.py" || curr_req.getUri() == "/upload.py" || curr_req.getUri() == "/list.py")
+
+	if (is_cgi(conf, curr_req))
 	{
 			if (cgi(curr_req, client_fd) == 0)
 				return (void)0;
 		}
 	else if (curr_req.getMethod() == "GET" && curr_req.getUri().empty())
-	{
-		homepage(events);
-	}
+		homepage(events, conf);
 	else if (curr_req.getMethod() == "POST")
 	{
 		std::string data = curr_req.getBody();
@@ -236,7 +249,7 @@ void answer(epoll_event *events)
 	}
 }
 
-int	wait_request(int fd, sockaddr_in sockaddr)
+int	wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf)
 {
 	int	epoll_fd, nbfds;
 	epoll_event ev, events[MAX_EVENTS];
@@ -260,7 +273,7 @@ int	wait_request(int fd, sockaddr_in sockaddr)
 			if (events[i].data.fd == fd)
 				accept_new(fd, sockaddr, ev, epoll_fd);
 			else
-				answer(events);
+				answer(events, conf);
 		}
 	}
 	(close(fd), close(epoll_fd));
