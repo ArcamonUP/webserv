@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/01 14:55:37 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/02 11:42:59 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,11 +124,22 @@ static ServerConfig getPages(std::string raw, size_t *pos, ServerConfig result)
 		if (*pos >= raw.length())
 			throw(Config::InvalidFileException());
 		if (!is_all_digit(token)) {
-			if (token.empty())
+			if (token.empty() || token == ";")
 				throw (std::invalid_argument("Unexpected end of line while parsing error_page directive."));
-			std::string url = token;
+			std::string error_path = token;
+			if (error_path[0] == '/') {
+				std::string server_root = result.getRoot();
+				if (!server_root.empty()) {
+					if (server_root[server_root.length()-1] == '/')
+						error_path = server_root + token.substr(1);
+					else
+						error_path = server_root + token;
+				}
+			}
+			if (access(error_path.c_str(), F_OK) == -1 || access(error_path.c_str(), R_OK) == -1)
+				throw (std::invalid_argument("Wrong URL for error_page directive: " + error_path));
 			for (size_t i = 0; i < code_list.size(); ++i)
-				error_pages[code_list[i]] = url;
+				error_pages[code_list[i]] = token;
 			skipLine(raw, pos);
 			result.setErrorPages(error_pages);
 			return (result);
@@ -157,7 +168,9 @@ static LocationConfig	getCgi(std::string raw, size_t *pos, LocationConfig loc)
 	path = getToken(raw, pos);
 	if (path.empty() || path == ";")
 		throw std::invalid_argument("Missing CGI path in cgi directive.");
-	
+
+	if (access(path.c_str(), F_OK) == -1 || access(path.c_str(), X_OK) == -1)
+		throw std::invalid_argument("CGI path isn't valid: " + path);
 	loc.setCgiExtension(extension);
 	loc.setCgiPath(path);
 	skipLine(raw, pos);
@@ -214,6 +227,8 @@ static LocationConfig	getUpload(std::string raw, size_t *pos, LocationConfig loc
 	path = getToken(raw, pos);
 	if ((path.empty() || path == ";"))
 		throw std::invalid_argument("Missing upload path in upload directive.");
+	if (access(path.c_str(), F_OK) == -1 || access(path.c_str(), W_OK) == -1)
+		throw std::invalid_argument("Upload path isn't valid: " + path);
 	loc.setUploadPath(path);
 	skipLine(raw, pos);
 	return (loc);
@@ -222,18 +237,26 @@ static LocationConfig	getUpload(std::string raw, size_t *pos, LocationConfig loc
 static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationConfig loc, std::string key)
 {
 	std::string	value;
-	std::string	possibles_str[] = {"root", "index", "redirect"};
-	void		(LocationConfig::*functions[])(const std::string &value) = {&LocationConfig::setRoot, &LocationConfig::setIndex, \
-		&LocationConfig::setRedirect};
 
 	skipSpacesComments(raw, pos);
 	if (*pos >= raw.length())
 		throw(Config::InvalidFileException());
-	for (size_t i = 0; i < 3; i++) {
-		if (possibles_str[i] == key) {
-			(loc.*functions[i])(getToken(raw, pos));
-			return (skipLine(raw, pos), loc);
-		}
+	if (key == "root") {
+		value = getToken(raw, pos);
+		if (value.empty() || access(value.c_str(), F_OK) == -1 || access(value.c_str(), R_OK) == -1)
+			throw std::invalid_argument("Root path isn't valid: " + value);
+		loc.setRoot(value);
+		return (skipLine(raw, pos), loc);
+	}
+	if (key == "index") {
+		value = getToken(raw, pos);
+		loc.setIndex(value);
+		return (skipLine(raw, pos), loc);
+	}
+	if (key == "redirect") {
+		value = getToken(raw, pos);
+		loc.setRedirect(value);
+		return (skipLine(raw, pos), loc);
 	}
 	if (key == "autoindex") {
 		if (getToken(raw, pos) == "on")
@@ -279,17 +302,27 @@ ServerConfig	getLocationBlock(std::string raw, size_t *pos, ServerConfig result)
 static ServerConfig	getServerValue(std::string raw, size_t *pos, ServerConfig result, const std::string& key)
 {
 	std::string	value;
-	std::string possibles_str[] = {"server_name", "root", "index"};
-	void		(ServerConfig::*functions[])(const std::string &value) = {&ServerConfig::setServerName, &ServerConfig::setRoot, &ServerConfig::setIndex};
 	
 	skipSpacesComments(raw, pos);
 	if (*pos >= raw.length())
-		throw(Config::InvalidFileException());	
-	for (size_t i = 0; i < 3; i++) {
-		if (possibles_str[i] == key) {
-			(result.*functions[i])(getToken(raw, pos));
-			return (skipLine(raw, pos), result);
-		}
+		throw(Config::InvalidFileException());
+	
+	if (key == "server_name") {
+		value = getToken(raw, pos);
+		result.setServerName(value);
+		return (skipLine(raw, pos), result);
+	}
+	if (key == "root") {
+		value = getToken(raw, pos);
+		if (value.empty() || access(value.c_str(), F_OK) == -1 || access(value.c_str(), R_OK) == -1)
+			throw std::invalid_argument("Root path isn't valid: " + value);
+		result.setRoot(value);
+		return (skipLine(raw, pos), result);
+	}
+	if (key == "index") {
+		value = getToken(raw, pos);
+		result.setIndex(value);
+		return (skipLine(raw, pos), result);
 	}
 	if (key == "listen") {
 		result.setPort(ft_atoi(getToken(raw, pos)));
