@@ -64,7 +64,8 @@ std::string	Request::getHeaderMap() const {
 }
 
 
-std::string Request::getHeaderValue(std::string key) const {
+std::string Request::getHeaderValue(std::string key) const 
+{
 	std::vector<std::pair<std::string, std::string> >::const_iterator it;
 
 	it = this->_headers.begin();
@@ -101,6 +102,7 @@ Request&	Request::operator=(const Request& src)
 	if (this != &src)
 	{
 		Message::operator=(src);
+		this->_uri = src._uri;
 		this->_method = src._method;
 		this->_serialized_request = src._serialized_request;
 	}

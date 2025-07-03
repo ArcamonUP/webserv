@@ -58,9 +58,10 @@ int cgi(Request &req, int client_fd)
 	std::string content_length = "CONTENT_LENGTH=" + req.getHeaderValue("Content-Length");
 	std::string script_name = "SCRIPT_NAME=" + req.getUri();
 
-	std::cout << content_length << "     " << content_type << "          " << req.getBody() << std::endl;
+	std::cout << content_length << "  HAHAHHH   " << content_type << "          " << req.getBody() << std::endl;
 
-	char *envp[] = {
+	char *envp[] = 
+	{
 		(char *)method.c_str(),
 		(char *)content_type.c_str(),
 		(char *)content_length.c_str(),
@@ -185,21 +186,19 @@ int cgi(Request &req, int client_fd)
 // 	close(client_fd);
 // }
 
-bool	is_cgi(ServerConfig conf, Request req)
+bool	is_cgi(ServerConfig conf, Request &req)
 {
 	std::string	p1, p2, p3;
-	size_t		n1, n2, n3;
 
 	p1 = conf.getLocations()[1].getCgiPath();
 	p2 = conf.getLocations()[2].getCgiPath();
 	p3 = conf.getLocations()[3].getCgiPath();
+	
 
-	n1 = p1.find_last_of('/');
-	n2 = p2.find_last_of('/');
-	n3 = p3.find_last_of('/');
-
+	
 	std::string uri = req.getUri();
-	return (uri == p1.substr(n1) || uri == p2.substr(n2) || uri == p3.substr(n3));
+	std::cout << p1.substr(1) << " TESSSSSSSSSSSSSSSSSSSSSSSSST " << uri << std::endl;
+	return (uri == p1.substr(1) || uri == p2.substr(1) || uri == p3.substr(1));
 }
 
 Response*	handle_action(const Request& request)
@@ -234,8 +233,15 @@ int	handle_request(epoll_event *events, ServerConfig conf)
 	Request	request(serialized_request);
 	std::cout << "parsed request : \n" << request << std::endl;
 
+
 	if (is_cgi(conf, request))
 	{
+	
+		std::string content_type = "CONTENT_TYPE=" + request.getHeaderValue("Content-Type");
+
+		std::string content_length = "CONTENT_LENGTH=" + request.getHeaderValue("Content-Length");
+		std::cout << content_length << "  BBBBBBBBBBBBBBBBBBBBB  " << content_type << "          " << std::endl;
+
 			if (cgi(request, client_fd) == 0)
 				return (0);
 	}
@@ -252,12 +258,16 @@ int	handle_request(epoll_event *events, ServerConfig conf)
 		close(client_fd);
 		return (1);
 	}
-	response = handle_action(request);
-	serialized_response = response->getSerializedResponse();
-	
-	send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
-	close(client_fd), delete (response);
-	return (0);
+	else {
+		
+		response = handle_action(request);
+		serialized_response = response->getSerializedResponse();
+		
+		send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+		close(client_fd), delete (response);
+		return (0);
+	}
+	return (1);
 }
 
 int	wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf)

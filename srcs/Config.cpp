@@ -414,7 +414,8 @@ void Config::validateConfiguration()
 			throw std::invalid_argument("Server must have a valid port defined");
 		}
 		const std::vector<LocationConfig>& locations = servers[i].getLocations();
-		for (size_t k = 0; k < locations.size(); ++k) {
+		for (size_t k = 0; k < locations.size(); ++k) 
+		{
 			for (size_t l = k + 1; l < locations.size(); ++l) {
 				if (locations[k].getPath() == locations[l].getPath()) {
 					throw std::invalid_argument("Duplicate location path: " + locations[k].getPath());

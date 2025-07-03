@@ -1,0 +1,12 @@
+- method get
+
+
+- erreur bonne affichage des erreur, envoie des bonne page html etc
+- POST static + DELETE static
+- comment traiter les donne de la demande post ? container ? fichier txt ? on renvoie ?
+
+
+
+- rempalcer les variable dur par variabe .conf
+- changer le fork par des while (pour plusieur serveur !)
+
