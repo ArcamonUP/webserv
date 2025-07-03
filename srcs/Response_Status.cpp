@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:37:59 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 02:22:11 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 11:10:14 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@
 //No Content is missing
 
 //For the moment we assume the content-type is html but we need to define it
+//The content length need to be set after the body has been recovered
 void	Response::Ok()
 {
 	this->_status_code = 200;
 	this->_status_name = "OK";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "keep-alive");
-	addHeader("content-length", toString(getBody().length()));
 	addHeader("content-type", "text/html");
 }
 //201 need a "location" header
@@ -57,7 +57,7 @@ void	Response::MovedPermanently()
 	addHeader("content-type", "text/plain ; charset=utf-8");
 	body = "Moved Permanently. Redirecting to " + location + "\n";
 	setBody(body);
-	addHeader("content-length", toString(getBody().length()));
+	// addHeader("content-length", toString(getBody().length()));
 }
 
 void	Response::BadRequest()
@@ -95,7 +95,8 @@ void	Response::NotFound()
 	addHeader("content-type", "text/html");
 	std::string body = "<!doctype html>\n";
 	body += "<head>\n	<title>404 not found !</title>";
-	addHeader("content-length", toString(getBody().length()));
+	setBody(body);
+	// addHeader("content-length", toString(body.length()));
 }
 //Allow header depends ??
 void	Response::MethodNotAllowed()
@@ -169,7 +170,8 @@ void	Response::InternalServerError()
 	addHeader("content-type", "text/html");
 	std::string body = "<!doctype html>\n";
 	body += "<head>\n	<title>500 Internal Server Error !</title>";
-	addHeader("content-length", toString(getBody().length()));
+	setBody(body);
+	// addHeader("content-length", toString(getBody().length()));
 }
 
 void	Response::NotImplemented()
@@ -189,7 +191,8 @@ void	Response::ServiceUnavailable()
 	addHeader("content-type", "text/html");
 	std::string body = "<!doctype html>\n";
 	body += "<head>\n	<title>503 Service Unavailable</title>";
-	addHeader("content-length", toString(getBody().length()));
+	setBody(body);
+	// addHeader("content-length", toString(getBody().length()));
 }
 
 void	Response::HttpVersionNotSupported()
@@ -201,5 +204,6 @@ void	Response::HttpVersionNotSupported()
 	addHeader("content-type", "text/html");
 	std::string body = "<!doctype html>\n";
 	body += "<head>\n	<title>505 HTTP Version Not Supported</title>";
-	addHeader("content-length", toString(getBody().length()));
+	setBody(body);
+	// addHeader("content-length", toString(getBody().length()));
 }

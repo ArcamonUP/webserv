@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:12:36 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 02:51:22 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 11:04:59 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,13 @@ void	Message::addHeader(const std::string first, const std::string second)
 void	Message::setBody(const std::string body)
 {
 	this->_body = body;
+	std::string length_str = toString(body.length());
+	
+	std::string ContentLength = getHeaderValue("content-length");
+	if (ContentLength.empty())
+		addHeader("content-length", length_str);
+	else
+		setHeaderValue("content-length", length_str);
 }
 
 void	Message::setError(const bool error)

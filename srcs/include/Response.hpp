@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 02:26:44 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 11:19:24 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ class Response : public Message
 		
 		int					getStatusCode() const;
 		std::string			getStatusName() const;
-		std::string 		getDate() const;
+		std::string 		getDate() const; //Get UTC by strftime()
 		const std::string	getSerializedHeaders() const;
 		const std::string	getSerializedResponse();
 
@@ -49,7 +49,7 @@ class Response : public Message
 
 		static	void		initBuilders();
 
-		//STATUS FUNCTIONS
+		//BUILDERS STATUS FUNCTIONS
 		//2xx : SUCCESS RESPONSE
 		void	Ok();						//200
 		void	Created();					//201

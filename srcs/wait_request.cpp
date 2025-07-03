@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 03:04:09 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 11:22:05 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 std::map<std::string, MethodHandler> method_map;
 
-//Test function -> must to change
+//Test function -> must change
 std::string get_file_body(const Request& request)
 {
 	char buffer[4096];
@@ -80,12 +80,10 @@ Response*	handle_action(const Request& request)
 	std::string method_request;
 	 
 	method_request = request.getMethod();
-	std::cout << "prout\n";
 	it = method_map.find(method_request);
 	if (it != method_map.end())
 	{
 		response = (*method_map[method_request])(request);
-		std::cout << "ntm\n";
 		return (response);
 	}
 	else
@@ -103,12 +101,17 @@ void	handle_request(epoll_event *events)
 
 	std::string serialized_request = get_request(client_fd);
 	std::cout << "serialized request : \n" << serialized_request << std::endl;
+	
 	Request	request(serialized_request);
 	std::cout << "parsed request : \n" << request << std::endl;
+	
 	response = handle_action(request);
 	serialized_response = response->getSerializedResponse();
+	
 	send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
 	close(client_fd);
+	
+	delete (response);
 }
 
 int	wait_request(int fd, sockaddr_in sockaddr)

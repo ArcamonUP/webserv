@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 19:02:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 03:15:26 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 10:38:15 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,12 +68,13 @@ std::string	Response::getStatusName() const
 
 std::string	Response::getDate() const
 {
-	char	buffer[29];
+	char	buffer[30];
+	buffer[29] = '\0';
 	time_t timestamp;
 	time(&timestamp);
 
 	struct tm datetime = *localtime(&timestamp);
-	strftime(buffer, 29, "%a, %d %b %G %T GMT", &datetime);
+	strftime(buffer, 30, "%a, %d %b %G %T GMT", &datetime);
 	std::string result = buffer;
 	return (result);
 }
@@ -97,9 +98,9 @@ const std::string	Response::getSerializedResponse()
 	std::string response;
 	addHeader("date", getDate());
 	response += "HTTP/";
-	response += this->_http_version;
+	response += toString(this->_http_version);
 	response += " ";
-	response += this->_status_code + " " + this->_status_name + "\r\n";
+	response += toString(this->_status_code) + " " + this->_status_name + "\r\n";
 	response += getSerializedHeaders() + "\r\n" + getBody() + "\n";
 	return (response);
 }
