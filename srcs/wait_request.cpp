@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 15:32:20 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 17:28:39 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,6 +187,7 @@ int cgi(Request &req, int client_fd)
 // }
 
 bool	is_cgi(ServerConfig conf, Request &req)
+bool	is_cgi(ServerConfig& conf, Request req)
 {
 	std::string	p1, p2, p3;
 
@@ -201,7 +202,7 @@ bool	is_cgi(ServerConfig conf, Request &req)
 	return (uri == p1.substr(1) || uri == p2.substr(1) || uri == p3.substr(1));
 }
 
-Response*	handle_action(const Request& request)
+Response*	handle_action(ServerConfig& conf, Request& request)
 {
 	Response *response;
 	std::map<std::string, MethodHandler>::const_iterator it;
@@ -211,7 +212,7 @@ Response*	handle_action(const Request& request)
 	it = method_map.find(method_request);
 	if (it != method_map.end())
 	{
-		response = (*method_map[method_request])(request);
+		response = (*method_map[method_request])(conf, request);
 		return (response);
 	}
 	else
@@ -221,7 +222,7 @@ Response*	handle_action(const Request& request)
 	}
 }
 
-int	handle_request(epoll_event *events, ServerConfig conf)
+int	handle_request(epoll_event *events, ServerConfig& conf)
 {
 	Response*	response;
 	std::string serialized_response;
@@ -244,6 +245,11 @@ int	handle_request(epoll_event *events, ServerConfig conf)
 
 			if (cgi(request, client_fd) == 0)
 				return (0);
+		std::cout << "cc1\n";	
+		if (cgi(request, client_fd) == 0)
+			return (0);
+		else 
+			return (1);
 	}
 	else if (request.getMethod() == "POST" && request.getUri() == "/stop_server")
 	{
@@ -260,7 +266,7 @@ int	handle_request(epoll_event *events, ServerConfig conf)
 	}
 	else {
 		
-		response = handle_action(request);
+		response = handle_action(conf, request);
 		serialized_response = response->getSerializedResponse();
 		
 		send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
