@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 10:42:41 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 17:37:31 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <sys/epoll.h>
 #include <cstdio>
+#include <map>
 #include "Webserv.hpp"
 #include "Request.hpp"
 
@@ -207,7 +208,7 @@ bool	is_cgi(ServerConfig conf, Request req)
 	return (uri == p1.substr(n1) || uri == p2.substr(n2) || uri == p3.substr(n3));
 }
 
-int answer(epoll_event *events, ServerConfig conf)
+int answer(epoll_event *events, ServerConfig& conf, int epoll_fd)
 {
 	std::string response;
 	int client_fd = events->data.fd;
@@ -227,12 +228,21 @@ int answer(epoll_event *events, ServerConfig conf)
 		std::string stop_response = 
 			"HTTP/1.1 200 OK\r\n"
 			"Content-Type: text/html\r\n"
-			"Content-Length: 84\r\n"
+			"Content-Length: 120\r\n"
 			"Connection: close\r\n"
 			"\r\n"
-			"<html><body><h1>Server i stopping...</h1><p>Bye !</p></body></html>";
+			"<html><body><h1>Serveur arrêté</h1><p>Le serveur sur le port " 
+			+ int_to_string(conf.getPort()) + 
+			" a été arrêté avec succès.</p></body></html>";
 		send(client_fd, stop_response.c_str(), stop_response.size(), NO_FLAGS);
 		close(client_fd);
+		
+		if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, conf.getSockfd(), NULL) == -1) {
+			std::perror("epoll_ctl DEL");
+		}
+		close(conf.getSockfd());
+		
+		std::cout << "Serveur sur port " << conf.getPort() << " arrêté avec succès" << std::endl;
 		return (1);
 	}
 	else if (curr_req.getMethod() == "GET" && curr_req.getUri().empty())
@@ -287,7 +297,7 @@ int	wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf)
 				accept_new(fd, sockaddr, ev, epoll_fd);
 			else
 			{
-				if (answer(events, conf)) {
+				if (answer(&events[i], conf, epoll_fd)) {
 					std::cout << "Arret du serveur demande..." << std::endl;
 					(close(fd), close(epoll_fd));
 					return (0);
@@ -296,4 +306,112 @@ int	wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf)
 		}
 	}
 	return (1);
+}
+
+int wait_multiple_servers(std::vector<ServerConfig>& servers)
+{
+	int epoll_fd, nbfds;
+	epoll_event ev, events[MAX_EVENTS];
+	std::map<int, ServerConfig*> server_map;
+	std::map<int, ServerConfig*> client_map;
+
+	epoll_fd = epoll_create(1);
+	if (epoll_fd == -1)
+		return (std::perror("epoll_create"), 1);
+
+	for (size_t i = 0; i < servers.size(); i++) {
+		ev.events = EPOLLIN;
+		ev.data.fd = servers[i].getSockfd();
+		if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, servers[i].getSockfd(), &ev) == -1) {
+			std::perror("epoll_ctl");
+			close(epoll_fd);
+			return 1;
+		}
+		server_map[servers[i].getSockfd()] = &servers[i];
+		std::cout << "Serveur sur port " << servers[i].getPort() 
+				  << " ajouté à epoll (fd=" << servers[i].getSockfd() << ")" << std::endl;
+	}
+
+	std::cout << "En attente de connexions sur " << servers.size() << " serveurs..." << std::endl;
+
+	while (true) {
+		if (g_shutdown_requested) {
+			std::cout << "Arrêt demandé via signal..." << std::endl;
+			close(epoll_fd);
+			return 0;
+		}
+		
+		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000);
+		if (nbfds == -1) {
+			std::perror("epoll_wait");
+			break;
+		}
+		else if (nbfds == 0) {
+			continue;
+		}
+
+		for (int i = 0; i < nbfds; i++) {
+			int current_fd = events[i].data.fd;
+			
+			if (server_map.find(current_fd) != server_map.end()) {
+				ServerConfig* server_config = server_map[current_fd];
+				sockaddr_in server_addr = server_config->getSockaddr();
+				
+				std::cout << "Nouvelle connexion sur serveur port " 
+						  << server_config->getPort() << std::endl;
+				
+				socklen_t addrlen = sizeof(server_addr);
+				int client_fd = accept(current_fd, (struct sockaddr*)&server_addr, &addrlen);
+				if (client_fd == -1) {
+					std::perror("accept");
+					continue;
+				}
+				
+				if (make_not_blocking_socket(client_fd) == -1) {
+					std::perror("make_not_blocking_socket");
+					close(client_fd);
+					continue;
+				}
+				
+				ev.events = EPOLLIN | EPOLLET;
+				ev.data.fd = client_fd;
+				if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &ev) == -1) {
+					std::perror("epoll_ctl");
+					close(client_fd);
+					continue;
+				}
+				
+				client_map[client_fd] = server_config;
+				
+			} else {
+				int client_fd = current_fd;
+				
+				ServerConfig* server_config = client_map[client_fd];
+				if (!server_config) {
+					std::cerr << "Erreur: client non associé à un serveur" << std::endl;
+					close(client_fd);
+					continue;
+				}
+				
+				std::cout << "Traitement requête pour serveur port " << server_config->getPort() << std::endl;
+				
+				int result = answer(&events[i], *server_config, epoll_fd);
+				if (result == 1) {
+					server_map.erase(server_config->getSockfd());
+					std::cout << "Serveur sur port " << server_config->getPort() << " retiré de la liste" << std::endl;
+					
+					if (server_map.empty()) {
+						std::cout << "Tous les serveurs ont été arrêtés. Arrêt du programme." << std::endl;
+						close(epoll_fd);
+						return 0;
+					}
+				}
+				
+				client_map.erase(client_fd);
+			}
+		}
+	}
+	
+	close(epoll_fd);
+	return 1;
 }

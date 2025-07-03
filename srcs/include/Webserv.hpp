@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/02 17:22:22 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 17:37:47 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,9 @@ bool		is_all_digit(std::string str);
 
 //request.cpp
 int		wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf);
+int		wait_multiple_servers(std::vector<ServerConfig>& servers);
 std::string int_to_string(size_t value);
+
+// Variable globale pour l'arrêt propre: peut etre a enlever
+extern volatile sig_atomic_t g_shutdown_requested;
 #endif
