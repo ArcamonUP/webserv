@@ -3,24 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/02 17:55:05 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 13:37:16 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/socket.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <iostream>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <signal.h>
 #include "Webserv.hpp"
-#include "Config.hpp"
 
 void	end(pid_t *tab_pid, size_t n)
 {
@@ -66,7 +56,7 @@ int	main(int ac, char **av)
 	Config conf;
 	pid_t		*tab_pid = NULL;
 	size_t		nb_servers = 0;
-
+	
 	if (ac != 2 || !endsWith(av[1], ".conf")) {
 		std::cerr << "Respect the format: ./webserv [file].conf" << std::endl;
 		return (1);
@@ -76,6 +66,7 @@ int	main(int ac, char **av)
 		std::cerr << e.what() << std::endl;
 		return (1);
 	}
+	initMethodMap();
 	nb_servers = conf.getServer().size();
 	tab_pid = new pid_t[nb_servers];
 	if (!tab_pid)

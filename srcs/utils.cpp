@@ -3,15 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/28 12:51:24 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 14:27:31 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
-#include <fcntl.h>
+
+void	initMethodMap()
+{
+	method_map["HEAD"] = &HandleHEAD;
+	method_map["GET"] = &HandleGET;
+	method_map["POST"] = &HandlePOST;
+	method_map["DELETE"] = &HandleDELETE;
+}
 
 int	make_not_blocking_socket(int fd)
 {
@@ -77,9 +84,25 @@ bool	is_all_digit(std::string str)
 	return (true);
 }
 
-std::string int_to_string(size_t value) 
+std::string get_file_body(const Request& request)
 {
-    std::ostringstream oss;
-    oss << value;
-    return oss.str();
+	char buffer[4096];
+	std::string file_path = "." + request.getUri();
+	std::cout << file_path << std::endl;
+	int fd = open(file_path.c_str(), O_RDONLY);
+	if (errno == ENOENT)
+		throw Response::ResourceNotFoundException();
+	else if (fd < 0)
+	{
+		std::cout << errno << std::endl;
+		throw Response::InternalServerErrorException();
+	}
+	int read_ret = read(fd, buffer, sizeof(buffer));
+	if (read_ret < 0)
+	{
+		std::cout << errno << std::endl;
+		throw Response::InternalServerErrorException();
+	}
+	std::string result(buffer, read_ret);
+	return (result);
 }

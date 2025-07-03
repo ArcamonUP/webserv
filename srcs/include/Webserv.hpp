@@ -3,18 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/02 17:22:22 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 15:44:23 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#pragma once
 
-# include "Config.hpp"
-# include <netinet/in.h>
+#include "Config.hpp"
+#include "Message.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+
+#include <netinet/in.h>
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -24,20 +27,43 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include <ctime>
+#include <map>
 #include <string>
-#include <iostream>
 #include <unistd.h>
 #include <sys/epoll.h>
 #include <cstdio>
+#include <cstring>
+
+# define MAX_EVENTS 512
+# define NO_FLAGS 0
+
+template<typename T>
+std::string	toString(const T& value)
+{
+	std::ostringstream oss;
+	oss << value;
+	return oss.str();
+}
+
+typedef Response* (*MethodHandler)(const Request& request);
+extern	std::map<std::string, MethodHandler> method_map;
 
 //utils.cpp
+void		initMethodMap();
 int			make_not_blocking_socket(int fd);
 bool		endsWith(const std::string &str, const std::string &suffix);
 std::string	trim(const std::string &s);
 int			ft_atoi(const std::string value);
 bool		is_all_digit(std::string str);
+std::string get_file_body(const Request& request);
 
-//request.cpp
-int		wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf);
-std::string int_to_string(size_t value);
-#endif
+//wait_request.cpp
+void 		homepage(epoll_event *events, ServerConfig conf);
+int			wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf);
+
+//Handle_Method.cpp
+Response*	HandleHEAD(const Request& request);
+Response*	HandleGET(const Request& request);
+Response*	HandlePOST(const Request& request);
+Response*	HandleDELETE(const Request& request);

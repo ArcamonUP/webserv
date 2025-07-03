@@ -3,184 +3,61 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/24 15:12:36 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 18:00:58 by kbaridon         ###   ########.fr       */
+/*   Created: 2025/06/27 18:38:37 by pmateo            #+#    #+#             */
+/*   Updated: 2025/07/03 02:26:12 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Request.hpp"
-#include <sstream>
+#include "Webserv.hpp"
 
-static std::string get_first_word(std::string &request) {
-	std::string::size_type start = request.find_first_not_of(" \t\n\r");
-	if (start == std::string::npos)
-		return "";
-	std::string::size_type end = request.find_first_of(" \t\n\r", start);
-	std::string result = request.substr(start, end - start);
-	if (end != std::string::npos)
-		request = request.substr(end);
-	else
-		request.clear();
-	if (result == "/")
-		return ("");
-	return result;
-}
-
-static double str_to_double(const std::string &s)
+void	Request::process()
 {
-	double value = 0.0;
-	double div   = 1.0;
-	bool afterDot = false;
-
-	for (std::size_t i = 0; i < s.size(); ++i)
+	this->_method = get_first_word(this->_serialized_request);
+	this->_uri = get_first_word(this->_serialized_request);
+	this->_http_version = get_http_version(this->_serialized_request);
+	if (this->_method.empty() || this->_uri.empty() || this->_http_version == 0)
+		this->_error = true;
+	else
+		this->_error = false;
+	this->_serialized_request = this->_serialized_request.substr(this->_serialized_request.find_first_not_of(" \t\n\r"));
+	std::string line = get_next_line(this->_serialized_request);
+	while (!line.empty() && line != "\r\n")
 	{
-		char c = s[i];
-		if (c == '.')
-		{
-			if (afterDot)
-				break ;
-			afterDot = true;
+		size_t mid = line.find(':');
+		if (mid == std::string::npos) {
+			line = get_next_line(this->_serialized_request);
 			continue;
 		}
-		if (c < '0' || c > '9')
-			break;
-		int digit = c - '0';
-		if (!afterDot) {
-			value = value * 10 + digit;
-		} else {
-			div *= 10;
-			value += digit / div;
-		}
-	}
-	return value;
-}
-
-
-static double	get_http_version(std::string &request) {
-	std::string 			temp;
-	std::string::size_type	l;
-	double					result;
-
-	temp = get_first_word(request);
-	if (temp.empty())
-		return (0);
-	l = temp.find_first_of("/");
-	if (l == std::string::npos)
-		return (0);
-	temp = temp.substr(l + 1);
-	result = str_to_double(temp);
-	return (result);	
-}
-
-static std::string	trim(std::string str) {
-	size_t start = str.find_first_not_of(" \t\n\r");
-	size_t end = str.find_last_not_of(" \t\n\r");
-	std::string	result;
-
-	if (start == std::string::npos)
-		result.clear();
-	else
-		result = str.substr(start, end - start + 1);
-	return (result);
-}
-
-static std::string get_next_line(std::string &request)
-{
-    size_t start = request.find_first_not_of(" \t\n\r");
-    if (start != std::string::npos)
-        request = request.substr(start);
-    else
-	{
-        request.clear();
-        return ("");
-    }
-    size_t end = request.find_first_of("\r\n");
-    std::string line;
-    if (end != std::string::npos) {
-        line = request.substr(0, end);
-        size_t skip = 1;
-        if (request[end] == '\r' && end + 1 < request.size() && request[end + 1] == '\n')
-            skip = 2;
-        request = request.substr(end + skip);
-    }
-	else
-	{
-        line.swap(request);
-        request.clear();
-    }
-    return line;
-}
-
-static std::string get_content_length(std::string &request)
-{
-	size_t start = request.find("Content-Length");
-	if (start != std::string::npos)
-	{
-		size_t end = request.find("\n", start);
-		return request.substr(start + 16, end - (start + 16));
-	}
-	return "";
-}
-
-static std::string get_body(const std::string& request) 
-{
-    size_t pos = request.find("\r\n\r\n");
-    if (pos == std::string::npos)
-        return ""; 
-    return request.substr(pos + 4);
-}
-
-Request::Request() {}
-Request::~Request() {}
-
-Request::Request(std::string request)
-{
-	std::string body_req = request;
-	this->method = get_first_word(request);
-	this->uri = get_first_word(request);
-	this->http_version = get_http_version(request);
-	this->content_length = get_content_length(request);
-	if (this->method.empty() || this->uri.empty() || this->http_version == 0)
-		this->error = true;
-	else
-		this->error = false;
-	std::string line = "\n";
-	while (!line.empty())
-	{
-		line = get_next_line(request);
-		size_t	mid = line.find(':');
-		if (mid == std::string::npos)
-			continue ;
 		std::string key = trim(line.substr(0, mid));
 		std::string value = trim(line.substr(mid + 1));
-		this->headers.push_back(std::make_pair(key, value));
+		_headers.push_back(std::make_pair(key, value));
+		line = get_next_line(this->_serialized_request);
 	}
-
-	this->body = get_body(body_req);
+	this->_body.swap(this->_serialized_request);
 }
 
-Request::Request(const Request &copy) {
-	*this = copy;
+std::string	Request::getSerializedRequest() const {
+	return (this->_serialized_request);
 }
 
 std::string	Request::getMethod() const {
-	return (this->method);
+	return (this->_method);
 }
 
 std::string	Request::getUri() const {
-	return (this->uri);
+	return (this->_uri);
 }
 
 double	Request::getHttpVersion() const {
-	return (this->http_version);
+	return (this->_http_version);
 }
 
 std::string	Request::getHeaderMap() const {
 	std::string result;
-	for (size_t i = 0; i < this->headers.size(); ++i)
-		result += this->headers[i].first + ": " + this->headers[i].second + "\n";
+	for (size_t i = 0; i < this->_headers.size(); ++i)
+		result += this->_headers[i].first + ": " + this->_headers[i].second + "\n";
 	if (result.empty())
 		return "No headers.\n";
 	return result;
@@ -190,8 +67,8 @@ std::string	Request::getHeaderMap() const {
 std::string Request::getHeaderValue(std::string key) const {
 	std::vector<std::pair<std::string, std::string> >::const_iterator it;
 
-	it = this->headers.begin();
-    for (; it != this->headers.end(); ++it) {
+	it = this->_headers.begin();
+    for (; it != this->_headers.end(); ++it) {
         if (it->first == key)
             return it->second;
     }
@@ -200,30 +77,32 @@ std::string Request::getHeaderValue(std::string key) const {
 
 
 std::string	Request::getBody() const {
-	return (this->body);
+	return (this->_body);
 }
 
 bool	Request::getError() const {
-	return (this->error);
+	return (this->_error);
 }
 
-Request &Request::operator=(const Request &src) {
+Request::Request(std::string serialized_request) : Message(), _serialized_request(serialized_request)
+{
+	this->process();		
+}
+
+Request::Request(const Request& copy) : Message(copy)
+{
+	*this = copy;
+}
+
+Request::~Request() {}
+
+Request&	Request::operator=(const Request& src)
+{
 	if (this != &src)
 	{
-		this->method = src.method;
-		this->uri = src.uri;
-		this->http_version = src.http_version;
-		this->error = src.error;
+		Message::operator=(src);
+		this->_method = src._method;
+		this->_serialized_request = src._serialized_request;
 	}
 	return (*this);
-}
-
-std::ostream &operator<<(std::ostream &stream, Request const &request) {
-	stream << "--> Method: " << request.getMethod() << std::endl << \
-	"--> Uri: " << request.getUri() << std::endl << \
-	"--> Http Version: " << request.getHttpVersion() << std::endl << \
-	"--> Headers/Value: " << std::endl << request.getHeaderMap() << \
-	"--> Body: " << request.getBody() << std::endl << \
-	"--> Error: " << request.getError() << std::endl;
-	return (stream);
 }

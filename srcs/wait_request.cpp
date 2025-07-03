@@ -3,23 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   wait_request.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 10:42:41 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 15:32:20 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <unistd.h>
-#include <sys/epoll.h>
-#include <cstdio>
 #include "Webserv.hpp"
-#include "Request.hpp"
 
-# define MAX_EVENTS 512
-# define NO_FLAGS 0
+std::map<std::string, MethodHandler> method_map;
 
+//static buffer must change
 std::string get_request(int connection)
 {
 	char buffer[4096];
@@ -141,7 +136,7 @@ int cgi(Request &req, int client_fd)
 		std::string response =
 			"HTTP/1.1 200 OK\r\n"
 			"Content-Type: text/html\r\n"
-			"Content-Length: " + int_to_string(output.size()) + "\r\n"
+			"Content-Length: " + toString(output.size()) + "\r\n"
 			"Connection: close\r\n"
 			"\r\n" +  output;
 		send(client_fd, response.c_str(), response.size(), 0);
@@ -150,45 +145,45 @@ int cgi(Request &req, int client_fd)
 	return 0;
 }
 
-void homepage(epoll_event *events, ServerConfig conf)
-{
-	int client_fd = events->data.fd;
+// void homepage(epoll_event *events, ServerConfig conf)
+// {
+// 	int client_fd = events->data.fd;
 
-	std::string request = get_request(client_fd);
-	std::ifstream file((conf.getRoot() + conf.getIndex()).c_str());
-	if (!file.is_open())
-	{
-		std::string error_response =
-			"HTTP/1.1 500 Internal Server Error\r\n"
-			"Content-Type: text/plain\r\n"
-			"Content-Length: 21\r\n"
-			"Connection: close\r\n"
-			"\r\n"
-			"Erreur serveur interne";
-		send(client_fd, error_response.c_str(), error_response.size(), 0);
-		close(client_fd);
-		return;
-	}
-	std::istreambuf_iterator<char> begin(file);
-	std::istreambuf_iterator<char> end;
-	std::string html_body(begin, end);
+// 	std::string request = get_request(client_fd);
+// 	std::ifstream file((conf.getRoot() + conf.getIndex()).c_str());
+// 	if (!file.is_open())
+// 	{
+// 		std::string error_response =
+// 			"HTTP/1.1 500 Internal Server Error\r\n"
+// 			"Content-Type: text/plain\r\n"
+// 			"Content-Length: 21\r\n"
+// 			"Connection: close\r\n"
+// 			"\r\n"
+// 			"Erreur serveur interne";
+// 		send(client_fd, error_response.c_str(), error_response.size(), 0);
+// 		close(client_fd);
+// 		return;
+// 	}
+// 	std::istreambuf_iterator<char> begin(file);
+// 	std::istreambuf_iterator<char> end;
+// 	std::string html_body(begin, end);
 					
-	file.close();
+// 	file.close();
 
-	std::ostringstream oss;
-	oss << html_body.size();
+// 	std::ostringstream oss;
+// 	oss << html_body.size();
 
-	std::string response =
-	"HTTP/1.1 200 OK\r\n"
-	"Content-Type: text/html\r\n"
-	"Content-Length: " + oss.str() + "\r\n"
-	"connecton: close\r\n"
-	"\r\n" + 
-	html_body;
+// 	std::string response =
+// 	"HTTP/1.1 200 OK\r\n"
+// 	"Content-Type: text/html\r\n"
+// 	"Content-Length: " + oss.str() + "\r\n"
+// 	"connecton: close\r\n"
+// 	"\r\n" + 
+// 	html_body;
 
-	send(client_fd, response.c_str(), response.size(), NO_FLAGS);
-	close(client_fd);
-}
+// 	send(client_fd, response.c_str(), response.size(), NO_FLAGS);
+// 	close(client_fd);
+// }
 
 bool	is_cgi(ServerConfig conf, Request req)
 {
@@ -207,22 +202,44 @@ bool	is_cgi(ServerConfig conf, Request req)
 	return (uri == p1.substr(n1) || uri == p2.substr(n2) || uri == p3.substr(n3));
 }
 
-int answer(epoll_event *events, ServerConfig conf)
+Response*	handle_action(const Request& request)
 {
-	std::string response;
+	Response *response;
+	std::map<std::string, MethodHandler>::const_iterator it;
+	std::string method_request;
+	 
+	method_request = request.getMethod();
+	it = method_map.find(method_request);
+	if (it != method_map.end())
+	{
+		response = (*method_map[method_request])(request);
+		return (response);
+	}
+	else
+	{
+		response = new Response(501, "Not Implemented");
+		return (response);
+	}
+}
+
+int	handle_request(epoll_event *events, ServerConfig conf)
+{
+	Response*	response;
+	std::string serialized_response;
 	int client_fd = events->data.fd;
 
-	std::string request = get_request(client_fd);
-	std::cout << "raw request : \n" << request << std::endl;
-	Request curr_req(request);
-	std::cout << "parsed request : \n" << curr_req << std::endl;
+	std::string serialized_request = get_request(client_fd);
+	std::cout << "serialized request : \n" << serialized_request << std::endl;
+	
+	Request	request(serialized_request);
+	std::cout << "parsed request : \n" << request << std::endl;
 
-	if (is_cgi(conf, curr_req))
+	if (is_cgi(conf, request))
 	{
-			if (cgi(curr_req, client_fd) == 0)
+			if (cgi(request, client_fd) == 0)
 				return (0);
 	}
-	else if (curr_req.getMethod() == "POST" && curr_req.getUri() == "/stop_server")
+	else if (request.getMethod() == "POST" && request.getUri() == "/stop_server")
 	{
 		std::string stop_response = 
 			"HTTP/1.1 200 OK\r\n"
@@ -235,29 +252,11 @@ int answer(epoll_event *events, ServerConfig conf)
 		close(client_fd);
 		return (1);
 	}
-	else if (curr_req.getMethod() == "GET" && curr_req.getUri().empty())
-		homepage(events, conf);
-	else if (curr_req.getMethod() == "POST")
-	{
-		std::string data = curr_req.getBody();
-		std::cout << data << std::endl;
-		response =
-		"HTTP/1.1 200 OK\r\n"
-		"Content-Type: text/plain\r\n"
-		"Content-Length: ";
-		std::ostringstream oss;
-		oss << data.length();
-		response += oss.str();
-		response += "\r\n";
-		response += "Connection: close\r\n";
-		response += "\r\n";
-		response += data;
-		send(client_fd, response.c_str(), response.size(), NO_FLAGS);
-		close(client_fd);
-	}
-	else {
-		close(client_fd);
-	}
+	response = handle_action(request);
+	serialized_response = response->getSerializedResponse();
+	
+	send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+	close(client_fd), delete (response);
 	return (0);
 }
 
@@ -287,7 +286,8 @@ int	wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf)
 				accept_new(fd, sockaddr, ev, epoll_fd);
 			else
 			{
-				if (answer(events, conf)) {
+				if (handle_request(events, conf)) 
+				{
 					std::cout << "Arret du serveur demande..." << std::endl;
 					(close(fd), close(epoll_fd));
 					return (0);
