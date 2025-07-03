@@ -6,13 +6,19 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:12:36 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/02 21:14:11 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 02:51:22 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Message.hpp"
+#include "Webserv.hpp"
 
-Message::Message() {}
+Message::Message() : _http_version(1.1) {}
+
+Message::Message(const Message &copy)
+{
+	*this = copy;
+}
+
 Message::~Message() {}
 
 void	Message::setHeaderMap(const std::string __attribute_maybe_unused__ headermap)

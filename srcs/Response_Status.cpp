@@ -6,20 +6,26 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:37:59 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/02 21:04:40 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 02:22:11 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Response.hpp"
+#include "Webserv.hpp"
 
 //For 200, 201, 202 : Body, Content-Length and Content-Type need to be set upstream
 //Date header need to be set just before the response is send to the client
+
+//No Content is missing
+
+//For the moment we assume the content-type is html but we need to define it
 void	Response::Ok()
 {
 	this->_status_code = 200;
 	this->_status_name = "OK";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "keep-alive");
+	addHeader("content-length", toString(getBody().length()));
+	addHeader("content-type", "text/html");
 }
 //201 need a "location" header
 void	Response::Created()
@@ -91,7 +97,7 @@ void	Response::NotFound()
 	body += "<head>\n	<title>404 not found !</title>";
 	addHeader("content-length", toString(getBody().length()));
 }
-
+//Allow header depends ??
 void	Response::MethodNotAllowed()
 {
 	this->_status_code = 405;

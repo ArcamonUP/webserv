@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:06:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/02 21:25:43 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 02:26:51 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ class Message
 		Message();
 		Message(const Message &copy);
 
-		double		_http_version = 1.1;
+		double		_http_version;
 		std::vector<std::pair<std::string, std::string> > _headers;
 		std::string	_body;
 		bool		_error;

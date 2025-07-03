@@ -6,11 +6,13 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 19:02:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/02 21:21:46 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 03:15:26 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Response.hpp"
+#include "Webserv.hpp"
+
+std::map<int, Response::ResponseFunction> Response::_builders;
 
 void	Response::process()
 {
@@ -87,8 +89,11 @@ const std::string	Response::getSerializedHeaders() const
 	return result;
 }
 
-const char *	Response::getSerializedResponse()
+//Need to check if adding header date here is ok
+const std::string	Response::getSerializedResponse()
 {
+	std::cout << this->_http_version << std::endl;
+	std::cout << this->_status_code << std::endl;
 	std::string response;
 	addHeader("date", getDate());
 	response += "HTTP/";
@@ -96,7 +101,7 @@ const char *	Response::getSerializedResponse()
 	response += " ";
 	response += this->_status_code + " " + this->_status_name + "\r\n";
 	response += getSerializedHeaders() + "\r\n" + getBody() + "\n";
-	return (response.c_str());
+	return (response);
 }
 
 std::string	Response::createJsonError(const std::string& error, const std::string& message)
@@ -111,34 +116,39 @@ std::string	Response::createJsonError(const std::string& error, const std::strin
 
 void	Response::initBuilders()
 {
-	Response::_builders[200] = &Ok;
-	Response::_builders[201] = &Created;
-	Response::_builders[202] = &Accepted;
-	Response::_builders[301] = &MovedPermanently;
-	Response::_builders[400] = &BadRequest;
-	Response::_builders[403] = &Forbidden;
-	Response::_builders[404] = &NotFound;
-	Response::_builders[405] = &MethodNotAllowed;
-	Response::_builders[411] = &LengthRequired;
-	Response::_builders[414] = &UriTooLong;
-	Response::_builders[418] = &ImATeapot;
-	Response::_builders[429] = &TooManyRequest;
-	Response::_builders[500] = &InternalServerError;
-	Response::_builders[501] = &NotImplemented;
-	Response::_builders[503] = &ServiceUnavailable;
-	Response::_builders[504] = &HttpVersionNotSupported;
+	Response::_builders[200] = &Response::Ok;
+	Response::_builders[201] = &Response::Created;
+	Response::_builders[202] = &Response::Accepted;
+	Response::_builders[301] = &Response::MovedPermanently;
+	Response::_builders[400] = &Response::BadRequest;
+	Response::_builders[403] = &Response::Forbidden;
+	Response::_builders[404] = &Response::NotFound;
+	Response::_builders[405] = &Response::MethodNotAllowed;
+	Response::_builders[411] = &Response::LengthRequired;
+	Response::_builders[414] = &Response::UriTooLong;
+	Response::_builders[418] = &Response::ImATeapot;
+	Response::_builders[429] = &Response::TooManyRequest;
+	Response::_builders[500] = &Response::InternalServerError;
+	Response::_builders[501] = &Response::NotImplemented;
+	Response::_builders[503] = &Response::ServiceUnavailable;
+	Response::_builders[504] = &Response::HttpVersionNotSupported;
 }
 
-Response::Response() {}
+Response::Response() : Message(), _status_code(0)
+{
+	this->initBuilders();
+}
 
 Response::Response(const int status_code, const std::string status_name)
-					: _status_code(status_code), _status_name(status_name)
+					: Message(), _status_code(status_code), _status_name(status_name)
 {
+	this->initBuilders();
 	this->process();
 }
 
-Response::Response(const Response &copy)
+Response::Response(const Response &copy) : Message(copy)
 {
+	this->initBuilders();
 	*this = copy;
 }
 

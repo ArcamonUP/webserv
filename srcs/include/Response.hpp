@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/02 21:26:01 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 02:26:44 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 class Response : public Message
 {
 	private:
-		int _status_code = 0;
+		int _status_code;
 		std::string _status_name;
 		std::string	_error_json;
 		typedef void (Response::*ResponseFunction)();
@@ -43,7 +43,7 @@ class Response : public Message
 		std::string			getStatusName() const;
 		std::string 		getDate() const;
 		const std::string	getSerializedHeaders() const;
-		const char *		getSerializedResponse();
+		const std::string	getSerializedResponse();
 
 		std::string 		createJsonError(const std::string& error, const std::string& message);
 
@@ -75,6 +75,7 @@ class Response : public Message
 		void	HttpVersionNotSupported();	//504
 
 		class ResourceNotFoundException : public std::exception {};
+		class InternalServerErrorException : public std::exception {};
 };
 
 inline std::ostream &operator<<(std::ostream &stream, Response const &response) {

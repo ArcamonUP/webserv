@@ -3,15 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 14:59:10 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 01:35:43 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
-#include <fcntl.h>
+
+void	initMethodMap()
+{
+	method_map["HEAD"] = &HandleHEAD;
+	method_map["GET"] = &HandleGET;
+	method_map["POST"] = &HandlePOST;
+	method_map["DELETE"] = &HandleDELETE;
+}
 
 int	make_not_blocking_socket(int fd)
 {

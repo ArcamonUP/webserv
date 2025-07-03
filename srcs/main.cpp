@@ -3,19 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/24 12:46:05 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 02:58:55 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/socket.h>
-#include <iostream>
-#include <cstdio>
 #include "Webserv.hpp"
-
-# define PORTS 8080
 
 int	main()
 {
@@ -37,5 +32,6 @@ int	main()
 		return (std::perror("bind"), 1);
 	if (listen(sockfd, SOMAXCONN) < 0)
 		return (std::perror("listen"), 1);
+	initMethodMap();
 	return (wait_request(sockfd, sockaddr));
 }

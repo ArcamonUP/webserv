@@ -6,40 +6,38 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/26 01:18:49 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 03:04:09 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <unistd.h>
-#include <sys/epoll.h>
-#include <cstdio>
-#include <stdlib.h>
-#include <errno.h>
-#include <fcntl.h>
 #include "Webserv.hpp"
-#include "Message.hpp"
 
-# define MAX_EVENTS 32
-# define NO_FLAGS 0
+std::map<std::string, MethodHandler> method_map;
 
-static std::string get_file_body(const Message& request)
+//Test function -> must to change
+std::string get_file_body(const Request& request)
 {
 	char buffer[4096];
 	std::string file_path = "." + request.getUri();
 	std::cout << file_path << std::endl;
 	int fd = open(file_path.c_str(), O_RDONLY);
 	if (errno == ENOENT)
-		throw Message::ResourceNotFoundException();
+		throw Response::ResourceNotFoundException();
 	else if (fd < 0)
-		std::cout << errno << std::cout, std::exit(EXIT_FAILURE);
+	{
+		std::cout << errno << std::endl;
+		throw Response::InternalServerErrorException();
+	}
 	int read_ret = read(fd, buffer, sizeof(buffer));
 	if (read_ret < 0)
-		std::exit(EXIT_FAILURE);
+	{
+		std::cout << errno << std::endl;
+		throw Response::InternalServerErrorException();
+	}
 	std::string result(buffer, read_ret);
 	return (result);
 }
-
+//buffer isn't dynamic
 std::string get_request(int connection)
 {
 	char buffer[4096];
@@ -75,66 +73,41 @@ int accept_new(int server_fd, sockaddr_in sockaddr, epoll_event &ev, int epoll_f
 	return (0);
 }
 
-// void	handle_response(Request& curr_request)
-// {
-// 	if (curr_request.getMethod() == "GET" && !curr_request.getUri().empty())
-// 		// 
-// }
-
-void response(epoll_event *events)
+Response*	handle_action(const Request& request)
 {
+	Response *response;
+	std::map<std::string, MethodHandler>::const_iterator it;
+	std::string method_request;
+	 
+	method_request = request.getMethod();
+	std::cout << "prout\n";
+	it = method_map.find(method_request);
+	if (it != method_map.end())
+	{
+		response = (*method_map[method_request])(request);
+		std::cout << "ntm\n";
+		return (response);
+	}
+	else
+	{
+		response = new Response(501, "Not Implemented");
+		return (response);
+	}
+}
+
+void	handle_request(epoll_event *events)
+{
+	Response*	response;
+	std::string serialized_response;
 	int client_fd = events->data.fd;
 
-	std::string request = get_request(client_fd);
-	std::cout << "raw request : \n" << request << std::endl;
-	Message curr_req(request);
-	std::cout << "parsed request : \n" << curr_req << std::endl;
-	std::string response;
-	if (curr_req.getMethodOrStatus() == "GET" && !curr_req.getUri().empty())
-	{
-		std::string file_body;
-		try
-		{
-			file_body = get_file_body(curr_req);
-			response = 
-			"HTTP/1.1 200 OK\r\n"
-			"Content-Type: text/html\r\n"
-			"Content-Length: ";
-			std::ostringstream oss;
-			oss << file_body.length();
-			response += oss.str();
-			response += "\r\n";
-			response += "Connection: close\r\n";
-			response += "\r\n";
-			response += file_body;
-			response += "\n";
-		}
-		catch(const std::exception& e)
-		{
-			response =
-			"HTTP/1.1 404 Not Found\r\n"
-			"Connection: close\r\n"
-			"\r\n"
-			"Resource not found !\n";
-		}
-	}
-	else if (curr_req.getMethodOrStatus() == "POST")
-	{
-		std::string data = curr_req.getBody();
-		response =
-		"HTTP/1.1 200 OK\r\n"
-		"Content-Type: text/plain\r\n"
-		"Content-Length: ";
-		std::ostringstream oss;
-		oss << data.length();
-		response += oss.str();
-		response += "\r\n";
-		response += "Connection: close\r\n";
-		response += "\r\n";
-		response += data;
-		response += "\n";
-	}
-	send(client_fd, response.c_str(), response.size(), NO_FLAGS);
+	std::string serialized_request = get_request(client_fd);
+	std::cout << "serialized request : \n" << serialized_request << std::endl;
+	Request	request(serialized_request);
+	std::cout << "parsed request : \n" << request << std::endl;
+	response = handle_action(request);
+	serialized_response = response->getSerializedResponse();
+	send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
 	close(client_fd);
 }
 
@@ -162,7 +135,7 @@ int	wait_request(int fd, sockaddr_in sockaddr)
 			if (events[i].data.fd == fd)
 				accept_new(fd, sockaddr, ev, epoll_fd);
 			else
-				response(events);
+				handle_request(events);
 		}
 	}
 	(close(fd), close(epoll_fd));

@@ -6,11 +6,11 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 18:38:37 by pmateo            #+#    #+#             */
-/*   Updated: 2025/06/27 19:01:01 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 02:26:12 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Request.hpp"
+#include "Webserv.hpp"
 
 void	Request::process()
 {
@@ -84,12 +84,12 @@ bool	Request::getError() const {
 	return (this->_error);
 }
 
-Request::Request(std::string serialized_request) : _serialized_request(serialized_request)
+Request::Request(std::string serialized_request) : Message(), _serialized_request(serialized_request)
 {
 	this->process();		
 }
 
-Request::Request(const Request& copy)
+Request::Request(const Request& copy) : Message(copy)
 {
 	*this = copy;
 }
