@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 17:28:39 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 18:03:12 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,8 +186,7 @@ int cgi(Request &req, int client_fd)
 // 	close(client_fd);
 // }
 
-bool	is_cgi(ServerConfig conf, Request &req)
-bool	is_cgi(ServerConfig& conf, Request req)
+bool	is_cgi(ServerConfig& conf, Request& req)
 {
 	std::string	p1, p2, p3;
 
@@ -242,10 +241,7 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 
 		std::string content_length = "CONTENT_LENGTH=" + request.getHeaderValue("Content-Length");
 		std::cout << content_length << "  BBBBBBBBBBBBBBBBBBBBB  " << content_type << "          " << std::endl;
-
-			if (cgi(request, client_fd) == 0)
-				return (0);
-		std::cout << "cc1\n";	
+	
 		if (cgi(request, client_fd) == 0)
 			return (0);
 		else 
