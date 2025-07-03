@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 21:15:13 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 15:22:39 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 17:45:57 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@ std::string get_first_word(std::string &message) {
 		message = message.substr(end);
 	else
 		message.clear();
-	if (result == "/")
-		return ("");
 	return result;
 }
 

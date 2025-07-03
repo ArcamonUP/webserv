@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:42:58 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 15:58:41 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 16:56:54 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ class Request : public Message
 		Request &operator=(const Request& src);
 
 		void			process();
+
+		void			setUri(std::string uri);
 
 		std::string		getSerializedRequest() const;
 		std::string		getMethod() const;

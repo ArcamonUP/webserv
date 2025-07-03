@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 14:27:31 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 17:20:58 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,25 +84,22 @@ bool	is_all_digit(std::string str)
 	return (true);
 }
 
-std::string get_file_body(const Request& request)
+std::string get_file_content(const std::string& file_path)
 {
-	char buffer[4096];
-	std::string file_path = "." + request.getUri();
+	std::ifstream file(file_path.c_str());
 	std::cout << file_path << std::endl;
-	int fd = open(file_path.c_str(), O_RDONLY);
-	if (errno == ENOENT)
-		throw Response::ResourceNotFoundException();
-	else if (fd < 0)
+	if (!file.is_open() || file.fail())
 	{
-		std::cout << errno << std::endl;
-		throw Response::InternalServerErrorException();
+		if (errno == ENOENT)
+			throw Response::ResourceNotFoundException(); 
+		else
+			throw Response::InternalServerErrorException();	
 	}
-	int read_ret = read(fd, buffer, sizeof(buffer));
-	if (read_ret < 0)
-	{
-		std::cout << errno << std::endl;
-		throw Response::InternalServerErrorException();
-	}
-	std::string result(buffer, read_ret);
-	return (result);
+	std::stringstream	buffer;
+	std::string file_content;
+
+	buffer << file.rdbuf();
+	file.close();
+	file_content = buffer.str();
+	return (file_content);
 }
