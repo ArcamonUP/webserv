@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/02 17:32:49 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 10:42:41 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,7 @@ void homepage(epoll_event *events, ServerConfig conf)
 	int client_fd = events->data.fd;
 
 	std::string request = get_request(client_fd);
-	// std::cout << "> Request from client:\n" << Request(request);
-	std::ifstream file((conf.getRoot() + "/" + conf.getIndex()).c_str());
+	std::ifstream file((conf.getRoot() + conf.getIndex()).c_str());
 	if (!file.is_open())
 	{
 		std::string error_response =
@@ -208,7 +207,7 @@ bool	is_cgi(ServerConfig conf, Request req)
 	return (uri == p1.substr(n1) || uri == p2.substr(n2) || uri == p3.substr(n3));
 }
 
-void answer(epoll_event *events, ServerConfig conf)
+int answer(epoll_event *events, ServerConfig conf)
 {
 	std::string response;
 	int client_fd = events->data.fd;
@@ -221,8 +220,21 @@ void answer(epoll_event *events, ServerConfig conf)
 	if (is_cgi(conf, curr_req))
 	{
 			if (cgi(curr_req, client_fd) == 0)
-				return (void)0;
-		}
+				return (0);
+	}
+	else if (curr_req.getMethod() == "POST" && curr_req.getUri() == "/stop_server")
+	{
+		std::string stop_response = 
+			"HTTP/1.1 200 OK\r\n"
+			"Content-Type: text/html\r\n"
+			"Content-Length: 84\r\n"
+			"Connection: close\r\n"
+			"\r\n"
+			"<html><body><h1>Server i stopping...</h1><p>Bye !</p></body></html>";
+		send(client_fd, stop_response.c_str(), stop_response.size(), NO_FLAGS);
+		close(client_fd);
+		return (1);
+	}
 	else if (curr_req.getMethod() == "GET" && curr_req.getUri().empty())
 		homepage(events, conf);
 	else if (curr_req.getMethod() == "POST")
@@ -240,13 +252,13 @@ void answer(epoll_event *events, ServerConfig conf)
 		response += "Connection: close\r\n";
 		response += "\r\n";
 		response += data;
-		// response += "\n";
 		send(client_fd, response.c_str(), response.size(), NO_FLAGS);
 		close(client_fd);
 	}
 	else {
 		close(client_fd);
 	}
+	return (0);
 }
 
 int	wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf)
@@ -263,19 +275,25 @@ int	wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf)
 		return (std::perror("epoll_ctl"), 1);
 	while (true)
 	{
-		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000);
 		if (nbfds == -1) {
 			std::perror("epoll_wait");
 			break ;
 		}
+		else if (nbfds == 0) {continue;}
 		for (int i = 0; i < nbfds; i++)
 		{
 			if (events[i].data.fd == fd)
 				accept_new(fd, sockaddr, ev, epoll_fd);
 			else
-				answer(events, conf);
+			{
+				if (answer(events, conf)) {
+					std::cout << "Arret du serveur demande..." << std::endl;
+					(close(fd), close(epoll_fd));
+					return (0);
+				}
+			}
 		}
 	}
-	(close(fd), close(epoll_fd));
-	return (0);
+	return (1);
 }
