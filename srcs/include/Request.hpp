@@ -3,45 +3,57 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/24 15:06:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/25 14:54:42 by kbaridon         ###   ########.fr       */
+/*   Created: 2025/06/27 16:42:58 by pmateo            #+#    #+#             */
+/*   Updated: 2025/07/03 16:56:54 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef REQUEST_HPP
-# define REQUEST_HPP
+#pragma once
 
-#include <iostream>
-#include <vector>
+#include "Message.hpp"
 
-class Request
+class Request : public Message
 {
 	private:
-		std::string method;
-		std::string	uri;
-		double		http_version;
-		std::string content_length;
-		std::vector<std::pair<std::string, std::string> > headers;
-		std::string	body;
-		bool		error;
-		Request();
+		std::string _method;
+		std::string	_uri;
+		std::string	_serialized_request;
+	
 	public:
-		Request(std::string request);
-		Request(const Request &copy);
+		Request(std::string serialized_request);
+		Request(const Request& copy);
 		~Request();
-		Request	&operator=(const Request &src);
+		Request &operator=(const Request& src);
 
-		std::string	getMethod() const;
-		std::string getUri() const;
-		double		getHttpVersion() const;
-		std::string	getHeaderMap() const;
-		std::string	getHeaderValue(std::string key) const;
-		std::string	getBody() const;
-		bool		getError() const;
+		void			process();
+
+		void			setUri(std::string uri);
+
+		std::string		getSerializedRequest() const;
+		std::string		getMethod() const;
+		std::string		getUri() const;
+		double			getHttpVersion() const;
+		std::string		getHeaderMap() const;
+		std::string		getHeaderValue(std::string key) const;
+		std::string		getBody() const;
+		bool			getError() const;
+
 };
 
-std::ostream &operator<<(std::ostream &stream, Request const &request);
+inline std::ostream &operator<<(std::ostream &stream, Request const &request)
+{
+	stream << "--> Method: " << request.getMethod() << std::endl << \
+	"--> Uri: " << request.getUri() << std::endl << \
+	"--> Http Version: " << request.getHttpVersion() << std::endl << \
+	"--> Headers/Value: " << std::endl << request.getHeaderMap() << \
+	"--> Body: " << request.getBody() << std::endl << \
+	"--> Error: " << request.getError() << std::endl;
+			return (stream);
+}
 
-#endif
+std::string 	get_first_word(std::string &message);
+double 			str_to_double(const std::string &s);
+double			get_http_version(std::string &message);
+std::string 	get_next_line(std::string &message);

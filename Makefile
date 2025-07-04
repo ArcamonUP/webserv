@@ -20,9 +20,11 @@ SRCDIR = srcs
 NAME = webserv
 HEADER = $(SRCDIR)/include/Webserv.hpp $(SRCDIR)/include/Config.hpp \
 $(SRCDIR)/include/ServerConfig.hpp $(SRCDIR)/include/LocationConfig.hpp \
-$(SRCDIR)/include/Request.hpp
+$(SRCDIR)/include/Message.hpp $(SRCDIR)/include/Request.hpp $(SRCDIR)/include/Response.hpp
 
-SRC = main.cpp InitServers.cpp Utils.cpp Answer.cpp ServerConfig.cpp Config.cpp LocationConfig.cpp Request.cpp WaitRequest.cpp
+SRC = main.cpp Utils.cpp ServerConfig.cpp Config.cpp LocationConfig.cpp Message.cpp Request.cpp \
+		Request_utils.cpp Response.cpp Response_Status.cpp wait_request.cpp Handle_Method.cpp \
+        InitServers.cpp Answer.cpp
 
 OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 

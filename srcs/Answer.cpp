@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Answer.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
 /*   Updated: 2025/07/04 13:41:59 by kbaridon         ###   ########.fr       */
@@ -14,6 +14,8 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #define NO_FLAGS 0
+
+std::map<std::string, MethodHandler> method_map;
 
 std::string get_request(int connection)
 {
@@ -40,9 +42,10 @@ int cgi(Request &req, int client_fd)
 	std::string content_length = "CONTENT_LENGTH=" + req.getHeaderValue("Content-Length");
 	std::string script_name = "SCRIPT_NAME=" + req.getUri();
 
-	std::cout << content_length << "     " << content_type << "          " << req.getBody() << std::endl;
+	std::cout << content_length << "  HAHAHHH   " << content_type << "          " << req.getBody() << std::endl;
 
-	char *envp[] = {
+	char *envp[] = 
+	{
 		(char *)method.c_str(),
 		(char *)content_type.c_str(),
 		(char *)content_length.c_str(),
@@ -118,7 +121,7 @@ int cgi(Request &req, int client_fd)
 		std::string response =
 			"HTTP/1.1 200 OK\r\n"
 			"Content-Type: text/html\r\n"
-			"Content-Length: " + int_to_string(output.size()) + "\r\n"
+			"Content-Length: " + toString(output.size()) + "\r\n"
 			"Connection: close\r\n"
 			"\r\n" +  output;
 		send(client_fd, response.c_str(), response.size(), 0);
@@ -167,7 +170,7 @@ int cgi(Request &req, int client_fd)
 // 	close(client_fd);
 // }
 
-bool	is_cgi(ServerConfig conf, Request req)
+bool	is_cgi(ServerConfig& conf, Request& req)
 {
 	std::string	p1, p2, p3;
 

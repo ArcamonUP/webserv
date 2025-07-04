@@ -3,15 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/28 12:51:24 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 17:20:58 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
-#include <fcntl.h>
+
+void	initMethodMap()
+{
+	method_map["HEAD"] = &HandleHEAD;
+	method_map["GET"] = &HandleGET;
+	method_map["POST"] = &HandlePOST;
+	method_map["DELETE"] = &HandleDELETE;
+}
 
 int	make_not_blocking_socket(int fd)
 {
@@ -77,9 +84,22 @@ bool	is_all_digit(std::string str)
 	return (true);
 }
 
-std::string int_to_string(size_t value) 
+std::string get_file_content(const std::string& file_path)
 {
-    std::ostringstream oss;
-    oss << value;
-    return oss.str();
+	std::ifstream file(file_path.c_str());
+	std::cout << file_path << std::endl;
+	if (!file.is_open() || file.fail())
+	{
+		if (errno == ENOENT)
+			throw Response::ResourceNotFoundException(); 
+		else
+			throw Response::InternalServerErrorException();	
+	}
+	std::stringstream	buffer;
+	std::string file_content;
+
+	buffer << file.rdbuf();
+	file.close();
+	file_content = buffer.str();
+	return (file_content);
 }

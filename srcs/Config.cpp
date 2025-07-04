@@ -3,17 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/02 15:42:21 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 15:47:08 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Config.hpp"
 #include "Webserv.hpp"
-#include <fcntl.h>
-#include <unistd.h>
 
 static std::string readFile(const std::string& path)
 {
@@ -417,7 +414,8 @@ void Config::validateConfiguration()
 			throw std::invalid_argument("Server must have a valid port defined");
 		}
 		const std::vector<LocationConfig>& locations = servers[i].getLocations();
-		for (size_t k = 0; k < locations.size(); ++k) {
+		for (size_t k = 0; k < locations.size(); ++k) 
+		{
 			for (size_t l = k + 1; l < locations.size(); ++l) {
 				if (locations[k].getPath() == locations[l].getPath()) {
 					throw std::invalid_argument("Duplicate location path: " + locations[k].getPath());
