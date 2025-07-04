@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 10:37:23 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:10:38 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int	main(int ac, char **av)
         std::cerr << e.what() << std::endl;
         return (1);
     }
+    initMethodMap();
     std::vector<ServerConfig> servers = conf.getServer();
     for (size_t i = 0; i < servers.size(); i++)
     {

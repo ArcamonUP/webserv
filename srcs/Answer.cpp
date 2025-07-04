@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 14:00:03 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:06:15 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,46 +130,6 @@ int cgi(Request &req, int client_fd)
 	return 0;
 }
 
-// void homepage(epoll_event *events, ServerConfig conf)
-// {
-// 	int client_fd = events->data.fd;
-
-// 	std::string request = get_request(client_fd);
-// 	std::ifstream file((conf.getRoot() + conf.getIndex()).c_str());
-// 	if (!file.is_open())
-// 	{
-// 		std::string error_response =
-// 			"HTTP/1.1 500 Internal Server Error\r\n"
-// 			"Content-Type: text/plain\r\n"
-// 			"Content-Length: 21\r\n"
-// 			"Connection: close\r\n"
-// 			"\r\n"
-// 			"Erreur serveur interne";
-// 		send(client_fd, error_response.c_str(), error_response.size(), 0);
-// 		close(client_fd);
-// 		return;
-// 	}
-// 	std::istreambuf_iterator<char> begin(file);
-// 	std::istreambuf_iterator<char> end;
-// 	std::string html_body(begin, end);
-					
-// 	file.close();
-
-// 	std::ostringstream oss;
-// 	oss << html_body.size();
-
-// 	std::string response =
-// 	"HTTP/1.1 200 OK\r\n"
-// 	"Content-Type: text/html\r\n"
-// 	"Content-Length: " + oss.str() + "\r\n"
-// 	"connecton: close\r\n"
-// 	"\r\n" + 
-// 	html_body;
-
-// 	send(client_fd, response.c_str(), response.size(), NO_FLAGS);
-// 	close(client_fd);
-// }
-
 bool	is_cgi(ServerConfig& conf, Request& req)
 {
 	std::string	p1, p2, p3;
@@ -237,7 +197,7 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 			"Content-Length: 84\r\n"
 			"Connection: close\r\n"
 			"\r\n"
-			"<html><body><h1>Server i stopping...</h1><p>Bye !</p></body></html>";
+			"<html><body><h1>Server is stopping...</h1><p>Bye !</p></body></html>";
 		send(client_fd, stop_response.c_str(), stop_response.size(), NO_FLAGS);
 		close(client_fd);
 		return (2);

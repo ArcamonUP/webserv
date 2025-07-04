@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 13:38:45 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 14:14:42 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,10 @@ int	pre_answer(int fd, int epoll_fd, int i, epoll_event *events, ServerConfig* s
 		(*client_map).erase(fd);
 	if (result == 2)
 	{
+		(*client_map).erase(fd);
+		if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, serv->getSockfd(), NULL) == -1)
+			std::perror("epoll_ctl DEL");
+		close(serv->getSockfd());
 		(*serv_map).erase(serv->getSockfd());
 		if ((*serv_map).empty())
 		{
