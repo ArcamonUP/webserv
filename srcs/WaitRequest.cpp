@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   wait_request.cpp                                   :+:      :+:    :+:   */
+/*   WaitRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 11:36:27 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 11:59:43 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,9 @@ int wait_multiple_servers(std::vector<ServerConfig>& servers)
 		return (1);
 	while (true)
 	{
+		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000);
 		if (g_signal)
 			return (close(epoll_fd), 0);
-		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000);
 		if (nbfds == -1) {
 			std::perror("epoll_wait");
 			break ;
