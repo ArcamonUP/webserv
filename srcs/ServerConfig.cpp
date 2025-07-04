@@ -6,14 +6,17 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:14:49 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/28 12:32:30 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/03 15:32:25 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerConfig.hpp"
+#include <cstring>
 
-ServerConfig::ServerConfig() : port(80), server_name("localhost"), max_size_body(1048576), root("./"), index("index.html"), error_pages(), locations()
-{}
+ServerConfig::ServerConfig() : port(80), server_name("localhost"), max_size_body(1048576), root("./"), index("index.html"), error_pages(), locations(), sockfd(-1)
+{
+    std::memset(&sockaddr, 0, sizeof(sockaddr));
+}
 
 void ServerConfig::setPort(int p)
 {
@@ -64,6 +67,16 @@ void ServerConfig::addLocation(const LocationConfig loc)
     this->locations.push_back(loc);
 }
 
+void ServerConfig::setSockfd(int fd)
+{
+    this->sockfd = fd;
+}
+
+void ServerConfig::setSockaddr(const sockaddr_in& addr)
+{
+    this->sockaddr = addr;
+}
+
 int ServerConfig::getPort() const
 {
     return (this->port);
@@ -97,6 +110,16 @@ const std::map<int, std::string> &ServerConfig::getErrorPages() const
 const std::vector<LocationConfig> ServerConfig::getLocations() const
 {
     return (this->locations);
+}
+
+int ServerConfig::getSockfd() const
+{
+    return this->sockfd;
+}
+
+const sockaddr_in& ServerConfig::getSockaddr() const
+{
+    return this->sockaddr;
 }
 
 std::ostream &operator<<(std::ostream &stream, const ServerConfig &src)

@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 17:21:11 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/04 13:39:20 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,22 @@ int			ft_atoi(const std::string value);
 bool		is_all_digit(std::string str);
 std::string get_file_content(const std::string& file_path);
 
+//request.cpp
+int		wait_multiple_servers(std::vector<ServerConfig>& servers);
+std::string int_to_string(size_t value);
+
+//initServers.cpp
+Config	init(int ac, char **av);
+int		create_server_socket(int sockfd, ServerConfig& server_config);
+
+//answer.cpp
+int		handle_request(epoll_event *events, ServerConfig& conf);
+
+// Variable globale pour l'arrêt propre: peut etre a enlever
+extern bool g_signal;
+
 //wait_request.cpp
 void 		homepage(epoll_event *events, ServerConfig conf);
-int			wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf);
 
 //Handle_Method.cpp
 Response*	HandleHEAD(ServerConfig conf, const Request& request);

@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:54 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 15:39:20 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 15:32:25 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <map>
+#include <netinet/in.h>
 #include "LocationConfig.hpp"
 
 class ServerConfig
@@ -27,6 +28,8 @@ class ServerConfig
 		std::string					index;
 		std::map<int, std::string>	error_pages;
 		std::vector<LocationConfig>	locations;
+		int							sockfd;
+		sockaddr_in					sockaddr;
 	public:
 		ServerConfig();
 		void	setPort(int p);
@@ -38,6 +41,8 @@ class ServerConfig
 		void	addErrorPage(int code, std::string page);
 		void	setLocations(const std::vector<LocationConfig>& locs);
 		void	addLocation(const LocationConfig loc);
+		void	setSockfd(int fd);
+		void	setSockaddr(const sockaddr_in& addr);
 
 		int									getPort() const;
 		const std::string&					getServerName() const;
@@ -46,6 +51,8 @@ class ServerConfig
 		const std::string&					getIndex() const;
 		const std::map<int, std::string>&	getErrorPages() const;
 		const std::vector<LocationConfig>	getLocations() const;
+		int									getSockfd() const;
+		const sockaddr_in&					getSockaddr() const;
 };
 
 std::ostream& operator<<(std::ostream& os, const ServerConfig& srv);

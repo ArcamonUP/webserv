@@ -1,20 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   wait_request.cpp                                   :+:      :+:    :+:   */
+/*   Answer.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 18:03:12 by pmateo           ###   ########.fr       */
+/*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
+/*   Updated: 2025/07/04 14:06:15 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+#define NO_FLAGS 0
 
 std::map<std::string, MethodHandler> method_map;
 
-//static buffer must change
 std::string get_request(int connection)
 {
 	char buffer[4096];
@@ -30,24 +32,6 @@ std::string get_request(int connection)
 			break ;
 	}
 	return result;
-}
-
-int accept_new(int server_fd, sockaddr_in sockaddr, epoll_event &ev, int epoll_fd)
-{
-	socklen_t	addrlen;
-	int			client_fd;
-	
-	addrlen = sizeof(sockaddr);
-	client_fd = accept(server_fd, (struct sockaddr*)&sockaddr, &addrlen);
-	if (client_fd == -1)
-		return (std::perror("accept"), 1);
-	if (make_not_blocking_socket(client_fd) == -1)
-		return (std::perror("make_not_blocking_socket"), close(client_fd), 1);
-	ev.events = EPOLLIN | EPOLLET;
-	ev.data.fd = client_fd;
-	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &ev) == -1)
-		return (std::perror("epoll_ctl"), close(client_fd), 1);
-	return (0);
 }
 
 int cgi(Request &req, int client_fd)
@@ -146,46 +130,6 @@ int cgi(Request &req, int client_fd)
 	return 0;
 }
 
-// void homepage(epoll_event *events, ServerConfig conf)
-// {
-// 	int client_fd = events->data.fd;
-
-// 	std::string request = get_request(client_fd);
-// 	std::ifstream file((conf.getRoot() + conf.getIndex()).c_str());
-// 	if (!file.is_open())
-// 	{
-// 		std::string error_response =
-// 			"HTTP/1.1 500 Internal Server Error\r\n"
-// 			"Content-Type: text/plain\r\n"
-// 			"Content-Length: 21\r\n"
-// 			"Connection: close\r\n"
-// 			"\r\n"
-// 			"Erreur serveur interne";
-// 		send(client_fd, error_response.c_str(), error_response.size(), 0);
-// 		close(client_fd);
-// 		return;
-// 	}
-// 	std::istreambuf_iterator<char> begin(file);
-// 	std::istreambuf_iterator<char> end;
-// 	std::string html_body(begin, end);
-					
-// 	file.close();
-
-// 	std::ostringstream oss;
-// 	oss << html_body.size();
-
-// 	std::string response =
-// 	"HTTP/1.1 200 OK\r\n"
-// 	"Content-Type: text/html\r\n"
-// 	"Content-Length: " + oss.str() + "\r\n"
-// 	"connecton: close\r\n"
-// 	"\r\n" + 
-// 	html_body;
-
-// 	send(client_fd, response.c_str(), response.size(), NO_FLAGS);
-// 	close(client_fd);
-// }
-
 bool	is_cgi(ServerConfig& conf, Request& req)
 {
 	std::string	p1, p2, p3;
@@ -193,9 +137,7 @@ bool	is_cgi(ServerConfig& conf, Request& req)
 	p1 = conf.getLocations()[1].getCgiPath();
 	p2 = conf.getLocations()[2].getCgiPath();
 	p3 = conf.getLocations()[3].getCgiPath();
-	
 
-	
 	std::string uri = req.getUri();
 	std::cout << p1.substr(1) << " TESSSSSSSSSSSSSSSSSSSSSSSSST " << uri << std::endl;
 	return (uri == p1.substr(1) || uri == p2.substr(1) || uri == p3.substr(1));
@@ -255,10 +197,10 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 			"Content-Length: 84\r\n"
 			"Connection: close\r\n"
 			"\r\n"
-			"<html><body><h1>Server i stopping...</h1><p>Bye !</p></body></html>";
+			"<html><body><h1>Server is stopping...</h1><p>Bye !</p></body></html>";
 		send(client_fd, stop_response.c_str(), stop_response.size(), NO_FLAGS);
 		close(client_fd);
-		return (1);
+		return (2);
 	}
 	else {
 		
@@ -267,45 +209,7 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 		
 		send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
 		close(client_fd), delete (response);
-		return (0);
-	}
-	return (1);
-}
-
-int	wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf)
-{
-	int	epoll_fd, nbfds;
-	epoll_event ev, events[MAX_EVENTS];
-
-	epoll_fd = epoll_create(1);
-	if (epoll_fd == -1)
-		return (std::perror("epoll_create"), 1);
-	ev.events = EPOLLIN;
-	ev.data.fd = fd;
-	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &ev) == -1)
-		return (std::perror("epoll_ctl"), 1);
-	while (true)
-	{
-		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000);
-		if (nbfds == -1) {
-			std::perror("epoll_wait");
-			break ;
-		}
-		else if (nbfds == 0) {continue;}
-		for (int i = 0; i < nbfds; i++)
-		{
-			if (events[i].data.fd == fd)
-				accept_new(fd, sockaddr, ev, epoll_fd);
-			else
-			{
-				if (handle_request(events, conf)) 
-				{
-					std::cout << "Arret du serveur demande..." << std::endl;
-					(close(fd), close(epoll_fd));
-					return (0);
-				}
-			}
-		}
+		return (1);
 	}
 	return (1);
 }
