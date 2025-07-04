@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 11:59:43 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 13:38:45 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void accept_new(int fd, ServerConfig* serv, \
 int	pre_answer(int fd, int epoll_fd, int i, epoll_event *events, ServerConfig* serv, \
 	std::map<int, ServerConfig*> *serv_map, std::map<int, ServerConfig*> *client_map)
 {
-	int result = answer(&events[i], *serv, epoll_fd);
+	int result = handle_request(&events[i], *serv);
 
 	if (result == 1)
 		(*client_map).erase(fd);

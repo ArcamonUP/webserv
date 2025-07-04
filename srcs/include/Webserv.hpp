@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 11:06:42 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 13:39:20 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ Config	init(int ac, char **av);
 int		create_server_socket(int sockfd, ServerConfig& server_config);
 
 //answer.cpp
-int		answer(epoll_event *events, ServerConfig& conf, int epoll_fd);
+int		handle_request(epoll_event *events, ServerConfig& conf);
 
 // Variable globale pour l'arrêt propre: peut etre a enlever
 extern bool g_signal;
