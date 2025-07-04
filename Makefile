@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+         #
+#    By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/24 08:18:44 by kbaridon          #+#    #+#              #
-#    Updated: 2025/06/26 16:48:34 by kbaridon         ###   ########.fr        #
+#    Updated: 2025/07/04 10:58:19 by kbaridon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ HEADER = $(SRCDIR)/include/Webserv.hpp $(SRCDIR)/include/Config.hpp \
 $(SRCDIR)/include/ServerConfig.hpp $(SRCDIR)/include/LocationConfig.hpp \
 $(SRCDIR)/include/Request.hpp
 
-SRC = main.cpp utils.cpp ServerConfig.cpp Config.cpp LocationConfig.cpp Request.cpp wait_request.cpp
+SRC = main.cpp initServers.cpp utils.cpp ServerConfig.cpp Config.cpp LocationConfig.cpp Request.cpp wait_request.cpp
 
 OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 

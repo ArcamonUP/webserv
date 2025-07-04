@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 17:37:47 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 11:06:42 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,16 @@ int			ft_atoi(const std::string value);
 bool		is_all_digit(std::string str);
 
 //request.cpp
-int		wait_request(int fd, sockaddr_in sockaddr, ServerConfig conf);
 int		wait_multiple_servers(std::vector<ServerConfig>& servers);
 std::string int_to_string(size_t value);
 
+//initServers.cpp
+Config	init(int ac, char **av);
+int		create_server_socket(int sockfd, ServerConfig& server_config);
+
+//answer.cpp
+int		answer(epoll_event *events, ServerConfig& conf, int epoll_fd);
+
 // Variable globale pour l'arrêt propre: peut etre a enlever
-extern volatile sig_atomic_t g_shutdown_requested;
+extern bool g_signal;
 #endif
