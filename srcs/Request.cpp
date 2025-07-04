@@ -6,11 +6,11 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 18:38:37 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 17:38:19 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/04 18:45:27 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 
 void	Request::process()
 {
@@ -44,19 +44,19 @@ void	Request::setUri(std::string uri)
 	this->_uri = uri;	
 }
 
-std::string	Request::getSerializedRequest() const {
+const std::string&	Request::getSerializedRequest() const {
 	return (this->_serialized_request);
 }
 
-std::string	Request::getMethod() const {
+const std::string&	Request::getMethod() const {
 	return (this->_method);
 }
 
-std::string	Request::getUri() const {
+const std::string&	Request::getUri() const {
 	return (this->_uri);
 }
 
-double	Request::getHttpVersion() const {
+const double&	Request::getHttpVersion() const {
 	return (this->_http_version);
 }
 
@@ -83,11 +83,11 @@ std::string Request::getHeaderValue(std::string key) const
 }
 
 
-std::string	Request::getBody() const {
+const std::string&	Request::getBody() const {
 	return (this->_body);
 }
 
-bool	Request::getError() const {
+const bool&	Request::getError() const {
 	return (this->_error);
 }
 

@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request_utils.cpp                                  :+:      :+:    :+:   */
+/*   RequestUtils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 21:15:13 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 17:45:57 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 
 std::string get_first_word(std::string &message) {
 	std::string::size_type start = message.find_first_not_of(" \t\n\r");

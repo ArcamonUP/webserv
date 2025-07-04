@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 12:31:55 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/04 18:36:00 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ class Response : public Message
 		std::string	_error_json;
 		typedef void (Response::*ResponseFunction)();
 		static std::map<int, ResponseFunction> _builders;
+		static std::map<std::string, std::string> _content_types;
 	
 	public:
 		Response();
@@ -42,12 +43,15 @@ class Response : public Message
 		int					getStatusCode() const;
 		std::string			getStatusName() const;
 		std::string 		getDate() const; //Get UTC by strftime()
+		std::string			getExtension(const std::string& Uri) const;
 		const std::string	getSerializedHeaders() const;
 		const std::string	getSerializedResponse();
 
+		void				FindContentType(const std::string& Uri);
 		std::string 		createJsonError(const std::string& error, const std::string& message);
 
 		static	void		initBuilders();
+		static	void		initContentTypes();
 
 		//BUILDERS STATUS FUNCTIONS
 		//2xx : SUCCESS RESPONSE
