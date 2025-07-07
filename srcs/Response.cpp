@@ -6,14 +6,14 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 19:02:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/04 18:53:36 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/03 10:38:15 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
 
-std::map<int, Response::ResponseFunction>	Response::_builders;
-std::map<std::string, std::string> 			Response::_content_types;
+std::map<int, Response::ResponseFunction> Response::_builders;
+std::map<std::string, std::string> Response::_content_types;
 
 void	Response::process()
 {
@@ -67,19 +67,6 @@ std::string	Response::getStatusName() const
 	return (this->_status_name);
 }
 
-std::string Response::getExtension(const std::string& Uri) const
-{
-	std::size_t dot_pos = Uri.find_last_of('.');
-	
-	if (dot_pos == std::string::npos)
-		return ("");
-	else
-	{
-		std::string extension = Uri.substr(dot_pos, (Uri.length() - dot_pos));
-		return (extension);
-	}
-}
-
 std::string	Response::getDate() const
 {
 	char	buffer[30];
@@ -119,22 +106,6 @@ const std::string	Response::getSerializedResponse()
 	return (response);
 }
 
-void	Response::FindContentType(const std::string& Uri)
-{
-	std::string extension = getExtension(Uri);
-	if (extension.empty())
-		throw InternalServerErrorException();
-	else
-	{
-		std::map<std::string, std::string>::const_iterator it;
-		it = _content_types.find(extension);
-		if (it != _content_types.end())
-			addHeader("content-type", it->second);
-		else
-			addHeader("content-type", "application/octet-stream");
-	}
-}
-
 std::string	Response::createJsonError(const std::string& error, const std::string& message)
 {
 	std::string json_body;
@@ -145,16 +116,21 @@ std::string	Response::createJsonError(const std::string& error, const std::strin
 	return json_body;
 }
 
-Response::Response() : Message(), _status_code(0) {}
+Response::Response() : Message(), _status_code(0)
+{
+	this->initBuilders();
+}
 
 Response::Response(const int status_code, const std::string status_name)
 					: Message(), _status_code(status_code), _status_name(status_name)
 {
+	this->initBuilders();
 	this->process();
 }
 
 Response::Response(const Response &copy) : Message(copy)
 {
+	this->initBuilders();
 	*this = copy;
 }
 

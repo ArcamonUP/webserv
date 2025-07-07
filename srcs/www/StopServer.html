@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>400 - Requête incorrecte</title>
+  <title>Serveur Arrêté</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -23,7 +23,7 @@
       padding: 40px;
       max-width: 500px;
       text-align: center;
-      border-left: 5px solid #e67e22;
+      border-left: 5px solid #e74c3c;
     }
 
     .icon {
@@ -37,43 +37,31 @@
       font-size: 2.2em;
     }
 
-    .error-code {
-      font-size: 3em;
-      font-weight: bold;
-      color: #e67e22;
-      margin: 20px 0;
-    }
-
     p {
       color: #666;
       line-height: 1.6;
-      margin-bottom: 15px;
+      font-size: 1.1em;
     }
 
-    .btn {
-      display: inline-block;
-      padding: 12px 24px;
-      margin: 20px 5px 0;
-      background: linear-gradient(45deg, #667eea, #764ba2);
-      color: white;
-      text-decoration: none;
-      border-radius: 25px;
-      font-weight: 500;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
+    .status {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      border-left: 4px solid #dc3545;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="icon">⚠️</div>
-    <div class="error-code">400</div>
-    <h1>Requête incorrecte</h1>
-    <p>Le serveur ne peut pas traiter votre requête en raison d'une syntaxe invalide.</p>
-    <p>Vérifiez votre requête et réessayez.</p>
-    <a href="/" class="btn">🏠 Retour à l'accueil</a>
+    <div class="icon">🛑</div>
+    <h1>Serveur Arrêté</h1>
+    <div class="status">
+      <strong>État :</strong> Hors ligne
+    </div>
+    <p>Le serveur Webserv a été arrêté avec succès.</p>
+    <p>Veuillez le redémarrer pour continuer à l'utiliser.</p>
   </div>
 </body>
 </html>

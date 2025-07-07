@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WaitRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/07 11:18:24 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/07 16:51:28 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,26 +58,48 @@ void accept_new(int fd, ServerConfig* serv, \
 	return ;
 }
 
+void cleanup_all_fds(int epoll_fd, std::map<int, ServerConfig*> &server_map, \
+	std::map<int, ServerConfig*> &client_map)
+{
+	for (std::map<int, ServerConfig*>::iterator it = client_map.begin(); it != client_map.end(); ++it)
+	{
+		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, it->first, NULL);
+		close(it->first);
+	}
+	client_map.clear();
+
+	for (std::map<int, ServerConfig*>::iterator it = server_map.begin(); it != server_map.end(); ++it)
+	{
+		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, it->first, NULL);
+		close(it->first);
+	}
+	server_map.clear();
+	close(epoll_fd);
+}
+
 int	pre_answer(int fd, int epoll_fd, int i, epoll_event *events, ServerConfig* serv, \
 	std::map<int, ServerConfig*> *serv_map, std::map<int, ServerConfig*> *client_map)
 {
 	int result = handle_request(&events[i], *serv);
 
-	if (result == 0 || result == 1) //0 = keep_alive, a fix
+	if (result == 1)
 	{
 		(*client_map).erase(fd);
+		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
+		close(fd);
 	}
 	if (result == 2)
 	{
 		(*client_map).erase(fd);
-		if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, serv->getSockfd(), NULL) == -1)
-			std::perror("epoll_ctl DEL");
+		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
+		close(fd);
+		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, serv->getSockfd(), NULL);
 		close(serv->getSockfd());
 		(*serv_map).erase(serv->getSockfd());
 		if ((*serv_map).empty())
 		{
 			std::cout << "Tous les serveurs ont ete stoppes. Arret du programme." << std::endl;
-			close(epoll_fd);
+			cleanup_all_fds(epoll_fd, *serv_map, *client_map);
 			return (1);
 		}
 	}
@@ -97,7 +119,10 @@ int wait_multiple_servers(std::vector<ServerConfig>& servers)
 	{
 		nbfds = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000);
 		if (g_signal)
-			return (close(epoll_fd), 0);
+		{
+			cleanup_all_fds(epoll_fd, server_map, client_map);
+			return (0);
+		}
 		if (nbfds == -1) {
 			std::perror("epoll_wait");
 			break ;
@@ -108,10 +133,12 @@ int wait_multiple_servers(std::vector<ServerConfig>& servers)
 			curr_fd = events[i].data.fd;
 			if (server_map.find(curr_fd) != server_map.end())
 				accept_new(curr_fd, server_map[curr_fd], &client_map, &ev, epoll_fd);
-			else if (pre_answer(curr_fd, epoll_fd, i, events, client_map[curr_fd], \
+			else if (client_map.find(curr_fd) != client_map.end() && \
+				pre_answer(curr_fd, epoll_fd, i, events, client_map[curr_fd], \
 				&server_map, &client_map) == 1)
 				return (0);
 		}
 	}
-	return (close(epoll_fd), 1);
+	cleanup_all_fds(epoll_fd, server_map, client_map);
+	return (1);
 }

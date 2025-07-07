@@ -321,6 +321,11 @@ static ServerConfig	getServerValue(std::string raw, size_t *pos, ServerConfig re
 		result.setIndex(value);
 		return (skipLine(raw, pos), result);
 	}
+	if (key == "stopserver") {
+		value = getToken(raw, pos);
+		result.setStopServer(value);
+		return (skipLine(raw, pos), result);
+	}
 	if (key == "listen") {
 		result.setPort(ft_atoi(getToken(raw, pos)));
 		return (skipLine(raw, pos), result);
