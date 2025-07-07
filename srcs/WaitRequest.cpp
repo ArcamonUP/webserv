@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/07 11:18:24 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,10 @@ int	pre_answer(int fd, int epoll_fd, int i, epoll_event *events, ServerConfig* s
 {
 	int result = handle_request(&events[i], *serv);
 
-	if (result == 1)
+	if (result == 0 || result == 1) //0 = keep_alive, a fix
+	{
 		(*client_map).erase(fd);
+	}
 	if (result == 2)
 	{
 		(*client_map).erase(fd);

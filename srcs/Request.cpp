@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 18:38:37 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/04 18:45:27 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/07 11:05:17 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ void	Request::process()
 	this->_uri = get_first_word(this->_serialized_request);
 	std::cout << "help uri = " << this->_uri << std::endl;
 	this->_http_version = get_http_version(this->_serialized_request);
-	if (this->_method.empty() || this->_uri.empty() || this->_http_version == 0) {
+	if (this->_method.empty() || this->_uri.empty() || this->_http_version == 0)
+	{
 		this->_error = true;
 		return ;
 	}
