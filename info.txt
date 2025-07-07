@@ -6,3 +6,4 @@
 - timeout !
 - Resolutions fichiers OU execution CGI PUIS generation reponses
 - query string !!!!!
+- directory listing -> si autoindex a off response = forbidden

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Server - Static & CGI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>🚀 Nginx Test Server</h1>
+    <p>Ce serveur teste les fonctionnalités statiques et CGI</p>
+    
+    <h2>Tests statiques</h2>
+    <ul>
+        <li><a href="/style.css">Fichier CSS</a></li>
+        <li><a href="/images/">Dossier images</a></li>
+        <li><a href="/files/">Directory listing</a></li>
+    </ul>
+    
+    <h2>Tests CGI</h2>
+    <ul>
+        <li><a href="/info.py">Informations serveur</a></li>
+        <li><a href="file-list.py">Liste des fichiers</a></li>
+    </ul>
+    
+    <h2>Formulaire CGI</h2>
+    <form action="/form-handler.py" method="POST">
+        <input type="text" name="name" placeholder="Votre nom">
+        <button type="submit">Envoyer</button>
+    </form>
+</body>
+</html>
