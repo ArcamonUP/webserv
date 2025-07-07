@@ -1,36 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Bienvenue sur Webserv !</title>
+  <meta charset="UTF-8">
+  <title>Webserv</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 40px;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: #667eea;
+      margin-top: 30px;
+    }
+
+    form {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      border-left: 4px solid #667eea;
+    }
+
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    button, input[type="submit"] {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 500;
+      margin: 5px;
+    }
+
+    button:hover, input[type="submit"]:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 500;
+      margin: 5px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .danger {
+      background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
+    }
+
+    .links {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .links a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <h1>Hello depuis ton serveur Webserv 😎</h1>
-    <p>Si tu vois cette page, ton serveur fonctionne !</p>
+  <div class="container">
+    <h1>🚀 Webserv Server</h1>
+    <p style="text-align: center; color: #666;">Si tu vois cette page, c'est que ton serveur fonctionne !</p>
 
-    <h2>Formulaire vers script CGI</h2>
-    <form action="/script.py" method="POST">
-        <label for="prenom">Prénom :</label>
-        <input type="text" id="prenom" name="prenom"><br><br>
-
-        <label for="ville">Ville :</label>
-        <input type="text" id="ville" name="ville"><br><br>
-
-        <input type="submit" value="Envoyer">
+    <h2>📝 Test CGI (POST)</h2>
+    <form action="/method.py" method="POST">
+      <input type="text" name="prenom" placeholder="Prénom" required>
+      <input type="text" name="ville" placeholder="Ville" required>
+      <input type="submit" value="Envoyer">
     </form>
 
-    
-     <h1>Uploader un fichier</h1>
-  <form action="/upload.py" method="POST" enctype="multipart/form-data">
-    <input type="file" name="file_upload" required />
-    <button type="submit">Envoyer</button>
-  </form>
-  <form action="/stop_server" method="POST" style="display: inline;">
-    <button type="submit" style="background-color: #ff4444; color: white; padding: 10px 20px; border: none; cursor: pointer;">Stop the server</button>
-  </form>
-  <hr />
-  <a href="/list.py">Voir les fichiers uploadés</a>
+    <h2>🔎 Test CGI (GET)</h2>
+    <form>
+      <a href="/method.py" class="btn">Test GET</a>
+    </form>
+
+    <h2>📤 Upload de fichier</h2>
+    <form action="/upload.py" method="POST" enctype="multipart/form-data">
+      <input type="file" name="file_upload" required>
+      <input type="submit" value="Uploader">
+    </form>
+
+    <h2>🛑 Contrôle serveur</h2>
+    <form action="/stopserv" method="POST">
+      <button type="submit" class="danger">Arrêter le serveur</button>
+    </form>
+
+    <div class="links">
+      <p>📁 <a href="/list.py">Voir les fichiers uploadés</a></p>
+    </div>
+  </div>
 </body>
 </html>
-
-

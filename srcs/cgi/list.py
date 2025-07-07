@@ -1,36 +1,113 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import os
+import html
+import re
 import sys
 
-UPLOAD_DIR = "./uploads"
 
-print("Content-Type: text/html; charset=utf-8\n")  # En‑tête HTTP complet
-print("""
-<html>
+def get_upload_path():
+    if len(sys.argv) >= 4:
+        upload_status = sys.argv[2]
+        upload_path = sys.argv[3]
+        if upload_status == "on":
+            return upload_path
+    
+    try:
+        with open("./default.conf", 'r') as f:
+            content = f.read()
+        match = re.search(r'upload\s+on\s+([^;]+);', content)
+        return match.group(1).strip() if match else "./srcs/www/uploads/"
+    except:
+        return "./srcs/www/uploads/"
+
+
+def format_size(size):
+    for unit in ['B', 'KB', 'MB', 'GB']:
+        if size < 1024:
+            return f"{size:.1f} {unit}"
+        size /= 1024
+    return f"{size:.1f} TB"
+
+upload_dir = get_upload_path()
+
+print(f"""<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <title>Fichiers uploadés</title>
+    <meta charset="UTF-8">
+    <title>Fichiers Uploadés</title>
+    <style>
+        body {{
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }}
+        .container {{
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }}
+        h1 {{ color: #333; text-align: center; }}
+        .file-item {{
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }}
+        .btn {{
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+        }}
+        .btn:hover {{ transform: translateY(-2px); }}
+        .navigation {{ text-align: center; margin-top: 30px; }}
+    </style>
 </head>
 <body>
-<h1>Liste des fichiers uploadés</h1>
-""")
+    <div class="container">
+        <h1>📂 Fichiers Uploadés</h1>""")
 
-if os.path.exists(UPLOAD_DIR):
-    files = os.listdir(UPLOAD_DIR)
+if os.path.exists(upload_dir):
+    files = [f for f in os.listdir(upload_dir) if os.path.isfile(os.path.join(upload_dir, f))]
+    
     if files:
-        print("<ul>")
-        for f in files:
-            print(f'<li><a/{f}">{f}</a></li>')
-        print("</ul>")
+        for filename in files:
+            filepath = os.path.join(upload_dir, filename)
+            try:
+                size = format_size(os.path.getsize(filepath))
+                safe_name = html.escape(filename)
+                print(f"""
+        <div class="file-item">
+            <strong>📄 {safe_name}</strong><br>
+            Taille: {size}
+            <div style="margin-top: 10px;">
+                <a href="/uploads/{filename}" class="btn" target="_blank">⬇️ Télécharger</a>
+            </div>
+        </div>""")
+            except:
+                pass
     else:
-        print("<p>Aucun fichier uploadé pour le moment.</p>")
+        print('<p style="text-align: center; color: #666;">📭 Aucun fichier trouvé</p>')
 else:
-    print("<p>Le dossier d\'upload n\'existe pas.</p>")
+    print('<p style="text-align: center; color: #666;">❌ Dossier d\'upload inexistant</p>')
 
 print("""
-<p><a href="/">Retour à l'upload</a></p>
+        <div class="navigation">
+            <a href="/index.html" class="btn">🏠 Accueil</a>
+            <a href="/cgi/upload.py" class="btn">📤 Upload</a>
+        </div>
+    </div>
 </body>
-</html>
-""")
+</html>""")

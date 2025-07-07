@@ -47,6 +47,11 @@ void ServerConfig::setIndex(const std::string &i)
     this->index = i;
 }
 
+void ServerConfig::setStopServer(const std::string &i)
+{
+    this->stop_server = i;
+}
+
 void ServerConfig::setErrorPages(const std::map<int, std::string> &e)
 {
     this->error_pages = e;
@@ -100,6 +105,11 @@ const std::string &ServerConfig::getRoot() const
 const std::string &ServerConfig::getIndex() const
 {
     return (this->index);
+}
+
+const std::string &ServerConfig::getStopServer() const
+{
+    return (this->stop_server);
 }
 
 const std::map<int, std::string> &ServerConfig::getErrorPages() const

@@ -30,6 +30,7 @@ class ServerConfig
 		std::vector<LocationConfig>	locations;
 		int							sockfd;
 		sockaddr_in					sockaddr;
+		std::string					stop_server;
 	public:
 		ServerConfig();
 		void	setPort(int p);
@@ -42,10 +43,12 @@ class ServerConfig
 		void	setLocations(const std::vector<LocationConfig>& locs);
 		void	addLocation(const LocationConfig loc);
 		void	setSockfd(int fd);
+		void	setStopServer(const std::string& i);
 		void	setSockaddr(const sockaddr_in& addr);
 
 		int									getPort() const;
 		const std::string&					getServerName() const;
+		const std::string&					getStopServer() const;
 		size_t								getMaxSizeBody() const;
 		const std::string&					getRoot() const;
 		const std::string&					getIndex() const;
