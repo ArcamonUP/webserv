@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 18:59:32 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/07 11:17:04 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,10 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 	// std::cout << "serialized request : \n" << serialized_request << std::endl;
 	
 	Request	request(serialized_request);
+	if (request.getError()) {
+		std::cerr << "Fail here" << std::endl;
+		return (1);
+	}
 	std::cout << "parsed request : \n" << request << std::endl;
 
 
