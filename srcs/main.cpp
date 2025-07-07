@@ -3,40 +3,61 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/06/25 12:05:56 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 18:17:47 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/socket.h>
-#include <iostream>
-#include <cstdio>
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 
-# define PORTS 8080
+bool g_signal = false;
 
-int	main()
+int start_server(std::vector<ServerConfig>& servers)
 {
-	sockaddr_in	sockaddr;
-	int			sockfd;
-	int			opt = 1;
+    int result;
 
-	//On aura besoin de check ac/av: ./webserv conf_file
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd == -1)
-		return (std::perror("socket"), 1);
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
-		return (std::perror("setsockopt"), 1);
-	if (make_not_blocking_socket(sockfd) == -1)
-		return (std::perror("fcntl"), 1);
-	sockaddr.sin_family = AF_INET;
-	sockaddr.sin_addr.s_addr = INADDR_ANY;
-	sockaddr.sin_port = htons(PORTS);
-	if (bind(sockfd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) < 0)
-		return (std::perror("bind"), 1);
-	if (listen(sockfd, SOMAXCONN) < 0)
-		return (std::perror("listen"), 1);
-	return (wait_request(sockfd, sockaddr));
+    if (servers.empty())
+    {
+        std::cerr << "Aucun serveur configure. Stopping the program..." << std::endl;
+        return (1);
+    }
+    std::cout << "Tous les serveurs sont démarrés. En attente de connexions..." << std::endl;
+    result = wait_multiple_servers(servers);
+    for (size_t i = 0; i < servers.size(); i++)
+    {
+        if (servers[i].getSockfd() != -1)
+            close(servers[i].getSockfd());
+    }
+    return (result);
+}
+
+int	main(int ac, char **av)
+{
+    Config conf;
+
+    try {conf = init(ac, av);}
+    catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return (1);
+    }
+    initMethodMap(), Response::initBuilders(), Response::initContentTypes();
+    std::vector<ServerConfig> servers = conf.getServer();
+    for (size_t i = 0; i < servers.size(); i++)
+    {
+        int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (sockfd == -1 || create_server_socket(sockfd, servers[i]) == -1)
+        {
+            if (sockfd != -1)
+                close(sockfd);
+            std::cerr << "Échec de l'initialisation du serveur " << i << " sur le port " << servers[i].getPort() << std::endl;
+            for (size_t j = 0; j < i; j++) {
+                if (servers[j].getSockfd() != -1)
+                    close(servers[j].getSockfd());
+            }
+            return (1);
+        }
+    }
+    return (start_server(servers));
 }

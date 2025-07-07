@@ -6,7 +6,7 @@
 #    By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/24 08:18:44 by kbaridon          #+#    #+#              #
-#    Updated: 2025/06/24 16:18:01 by kbaridon         ###   ########.fr        #
+#    Updated: 2025/07/04 18:48:04 by pmateo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,13 +14,17 @@ GREEN=\033[0;32m
 ORANGE=\033[38;5;214m
 RESET=\033[0m
 CPP = c++
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I $(SRCDIR)/include
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -g -I $(SRCDIR)/include
 SRCDIR = srcs
 
 NAME = webserv
-HEADER = $(SRCDIR)/include/Webserv.hpp $(SRCDIR)/include/Request.hpp
+HEADER = $(SRCDIR)/include/WebServ.hpp $(SRCDIR)/include/Config.hpp \
+$(SRCDIR)/include/ServerConfig.hpp $(SRCDIR)/include/LocationConfig.hpp \
+$(SRCDIR)/include/Message.hpp $(SRCDIR)/include/Request.hpp $(SRCDIR)/include/Response.hpp
 
-SRC = main.cpp utils.cpp wait_request.cpp Request.cpp
+SRC = main.cpp Utils.cpp ServerConfig.cpp Config.cpp LocationConfig.cpp Message.cpp Request.cpp \
+		RequestUtils.cpp Response.cpp ResponseStatus.cpp ResponseUtils.cpp WaitRequest.cpp HandleMethod.cpp \
+        InitServers.cpp HandleRequest.cpp
 
 OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 
