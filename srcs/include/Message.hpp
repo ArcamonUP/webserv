@@ -6,13 +6,13 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:06:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 02:26:51 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 
 class Message
 {		 

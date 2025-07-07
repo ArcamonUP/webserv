@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:42:58 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 16:56:54 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/04 18:45:45 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,14 @@ class Request : public Message
 
 		void			setUri(std::string uri);
 
-		std::string		getSerializedRequest() const;
-		std::string		getMethod() const;
-		std::string		getUri() const;
-		double			getHttpVersion() const;
-		std::string		getHeaderMap() const;
-		std::string		getHeaderValue(std::string key) const;
-		std::string		getBody() const;
-		bool			getError() const;
+		const std::string&	getSerializedRequest() const;
+		const std::string&	getMethod() const;
+		const std::string&	getUri() const;
+		const double&		getHttpVersion() const;
+		std::string			getHeaderMap() const;
+		std::string			getHeaderValue(std::string key) const;
+		const std::string&	getBody() const;
+		const bool&			getError() const;
 
 };
 

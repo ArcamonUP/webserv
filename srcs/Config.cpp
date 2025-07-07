@@ -6,11 +6,11 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 15:47:08 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 
 static std::string readFile(const std::string& path)
 {

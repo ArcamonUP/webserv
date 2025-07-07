@@ -6,11 +6,11 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:12:36 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 11:04:59 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 
 Message::Message() : _http_version(1.1) {}
 

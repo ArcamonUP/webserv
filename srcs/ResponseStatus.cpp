@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Response_Status.cpp                                :+:      :+:    :+:   */
+/*   ResponseStatus.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:37:59 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 12:34:43 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/04 18:37:03 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 
 //For 200, 201, 202 : Body, Content-Length and Content-Type need to be set upstream
 //Date header need to be set just before the response is send to the client
@@ -25,7 +25,6 @@ void	Response::Ok()
 	this->_status_name = "OK";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "keep-alive");
-	addHeader("content-type", "text/html");
 }
 //201 need a "location" header
 void	Response::Created()

@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   initServers.cpp                                    :+:      :+:    :+:   */
+/*   InitServers.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 10:35:08 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 10:37:39 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 #include <cstring>
 
 void signal_handler(int sig)
@@ -56,7 +56,7 @@ Config init(int ac, char **av)
     signal(SIGTERM, signal_handler);
 
     if (ac != 2 || !endsWith(av[1], ".conf"))
-        throw (std::invalid_argument("Respect the format: ./webserv [file].conf"));
+        throw (std::invalid_argument("Respect the format: ./WebServ [file].conf"));
     conf = Config(av[1]);
     return (conf);
 }

@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Answer.cpp                                         :+:      :+:    :+:   */
+/*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
 /*   Updated: 2025/07/07 11:17:04 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #define NO_FLAGS 0
@@ -139,7 +139,7 @@ bool	is_cgi(ServerConfig& conf, Request& req)
 	p3 = conf.getLocations()[3].getCgiPath();
 
 	std::string uri = req.getUri();
-	std::cout << p1.substr(1) << " TESSSSSSSSSSSSSSSSSSSSSSSSST " << uri << std::endl;
+	// std::cout << p1.substr(1) << " TESSSSSSSSSSSSSSSSSSSSSSSSST " << uri << std::endl;
 	return (uri == p1.substr(1) || uri == p2.substr(1) || uri == p3.substr(1));
 }
 
@@ -170,7 +170,7 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 	int client_fd = events->data.fd;
 
 	std::string serialized_request = get_request(client_fd);
-	std::cout << "serialized request : \n" << serialized_request << std::endl;
+	// std::cout << "serialized request : \n" << serialized_request << std::endl;
 	
 	Request	request(serialized_request);
 	if (request.getError()) {

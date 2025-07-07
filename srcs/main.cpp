@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 14:10:38 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/04 18:17:47 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Webserv.hpp"
+#include "WebServ.hpp"
 
 bool g_signal = false;
 
@@ -42,7 +42,7 @@ int	main(int ac, char **av)
         std::cerr << e.what() << std::endl;
         return (1);
     }
-    initMethodMap();
+    initMethodMap(), Response::initBuilders(), Response::initContentTypes();
     std::vector<ServerConfig> servers = conf.getServer();
     for (size_t i = 0; i < servers.size(); i++)
     {
