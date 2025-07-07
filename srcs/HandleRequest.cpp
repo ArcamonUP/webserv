@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/07 11:17:04 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:37:48 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,27 +38,47 @@ void free_env(char **envp)
 {
     if (!envp) return;
 
-    for (size_t i = 0; envp[i]; ++i)
+    for (size_t i = 0; envp[i]; i++)
         delete[] envp[i];
     delete[] envp;
 }
 
 char **init_cgi(Request &req)
 {
-    std::vector<std::string> env_strings;
-    env_strings.push_back("REQUEST_METHOD=" + req.getMethod());
-    env_strings.push_back("CONTENT_TYPE=" + req.getHeaderValue("Content-Type"));
-    env_strings.push_back("CONTENT_LENGTH=" + req.getHeaderValue("Content-Length"));
-    env_strings.push_back("SCRIPT_NAME=" + req.getUri());
+    char **envp = new char*[6];
+    int env_count = 0;
+    
+    std::string method = "REQUEST_METHOD=" + req.getMethod();
+    envp[env_count] = new char[method.size() + 1];
+    std::strcpy(envp[env_count], method.c_str());
+    env_count++;
+    
+    std::string content_type = "CONTENT_TYPE=" + req.getHeaderValue("Content-Type");
+    envp[env_count] = new char[content_type.size() + 1];
+    std::strcpy(envp[env_count], content_type.c_str());
+    env_count++;
+    
+    std::string content_length = "CONTENT_LENGTH=" + req.getHeaderValue("Content-Length");
+    envp[env_count] = new char[content_length.size() + 1];
+    std::strcpy(envp[env_count], content_length.c_str());
+    env_count++;
+    
+    std::string script_name = "SCRIPT_NAME=" + req.getUri();
+    envp[env_count] = new char[script_name.size() + 1];
+    std::strcpy(envp[env_count], script_name.c_str());
+    env_count++;
 
-    char **envp = new char*[env_strings.size() + 1]; 
-
-    for (size_t i = 0; i < env_strings.size(); ++i)
-    {
-        envp[i] = new char[env_strings[i].size() + 1];
-        std::strcpy(envp[i], env_strings[i].c_str());
+    std::string uri = req.getUri();
+    std::string query_string = "QUERY_STRING=";
+    size_t pos = uri.find('?');
+    if (pos != std::string::npos) {
+        query_string += uri.substr(pos + 1);
     }
-    envp[env_strings.size()] = NULL;
+    envp[env_count] = new char[query_string.size() + 1];
+    std::strcpy(envp[env_count], query_string.c_str());
+    env_count++;
+    
+    envp[env_count] = NULL;
     return envp;
 }
 
@@ -82,11 +102,60 @@ int child_status(pid_t &pid, int client_fd)
 		return (0);
 }
 
-int cgi(Request &req, int client_fd)
+int cgi(Request &req, int client_fd, ServerConfig& conf)
 {
-	std::string uri = "srcs/cgi" + req.getUri();
+	std::string uri = req.getUri();
+	size_t pos = uri.find('?');
+	if (pos != std::string::npos) {
+		uri = uri.substr(0, pos);
+	}
+	
+	std::string script_path = "srcs/cgi" + uri;
 	char **envp = init_cgi(req);
-	char *argv[] = {(char*)"/usr/bin/python3", (char*)uri.c_str(), NULL};
+	
+	char *python_path = (char*)"/usr/bin/python3";
+	char *script_arg = new char[script_path.size() + 1];
+	std::strcpy(script_arg, script_path.c_str());
+	
+	char *upload_status_arg = NULL;
+	char *upload_path_arg = NULL;
+	
+	bool need_upload_args = false;
+	if (uri == "/upload.py" || uri == "/list.py") {
+		need_upload_args = true;
+		
+		for (size_t i = 0; i < conf.getLocations().size(); i++) {
+			if (conf.getLocations()[i].getPath() == "/upload/") {
+				if (conf.getLocations()[i].getUploadStatus()) {
+					upload_status_arg = new char[3];
+					std::strcpy(upload_status_arg, "on");
+				} else {
+					upload_status_arg = new char[4];
+					std::strcpy(upload_status_arg, "off");
+				}
+				
+				std::string up_path = conf.getLocations()[i].getUploadPath();
+				upload_path_arg = new char[up_path.size() + 1];
+				std::strcpy(upload_path_arg, up_path.c_str());
+				break;
+			}
+		}
+	}
+	
+	char **args;
+	if (need_upload_args && upload_status_arg && upload_path_arg) {
+		args = new char*[5];
+		args[0] = python_path;
+		args[1] = script_arg;
+		args[2] = upload_status_arg;
+		args[3] = upload_path_arg;
+		args[4] = NULL;
+	} else {
+		args = new char*[3];
+		args[0] = python_path;
+		args[1] = script_arg;
+		args[2] = NULL;
+	}
 
 	int pipefd[2], input_pipe[2];
 
@@ -97,13 +166,13 @@ int cgi(Request &req, int client_fd)
 		return std::perror("fork"), 1;
 	if (pid == 0)
 	{
-		close(input_pipe[1]), close(pipefd[0]);
+		close(input_pipe[1]), close(pipefd[0]), close(client_fd);
 		dup2(pipefd[1], STDOUT_FILENO), dup2(input_pipe[0], STDIN_FILENO);
 		if (req.getMethod() == "POST"){
 			std::string body = req.getBody();
 			write(STDIN_FILENO, body.c_str(), body.size());
 		}
-		execve(argv[0], argv, envp);
+		execve(args[0], args, envp);
 		std::perror("execve"), _exit(1);
 	}
 	else {
@@ -120,8 +189,15 @@ int cgi(Request &req, int client_fd)
 		while((count = read(pipefd[0], buffer, sizeof(buffer))) > 0)
 			output.append(buffer, count);
 
+		delete[] script_arg;
+		if (upload_status_arg)
+			delete[] upload_status_arg;
+		if (upload_path_arg)
+			delete[] upload_path_arg;
+		delete[] args;
+		
 		if (child_status(pid, client_fd))
-			return (free_env(envp), close(client_fd),1);
+			return (free_env(envp), close(client_fd), close(pipefd[0]), 1);
 		std::cout << output << std::endl;
 
 		std::string response =
@@ -131,7 +207,7 @@ int cgi(Request &req, int client_fd)
 			"Connection: close\r\n"
 			"\r\n" +  output;
 		send(client_fd, response.c_str(), response.size(), 0);
-		free_env(envp), close(client_fd);
+		free_env(envp), close(client_fd), close(pipefd[0]);
 	}
 	return 0;
 }
@@ -145,6 +221,11 @@ bool	is_cgi(ServerConfig& conf, Request& req)
 	p3 = conf.getLocations()[3].getCgiPath();
 
 	std::string uri = req.getUri();
+	size_t pos = uri.find('?');
+	if (pos != std::string::npos) {
+		uri = uri.substr(0, pos);
+	}
+	
 	return (uri == p1.substr(10) || uri == p2.substr(10) || uri == p3.substr(10));
 }
 
@@ -181,7 +262,7 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 
 	if (is_cgi(conf, request))
 	{
-		if (cgi(request, client_fd) == 0)
+		if (cgi(request, client_fd, conf) == 0)
 			return (0);
 	}
 	else {

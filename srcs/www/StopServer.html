@@ -1,39 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Serveur arrêté</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serveur Arrêté</title>
   <style>
     body {
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #2c3e50, #34495e);
-      color: #ecf0f1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      text-align: center;
     }
 
     .container {
-      background-color: rgba(0, 0, 0, 0.3);
-      padding: 40px;
+      background: white;
       border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 40px;
       max-width: 500px;
-    }
-
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 0.5em;
-    }
-
-    p {
-      font-size: 1.2em;
-      line-height: 1.6;
+      text-align: center;
+      border-left: 5px solid #e74c3c;
     }
 
     .icon {
@@ -41,21 +31,37 @@
       margin-bottom: 20px;
     }
 
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 2em;
-      }
-      p {
-        font-size: 1em;
-      }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 2.2em;
+    }
+
+    p {
+      color: #666;
+      line-height: 1.6;
+      font-size: 1.1em;
+    }
+
+    .status {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      border-left: 4px solid #dc3545;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="icon">🛑</div>
-    <h1>Serveur arrêté</h1>
-    <p>Ce serveur est actuellement hors ligne.<br>Veuillez réessayer plus tard.</p>
+    <h1>Serveur Arrêté</h1>
+    <div class="status">
+      <strong>État :</strong> Hors ligne
+    </div>
+    <p>Le serveur Webserv a été arrêté avec succès.</p>
+    <p>Veuillez le redémarrer pour continuer à l'utiliser.</p>
   </div>
 </body>
 </html>

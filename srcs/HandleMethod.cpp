@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandleMethod.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/04 19:01:30 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/07 17:24:26 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 		else
 			body = get_file_content(conf.getRoot() + request.getUri());
 		response = new Response(200, "OK");
-		// response->FindContentType(request.getUri());
 		response->setBody(body);
 		std::cout << "ser_response : " << response->getSerializedResponse();
 	}
@@ -53,13 +52,10 @@ Response*	HandlePOST(ServerConfig conf __attribute_maybe_unused__, const Request
 	{
 		if (request.getUri() == "/stopserv")
 			body = get_file_content(conf.getRoot() + conf.getStopServer());
-		
 		else
 			body = get_file_content(conf.getRoot() + request.getUri());
 
 		response = new Response(200, "OK");
-
-		// response->FindContentType(request.getUri());
 		response->setBody(body);
 		std::cout << "ser_response : " << response->getSerializedResponse();
 	}

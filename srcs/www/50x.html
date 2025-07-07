@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5xx - Erreur serveur</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 40px;
+      max-width: 500px;
+      text-align: center;
+      border-left: 5px solid #c0392b;
+    }
+
+    .icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 2.2em;
+    }
+
+    .error-code {
+      font-size: 3em;
+      font-weight: bold;
+      color: #c0392b;
+      margin: 20px 0;
+    }
+
+    p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      margin: 20px 5px 0;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 500;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .error-details {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      border-left: 4px solid #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">🔧</div>
+    <div class="error-code">5xx</div>
+    <h1>Erreur serveur</h1>
+    <div class="error-details">
+      <strong>Problème technique détecté</strong>
+    </div>
+    <p>Le serveur a rencontré une erreur interne et ne peut pas traiter votre requête.</p>
+    <p>Veuillez réessayer dans quelques instants.</p>
+    <a href="/" class="btn">🏠 Retour à l'accueil</a>
+  </div>
+</body>
+</html>
