@@ -113,7 +113,7 @@ import os
 
 UPLOAD_DIR = "./uploads"
 
-print("Content-Type: text/html\n")  # Header CGI obligatoire
+print("Content-Type: text/html\n")  
 
 form = cgi.FieldStorage()
 fileitem = form['file_upload']

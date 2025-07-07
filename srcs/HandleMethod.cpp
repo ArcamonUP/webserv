@@ -47,7 +47,33 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 
 Response*	HandlePOST(ServerConfig conf __attribute_maybe_unused__, const Request& request __attribute_maybe_unused__)
 {
-	return (NULL);
+	std::string body;
+	Response* response = NULL;
+	try
+	{
+		if (request.getUri() == "/stopserv")
+			body = get_file_content(conf.getRoot() + conf.getStopServer());
+		
+		else
+			body = get_file_content(conf.getRoot() + request.getUri());
+
+		response = new Response(200, "OK");
+
+		// response->FindContentType(request.getUri());
+		response->setBody(body);
+		std::cout << "ser_response : " << response->getSerializedResponse();
+	}
+	catch(const Response::ResourceNotFoundException& e)
+	{
+		response = new Response(404, "Not Found");
+		std::cout << "ser_response : " << response->getSerializedResponse();
+	}
+	catch(const Response::InternalServerErrorException& e)
+	{
+		response = new Response(500, "Internal Server Error");
+		std::cout << "ser_response : " << response->getSerializedResponse();
+	}
+	return (response);
 }
 
 Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, const Request& request __attribute_maybe_unused__)

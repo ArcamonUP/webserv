@@ -34,88 +34,94 @@ std::string get_request(int connection)
 	return result;
 }
 
+void free_env(char **envp)
+{
+    if (!envp) return;
+
+    for (size_t i = 0; envp[i]; ++i)
+        delete[] envp[i];
+    delete[] envp;
+}
+
+char **init_cgi(Request &req)
+{
+    std::vector<std::string> env_strings;
+    env_strings.push_back("REQUEST_METHOD=" + req.getMethod());
+    env_strings.push_back("CONTENT_TYPE=" + req.getHeaderValue("Content-Type"));
+    env_strings.push_back("CONTENT_LENGTH=" + req.getHeaderValue("Content-Length"));
+    env_strings.push_back("SCRIPT_NAME=" + req.getUri());
+
+    char **envp = new char*[env_strings.size() + 1]; 
+
+    for (size_t i = 0; i < env_strings.size(); ++i)
+    {
+        envp[i] = new char[env_strings[i].size() + 1];
+        std::strcpy(envp[i], env_strings[i].c_str());
+    }
+    envp[env_strings.size()] = NULL;
+    return envp;
+}
+
+int child_status(pid_t &pid, int client_fd)
+{
+		int 			status;
+		std::string		error_response;
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status)) 
+		{
+			int code_retour = WEXITSTATUS(status);
+			if(code_retour > 0) {
+
+				Response response(500, "Internal Server Error");
+				error_response = response.getSerializedResponse();
+				send(client_fd, error_response.c_str(), error_response.size(), 0);
+				close(client_fd);
+				return 1;
+			}
+    	}
+		return (0);
+}
+
 int cgi(Request &req, int client_fd)
 {
 	std::string uri = "srcs/cgi" + req.getUri();
-	std::string method = "REQUEST_METHOD=" + req.getMethod();
-	std::string content_type = "CONTENT_TYPE=" + req.getHeaderValue("Content-Type");
-	std::string content_length = "CONTENT_LENGTH=" + req.getHeaderValue("Content-Length");
-	std::string script_name = "SCRIPT_NAME=" + req.getUri();
-
-	std::cout << content_length << "  HAHAHHH   " << content_type << "          " << req.getBody() << std::endl;
-
-	char *envp[] = 
-	{
-		(char *)method.c_str(),
-		(char *)content_type.c_str(),
-		(char *)content_length.c_str(),
-		(char *)script_name.c_str(),
-		NULL
-	};
-	
+	char **envp = init_cgi(req);
 	char *argv[] = {(char*)"/usr/bin/python3", (char*)uri.c_str(), NULL};
 
-	int pipefd[2];
-	int input_pipe[2];
+	int pipefd[2], input_pipe[2];
 
 	if (pipe(pipefd) == -1 || pipe(input_pipe) == -1)
 		return std::perror("pipe"), 1;
-	
 	pid_t pid = fork();
 	if (pid == -1)
 		return std::perror("fork"), 1;
 	if (pid == 0)
 	{
-		dup2(pipefd[1], STDOUT_FILENO);
-		dup2(input_pipe[0], STDIN_FILENO);
-		close(input_pipe[1]); 
-		close(pipefd[0]);
-		if (req.getMethod() == "POST")
-		{
+		close(input_pipe[1]), close(pipefd[0]);
+		dup2(pipefd[1], STDOUT_FILENO), dup2(input_pipe[0], STDIN_FILENO);
+		if (req.getMethod() == "POST"){
 			std::string body = req.getBody();
 			write(STDIN_FILENO, body.c_str(), body.size());
 		}
 		execve(argv[0], argv, envp);
+		std::perror("execve"), _exit(1);
 	}
 	else {
-		close(pipefd[1]);
-		close(input_pipe[0]);
-
-		if (req.getMethod() == "POST") 
-		{
+		if (req.getMethod() == "POST") {
 			std::string body = req.getBody();
 			write(input_pipe[1], body.c_str(), body.size());
 		}
-		close(input_pipe[1]);
+		close(pipefd[1]), close(input_pipe[0]), close(input_pipe[1]);
 
 		
 		char buffer [4096];
 		size_t count;
 		std::string output;
 		while((count = read(pipefd[0], buffer, sizeof(buffer))) > 0)
-		{
 			output.append(buffer, count);
-		}
-		int status;
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status)) 
-		{
-			int code_retour = WEXITSTATUS(status);
-			std::cout << "Error children : " << code_retour << std::endl;
-			if(code_retour > 0) {
 
-				std::string error_response =
-				"HTTP/1.1 500 Internal Server Error\r\n"
-				"Content-Type: text/plain\r\n"
-				"Content-Length: 21\r\n"
-				"Connection: close\r\n"
-				"\r\n"
-				"Erreur serveur interne";
-				send(client_fd, error_response.c_str(), error_response.size(), 0);
-				close(client_fd);
-				return 1;
-			}
-    	}
+		if (child_status(pid, client_fd))
+			return (free_env(envp), close(client_fd),1);
 		std::cout << output << std::endl;
 
 		std::string response =
@@ -125,7 +131,7 @@ int cgi(Request &req, int client_fd)
 			"Connection: close\r\n"
 			"\r\n" +  output;
 		send(client_fd, response.c_str(), response.size(), 0);
-		close(client_fd);
+		free_env(envp), close(client_fd);
 	}
 	return 0;
 }
@@ -139,8 +145,7 @@ bool	is_cgi(ServerConfig& conf, Request& req)
 	p3 = conf.getLocations()[3].getCgiPath();
 
 	std::string uri = req.getUri();
-	// std::cout << p1.substr(1) << " TESSSSSSSSSSSSSSSSSSSSSSSSST " << uri << std::endl;
-	return (uri == p1.substr(1) || uri == p2.substr(1) || uri == p3.substr(1));
+	return (uri == p1.substr(10) || uri == p2.substr(10) || uri == p3.substr(10));
 }
 
 Response*	handle_action(ServerConfig& conf, Request& request)
@@ -168,48 +173,24 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 	Response*	response;
 	std::string serialized_response;
 	int client_fd = events->data.fd;
-
 	std::string serialized_request = get_request(client_fd);
-	// std::cout << "serialized request : \n" << serialized_request << std::endl;
-	
 	Request	request(serialized_request);
+	if (request.getError())
+		return (1);
 	std::cout << "parsed request : \n" << request << std::endl;
-
 
 	if (is_cgi(conf, request))
 	{
-	
-		std::string content_type = "CONTENT_TYPE=" + request.getHeaderValue("Content-Type");
-
-		std::string content_length = "CONTENT_LENGTH=" + request.getHeaderValue("Content-Length");
-		std::cout << content_length << "  BBBBBBBBBBBBBBBBBBBBB  " << content_type << "          " << std::endl;
-	
 		if (cgi(request, client_fd) == 0)
 			return (0);
-		else 
-			return (1);
-	}
-	else if (request.getMethod() == "POST" && request.getUri() == "/stop_server")
-	{
-		std::string stop_response = 
-			"HTTP/1.1 200 OK\r\n"
-			"Content-Type: text/html\r\n"
-			"Content-Length: 84\r\n"
-			"Connection: close\r\n"
-			"\r\n"
-			"<html><body><h1>Server is stopping...</h1><p>Bye !</p></body></html>";
-		send(client_fd, stop_response.c_str(), stop_response.size(), NO_FLAGS);
-		close(client_fd);
-		return (2);
 	}
 	else {
-		
 		response = handle_action(conf, request);
 		serialized_response = response->getSerializedResponse();
-		
 		send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
 		close(client_fd), delete (response);
-		return (1);
+		if (request.getUri() == "/stopserv")
+			return (2);
 	}
 	return (1);
 }

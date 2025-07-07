@@ -14,7 +14,7 @@ GREEN=\033[0;32m
 ORANGE=\033[38;5;214m
 RESET=\033[0m
 CPP = c++
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I $(SRCDIR)/include
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -g -I $(SRCDIR)/include
 SRCDIR = srcs
 
 NAME = webserv

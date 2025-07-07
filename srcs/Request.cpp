@@ -18,8 +18,10 @@ void	Request::process()
 	this->_uri = get_first_word(this->_serialized_request);
 	std::cout << "help uri = " << this->_uri << std::endl;
 	this->_http_version = get_http_version(this->_serialized_request);
-	if (this->_method.empty() || this->_uri.empty() || this->_http_version == 0)
+	if (this->_method.empty() || this->_uri.empty() || this->_http_version == 0) {
 		this->_error = true;
+		return ;
+	}
 	else
 		this->_error = false;
 	this->_serialized_request = this->_serialized_request.substr(this->_serialized_request.find_first_not_of(" \t\n\r"));
