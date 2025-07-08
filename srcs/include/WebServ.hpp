@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebServ.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/08 15:41:23 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,27 @@ std::string	trim(const std::string &s);
 int			ft_atoi(const std::string value);
 bool		is_all_digit(std::string str);
 std::string get_file_content(const std::string& file_path);
+int find_matching_location_index(ServerConfig& conf, const std::string& uri);
+bool has_custom_error_page(ServerConfig& conf, int error_code);
+std::string get_default_error_page(int error_code);
+std::string get_custom_error_page(ServerConfig& conf, int error_code);
+
+//AutoIndex.cpp
+std::string generate_autoindex_header(const std::string& uri_path);
+std::vector<std::pair<std::string, bool> > collect_directory_entries(const std::string& directory_path, const std::string& uri_path);
+void sort_directory_entries(std::vector<std::pair<std::string, bool> >& entries);
+std::string generate_entry_link_path(const std::string& name, bool is_dir, const std::string& uri_path);
+std::string generate_autoindex(const std::string& directory_path, const std::string& uri_path);
 
 //request.cpp
 int		wait_multiple_servers(std::vector<ServerConfig>& servers);
 std::string int_to_string(size_t value);
+
+//RequestUtils.cpp
+std::string get_first_word(std::string &message);
+double str_to_double(const std::string &s);
+double get_http_version(std::string &message);
+std::string get_next_line(std::string &message);
 
 //initServers.cpp
 Config	init(int ac, char **av);
@@ -80,3 +97,9 @@ Response*	HandleHEAD(ServerConfig conf, const Request& request);
 Response*	HandleGET(ServerConfig conf, const Request& request);
 Response*	HandlePOST(ServerConfig conf, const Request& request);
 Response*	HandleDELETE(ServerConfig conf, const Request& request);
+
+//UtilsGet.cpp
+Response*	handle_stopserv_request(ServerConfig& conf);
+std::string build_file_path(ServerConfig& conf, const std::string& uri);
+Response*	handle_directory_request(ServerConfig& conf, const std::string& file_path, const std::string& uri, int location_index);
+Response*	handle_file_request(const std::string& file_path);
