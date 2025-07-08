@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/08 15:41:23 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/08 18:45:24 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,4 @@ Response* handle_file_request(const std::string& file_path)
 	Response* response = new Response(200, "OK");
 	response->setBody(body);
 	return response;
-}
-
-void download()
-{
-	
 }
