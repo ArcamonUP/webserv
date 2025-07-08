@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 21:15:13 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/09 01:10:07 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,32 @@ double	get_http_version(std::string &message) {
 	temp = temp.substr(l + 1);
 	result = str_to_double(temp);
 	return (result);	
+}
+
+std::string	find_ressource_path(std::string uri)
+{
+	std::string result;
+	
+	size_t pos = uri.find('?');
+	if (pos == std::string::npos)
+	{
+		result = uri;
+		return (result);
+	}
+	else
+	{
+		result = uri.substr(0, pos);
+		return (result);
+	}
+}
+
+std::string	find_query_string(std::string uri)
+{
+	std::string result;
+	
+	size_t pos = uri.find('?');
+	result = (pos != std::string::npos) ? uri.substr(pos + 1) : "";
+	return (result);
 }
 
 std::string get_next_line(std::string &message)

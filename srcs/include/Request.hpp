@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:42:58 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/04 18:45:45 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/09 01:05:20 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ class Request : public Message
 	private:
 		std::string _method;
 		std::string	_uri;
+		std::string _ressource_path;
+		std::string	_query_string;
 		std::string	_serialized_request;
 		int		sys_call_verif;
 	
@@ -28,18 +30,15 @@ class Request : public Message
 		~Request();
 		Request &operator=(const Request& src);
 
-		void			process();
+		void				process();
 
-		void			setUri(std::string uri);
+		void				setUri(std::string uri);
 
 		const std::string&	getSerializedRequest() const;
 		const std::string&	getMethod() const;
 		const std::string&	getUri() const;
-		const double&		getHttpVersion() const;
-		std::string			getHeaderMap() const;
-		std::string			getHeaderValue(std::string key) const;
-		const std::string&	getBody() const;
-		const bool&			getError() const;
+		const std::string&	getRessourcePath() const;
+		const std::string&	getQueryString() const;
 		int					getSysCallVerif() const;
 
 		void				setSysCallVerif(int i);
@@ -57,7 +56,11 @@ inline std::ostream &operator<<(std::ostream &stream, Request const &request)
 			return (stream);
 }
 
+
+//fonctions non-membres ?
 std::string 	get_first_word(std::string &message);
 double 			str_to_double(const std::string &s);
 double			get_http_version(std::string &message);
+std::string		find_ressource_path(std::string uri);
+std::string		find_query_string(std::string uri);
 std::string 	get_next_line(std::string &message);
