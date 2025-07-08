@@ -46,7 +46,7 @@ std::string	toString(const T& value)
 	return oss.str();
 }
 
-typedef Response* (*MethodHandler)(ServerConfig conf, const Request& request);
+typedef Response* (*MethodHandler)(ServerConfig conf, Request& request);
 extern	std::map<std::string, MethodHandler> method_map;
 
 //utils.cpp
@@ -89,10 +89,10 @@ extern bool g_signal;
 void 		homepage(epoll_event *events, ServerConfig conf);
 
 //Handle_Method.cpp
-Response*	HandleHEAD(ServerConfig conf, const Request& request);
-Response*	HandleGET(ServerConfig conf, const Request& request);
-Response*	HandlePOST(ServerConfig conf, const Request& request);
-Response*	HandleDELETE(ServerConfig conf, const Request& request);
+Response*	HandleHEAD(ServerConfig conf, Request& request);
+Response*	HandleGET(ServerConfig conf,  Request& request);
+Response*	HandlePOST(ServerConfig conf, Request& request);
+Response*	HandleDELETE(ServerConfig conf, Request& request);
 
 //UtilsGet.cpp
 Response*	handle_stopserv_request(ServerConfig& conf);

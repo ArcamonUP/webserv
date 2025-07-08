@@ -93,6 +93,17 @@ const bool&	Request::getError() const {
 	return (this->_error);
 }
 
+int	Request::getSysCallVerif() const
+{
+	return sys_call_verif;
+}
+
+void	Request::setSysCallVerif(int i)
+{
+	sys_call_verif = i;
+}
+
+
 Request::Request(std::string serialized_request) : Message(), _serialized_request(serialized_request)
 {
 	this->process();		

@@ -5,14 +5,12 @@ import html
 import re
 import sys
 
-
 def get_upload_path():
     if len(sys.argv) >= 4:
         upload_status = sys.argv[2]
         upload_path = sys.argv[3]
         if upload_status == "on":
             return upload_path
-    
     try:
         with open("./default.conf", 'r') as f:
             content = f.read()
@@ -20,7 +18,6 @@ def get_upload_path():
         return match.group(1).strip() if match else "./srcs/www/uploads/"
     except:
         return "./srcs/www/uploads/"
-
 
 def format_size(size):
     for unit in ['B', 'KB', 'MB', 'GB']:
@@ -31,7 +28,8 @@ def format_size(size):
 
 upload_dir = get_upload_path()
 
-print(f"""<!DOCTYPE html>
+print(f"""\n
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -70,6 +68,7 @@ print(f"""<!DOCTYPE html>
             text-decoration: none;
             border-radius: 25px;
             font-weight: 500;
+            cursor: pointer;
         }}
         .btn:hover {{ transform: translateY(-2px); }}
         .navigation {{ text-align: center; margin-top: 30px; }}
@@ -77,7 +76,8 @@ print(f"""<!DOCTYPE html>
 </head>
 <body>
     <div class="container">
-        <h1>📂 Fichiers Uploadés</h1>""")
+        <h1>📂 Fichiers Uploadés</h1>
+""")
 
 if os.path.exists(upload_dir):
     files = [f for f in os.listdir(upload_dir) if os.path.isfile(os.path.join(upload_dir, f))]
@@ -88,12 +88,14 @@ if os.path.exists(upload_dir):
             try:
                 size = format_size(os.path.getsize(filepath))
                 safe_name = html.escape(filename)
+                encoded_name = html.escape(filename.replace('"', '\\"'))  # pour JS
                 print(f"""
-        <div class="file-item">
+        <div class="file-item" id="file-{safe_name}">
             <strong>📄 {safe_name}</strong><br>
             Taille: {size}
             <div style="margin-top: 10px;">
-                <a href="/uploads/{filename}" class="btn" target="_blank">⬇️ Télécharger</a>
+                <a href="/uploads/{safe_name}" class="btn" target="_blank">⬇️ Télécharger</a>
+                <button class="btn" onclick="deleteFile('{encoded_name}')">🗑 Supprimer</button>
             </div>
         </div>""")
             except:
@@ -106,8 +108,26 @@ else:
 print("""
         <div class="navigation">
             <a href="/index.html" class="btn">🏠 Accueil</a>
-            <a href="/cgi/upload.py" class="btn">📤 Upload</a>
         </div>
     </div>
+
+    <script>
+        function deleteFile(filename) {
+            if (!confirm("❌ Supprimer ce fichier ?")) return;
+
+            fetch("/uploads/" + encodeURIComponent(filename), {
+                method: "DELETE"
+            })
+            .then(res => {
+                if (res.ok) {
+                    const element = document.getElementById("file-" + filename);
+                    if (element) element.remove();
+                } else {
+                    alert("Erreur lors de la suppression !");
+                }
+            })
+            .catch(() => alert("Erreur réseau."));
+        }
+    </script>
 </body>
 </html>""")

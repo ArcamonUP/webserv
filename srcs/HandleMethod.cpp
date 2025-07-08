@@ -13,12 +13,12 @@
 #include "WebServ.hpp"
 #include <sys/stat.h>
 
-Response*	HandleHEAD(ServerConfig conf __attribute_maybe_unused__, const Request& request __attribute_maybe_unused__)
+Response*	HandleHEAD(ServerConfig conf __attribute_maybe_unused__, Request& request __attribute_maybe_unused__)
 {
 	return (NULL);
 }
 
-Response*	HandleGET(ServerConfig conf, const Request& request)
+Response*	HandleGET(ServerConfig conf, Request& request)
 {
 	std::string body, file_path;
 	Response* response = NULL;
@@ -54,7 +54,7 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 	return (response);
 }
 
-Response*	HandlePOST(ServerConfig conf __attribute_maybe_unused__, const Request& request __attribute_maybe_unused__)
+Response*	HandlePOST(ServerConfig conf __attribute_maybe_unused__, Request& request __attribute_maybe_unused__)
 {
 	std::string body;
 	Response* response = NULL;
@@ -83,7 +83,52 @@ Response*	HandlePOST(ServerConfig conf __attribute_maybe_unused__, const Request
 	return (response);
 }
 
-Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, const Request& request __attribute_maybe_unused__)
+Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, Request& request __attribute_maybe_unused__)
 {
-	return (NULL);
+		std::string path;
+		Response *response = NULL;
+
+
+		path = conf.getRoot() + request.getUri();
+		if (access(path.c_str(), F_OK) != 0)
+		{
+				request.setSysCallVerif(1);
+				response = new Response(404, "Not Found");
+				response->setBody(get_custom_error_page(conf, 404));
+				return response;
+
+		}
+		if (access(path.c_str(), W_OK ) != 0)
+		{
+			request.setSysCallVerif(1);
+			response = new Response(403, "Forbidden");
+			response->setBody(get_custom_error_page(conf, 403));
+			return response;
+		}
+		std::string::size_type pos = path.find_last_of('/');
+		if (pos == std::string::npos)
+		{
+			request.setSysCallVerif(1);
+			response = new Response(500, "Internal Server Error");
+			response->setBody(get_custom_error_page(conf, 500));
+			return response;
+		}
+		std::string dir = path.substr(0, pos);
+		if (access(dir.c_str(), W_OK | X_OK))
+		{
+			request.setSysCallVerif(1);
+			response = new Response(403, "Forbidden");
+			response->setBody(get_custom_error_page(conf, 403));
+			return response;
+		}
+		if(remove(path.c_str()) != 0)
+		{
+			request.setSysCallVerif(1);
+			response = new Response(403, "Forbidden");
+			response->setBody(get_custom_error_page(conf, 403));
+			return response;
+		}
+		return response = new Response(200, "OK");
+		request.setSysCallVerif(0);
+	
 }

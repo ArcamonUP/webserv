@@ -20,6 +20,7 @@ class Request : public Message
 		std::string _method;
 		std::string	_uri;
 		std::string	_serialized_request;
+		int		sys_call_verif;
 	
 	public:
 		Request(std::string serialized_request);
@@ -39,6 +40,9 @@ class Request : public Message
 		std::string			getHeaderValue(std::string key) const;
 		const std::string&	getBody() const;
 		const bool&			getError() const;
+		int					getSysCallVerif() const;
+
+		void				setSysCallVerif(int i);
 
 };
 
