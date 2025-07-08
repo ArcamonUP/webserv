@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/08 14:52:43 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/08 15:41:23 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,12 @@ std::string generate_autoindex(const std::string& directory_path, const std::str
 int		wait_multiple_servers(std::vector<ServerConfig>& servers);
 std::string int_to_string(size_t value);
 
+//RequestUtils.cpp
+std::string get_first_word(std::string &message);
+double str_to_double(const std::string &s);
+double get_http_version(std::string &message);
+std::string get_next_line(std::string &message);
+
 //initServers.cpp
 Config	init(int ac, char **av);
 int		create_server_socket(int sockfd, ServerConfig& server_config);
@@ -91,3 +97,9 @@ Response*	HandleHEAD(ServerConfig conf, const Request& request);
 Response*	HandleGET(ServerConfig conf, const Request& request);
 Response*	HandlePOST(ServerConfig conf, const Request& request);
 Response*	HandleDELETE(ServerConfig conf, const Request& request);
+
+//UtilsGet.cpp
+Response*	handle_stopserv_request(ServerConfig& conf);
+std::string build_file_path(ServerConfig& conf, const std::string& uri);
+Response*	handle_directory_request(ServerConfig& conf, const std::string& file_path, const std::string& uri, int location_index);
+Response*	handle_file_request(const std::string& file_path);
