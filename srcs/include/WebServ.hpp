@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebServ.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/08 14:52:43 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,17 @@ std::string	trim(const std::string &s);
 int			ft_atoi(const std::string value);
 bool		is_all_digit(std::string str);
 std::string get_file_content(const std::string& file_path);
+int find_matching_location_index(ServerConfig& conf, const std::string& uri);
+bool has_custom_error_page(ServerConfig& conf, int error_code);
+std::string get_default_error_page(int error_code);
+std::string get_custom_error_page(ServerConfig& conf, int error_code);
+
+//AutoIndex.cpp
+std::string generate_autoindex_header(const std::string& uri_path);
+std::vector<std::pair<std::string, bool> > collect_directory_entries(const std::string& directory_path, const std::string& uri_path);
+void sort_directory_entries(std::vector<std::pair<std::string, bool> >& entries);
+std::string generate_entry_link_path(const std::string& name, bool is_dir, const std::string& uri_path);
+std::string generate_autoindex(const std::string& directory_path, const std::string& uri_path);
 
 //request.cpp
 int		wait_multiple_servers(std::vector<ServerConfig>& servers);

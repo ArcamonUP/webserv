@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/08 15:05:01 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ bool	is_all_digit(std::string str)
 std::string get_file_content(const std::string& file_path)
 {
 	std::ifstream file(file_path.c_str());
-	std::cout << file_path << std::endl;
 	if (!file.is_open() || file.fail())
 	{
 		if (errno == ENOENT)
@@ -102,4 +101,75 @@ std::string get_file_content(const std::string& file_path)
 	file.close();
 	file_content = buffer.str();
 	return (file_content);
+}
+
+int find_matching_location_index(ServerConfig& conf, const std::string& uri)
+{
+	const std::vector<LocationConfig>& locations = conf.getLocations();
+	int best_match_index = -1;
+	size_t best_match_length = 0;
+
+	for (size_t i = 0; i < locations.size(); i++) {
+		const std::string& location_path = locations[i].getPath();
+		if (uri.find(location_path) == 0) {
+			if (location_path.length() > best_match_length) {
+				best_match_index = (int)i;
+				best_match_length = location_path.length();
+			}
+		}
+	}
+	
+	return best_match_index;
+}
+
+bool has_custom_error_page(ServerConfig& conf, int error_code)
+{
+	const std::map<int, std::string>& error_pages = conf.getErrorPages();
+	return error_pages.find(error_code) != error_pages.end();
+}
+
+std::string get_default_error_page(int error_code)
+{
+	std::ostringstream html;
+	html << "<!DOCTYPE html><html><head><title>Error " << error_code << "</title>";
+	html << "<style>body{font-family:'Segoe UI',sans-serif;margin:0;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center}";
+	html << ".container{background:white;padding:40px;border-radius:15px;box-shadow:0 20px 40px rgba(0,0,0,0.1);text-align:center;max-width:500px}";
+	html << "h1{color:#e74c3c;margin-bottom:20px}p{color:#666;margin-bottom:30px}";
+	html << ".btn{background:linear-gradient(45deg,#667eea,#764ba2);color:white;padding:12px 24px;border-radius:25px;text-decoration:none;display:inline-block}</style></head>";
+	html << "<body><div class=\"container\"><h1>❌ Erreur " << error_code << "</h1>";
+	
+	switch (error_code) {
+		case 400: html << "<p>Requête incorrecte.</p>"; break;
+		case 403: html << "<p>Vous n'avez pas l'autorisation d'accéder à cette ressource.</p>"; break;
+		case 404: html << "<p>La ressource demandée n'a pas été trouvée.</p>"; break;
+		case 405: html << "<p>Méthode non autorisée.</p>"; break;
+		case 500: html << "<p>Le serveur a rencontré une erreur interne.</p>"; break;
+		case 502: html << "<p>Passerelle incorrecte.</p>"; break;
+		case 503: html << "<p>Service indisponible.</p>"; break;
+		case 504: html << "<p>Délai d'attente de la passerelle dépassé.</p>"; break;
+		default: html << "<p>Une erreur s'est produite lors du traitement de votre requête.</p>"; break;
+	}
+	
+	html << "<a href=\"/\" class=\"btn\">🏠 Retour à l'accueil</a></div></body></html>";
+	return html.str();
+}
+
+std::string get_custom_error_page(ServerConfig& conf, int error_code)
+{
+	const std::map<int, std::string>& error_pages = conf.getErrorPages();
+	std::map<int, std::string>::const_iterator it = error_pages.find(error_code);
+	
+	if (it != error_pages.end()) {
+		std::string error_page_path = conf.getRoot() + it->second;
+		try {
+			return get_file_content(error_page_path);
+		} catch (const Response::ResourceNotFoundException&) {
+			std::cerr << "Error: Custom error page not found: " << error_page_path << std::endl;
+		} catch (const Response::InternalServerErrorException&) {
+			std::cerr << "Error: Cannot read custom error page: " << error_page_path << std::endl;
+		} catch (const std::exception& e) {
+			std::cerr << "Error reading custom error page: " << e.what() << std::endl;
+		}
+	}
+	return get_default_error_page(error_code);
 }

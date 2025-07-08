@@ -6,13 +6,11 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/07 17:37:48 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:42:26 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
-#include "Request.hpp"
-#include "Response.hpp"
 #define NO_FLAGS 0
 
 std::map<std::string, MethodHandler> method_map;
@@ -214,19 +212,26 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 
 bool	is_cgi(ServerConfig& conf, Request& req)
 {
-	std::string	p1, p2, p3;
-
-	p1 = conf.getLocations()[1].getCgiPath();
-	p2 = conf.getLocations()[2].getCgiPath();
-	p3 = conf.getLocations()[3].getCgiPath();
-
 	std::string uri = req.getUri();
 	size_t pos = uri.find('?');
 	if (pos != std::string::npos) {
 		uri = uri.substr(0, pos);
 	}
-	
-	return (uri == p1.substr(10) || uri == p2.substr(10) || uri == p3.substr(10));
+
+	const std::vector<LocationConfig>& locations = conf.getLocations();
+	for (size_t i = 0; i < locations.size(); i++) {
+		const std::string& cgi_path = locations[i].getCgiPath();
+		if (!cgi_path.empty()) {
+			size_t cgi_prefix_pos = cgi_path.find("srcs/cgi");
+			if (cgi_prefix_pos != std::string::npos) {
+				std::string script_name = cgi_path.substr(cgi_prefix_pos + 8); // 8 = length of "srcs/cgi"
+				if (uri == script_name) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
 Response*	handle_action(ServerConfig& conf, Request& request)
