@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/08 15:41:23 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:57:44 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,6 @@ std::string get_default_error_page(int error_code);
 std::string get_custom_error_page(ServerConfig& conf, int error_code);
 
 //AutoIndex.cpp
-std::string generate_autoindex_header(const std::string& uri_path);
-std::vector<std::pair<std::string, bool> > collect_directory_entries(const std::string& directory_path, const std::string& uri_path);
-void sort_directory_entries(std::vector<std::pair<std::string, bool> >& entries);
-std::string generate_entry_link_path(const std::string& name, bool is_dir, const std::string& uri_path);
 std::string generate_autoindex(const std::string& directory_path, const std::string& uri_path);
 
 //request.cpp

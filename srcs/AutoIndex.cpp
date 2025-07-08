@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/08 14:43:50 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:58:40 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ std::vector<std::pair<std::string, bool> > collect_directory_entries(const std::
 
 	while ((entry = readdir(dir)) != NULL) {
 		std::string name = entry->d_name;
-		if (name == "." || name == "..") continue;
-		
+		if (name == "." || name == "..")
+			continue;
 		std::string full_path = directory_path + "/" + name;
 		struct stat file_stat;
 		bool is_dir = false;
@@ -104,6 +104,36 @@ std::string generate_entry_link_path(const std::string& name, bool is_dir, const
 	return link_path;
 }
 
+//IA: A voir si on peut simplifier/faire mieux
+std::string generate_file_entry_html(const std::string& name, bool is_dir, const std::string& link_path, const std::string& directory_path)
+{
+	std::string size_str = "-", time_str = "-";
+	std::string full_path = directory_path + "/" + name;
+	struct stat file_stat;
+
+	if (name != "." && name != ".." && stat(full_path.c_str(), &file_stat) == 0) {
+		if (!is_dir) {
+			off_t size = file_stat.st_size;
+			std::ostringstream ss;
+			if (size < 1024) ss << size << " B";
+			else if (size < 1024 * 1024) ss << std::fixed << std::setprecision(1) << (double)size / 1024 << " KB";
+			else ss << std::fixed << std::setprecision(1) << (double)size / (1024 * 1024) << " MB";
+			size_str = ss.str();
+		}
+		char time_buf[64];
+		struct tm *tm_info = localtime(&file_stat.st_mtime);
+		strftime(time_buf, sizeof(time_buf), "%Y-%m-%d %H:%M", tm_info);
+		time_str = time_buf;
+	}
+	
+	std::ostringstream entry_html;
+	entry_html << "<tr><td>" << (is_dir ? "📁" : "📄") << " <a href=\"" << link_path << "\">" << name;
+	if (is_dir && name != "." && name != "..") entry_html << "/";
+	entry_html << "</a></td><td>" << size_str << "</td><td>" << time_str << "</td></tr>";
+	return entry_html.str();
+}
+//Fin IA
+
 std::string generate_autoindex(const std::string& directory_path, const std::string& uri_path)
 {
 	std::ostringstream html;
@@ -117,27 +147,7 @@ std::string generate_autoindex(const std::string& directory_path, const std::str
 		bool is_dir = it->second;
 		std::string link_path = generate_entry_link_path(name, is_dir, uri_path);
 
-		std::string size_str = "-", time_str = "-";
-		std::string full_path = directory_path + "/" + name;
-		struct stat file_stat;
-
-		if (name != "." && name != ".." && stat(full_path.c_str(), &file_stat) == 0) {
-			if (!is_dir) {
-				off_t size = file_stat.st_size;
-				std::ostringstream ss;
-				if (size < 1024) ss << size << " B";
-				else if (size < 1024 * 1024) ss << std::fixed << std::setprecision(1) << (double)size / 1024 << " KB";
-				else ss << std::fixed << std::setprecision(1) << (double)size / (1024 * 1024) << " MB";
-				size_str = ss.str();
-			}
-			char time_buf[64];
-			struct tm *tm_info = localtime(&file_stat.st_mtime);
-			strftime(time_buf, sizeof(time_buf), "%Y-%m-%d %H:%M", tm_info);
-			time_str = time_buf;
-		}
-		html << "<tr><td>" << (is_dir ? "📁" : "📄") << " <a href=\"" << link_path << "\">" << name;
-		if (is_dir && name != "." && name != "..") html << "/";
-		html << "</a></td><td>" << size_str << "</td><td>" << time_str << "</td></tr>";
+		html << generate_file_entry_html(name, is_dir, link_path, directory_path);
 	}
 	html << "</tbody></table></div></body></html>";
 	return html.str();
