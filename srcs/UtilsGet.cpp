@@ -78,3 +78,8 @@ Response* handle_file_request(const std::string& file_path)
 	response->setBody(body);
 	return response;
 }
+
+void download()
+{
+	
+}
