@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 18:38:37 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/08 15:41:23 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 01:07:13 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ void	Request::process()
 	}
 	else
 		this->_error = false;
+	this->_ressource_path = find_ressource_path(this->_uri);
+	this->_query_string = find_query_string(this->_uri);
 	this->_serialized_request = this->_serialized_request.substr(this->_serialized_request.find_first_not_of(" \t\n\r"));
 	std::string line = get_next_line(this->_serialized_request);
 	while (!line.empty() && line != "\r\n")
@@ -58,39 +60,14 @@ const std::string&	Request::getUri() const {
 	return (this->_uri);
 }
 
-const double&	Request::getHttpVersion() const {
-	return (this->_http_version);
-}
-
-std::string	Request::getHeaderMap() const {
-	std::string result;
-	for (size_t i = 0; i < this->_headers.size(); ++i)
-		result += this->_headers[i].first + ": " + this->_headers[i].second + "\n";
-	if (result.empty())
-		return "No headers.\n";
-	return result;
-}
-
-
-std::string Request::getHeaderValue(std::string key) const 
+const std::string&	Request::getRessourcePath() const
 {
-	std::vector<std::pair<std::string, std::string> >::const_iterator it;
-
-	it = this->_headers.begin();
-    for (; it != this->_headers.end(); ++it) {
-        if (it->first == key)
-            return it->second;
-    }
-    return "Not Found.";
+	return (this->_ressource_path);
 }
 
-
-const std::string&	Request::getBody() const {
-	return (this->_body);
-}
-
-const bool&	Request::getError() const {
-	return (this->_error);
+const std::string&	Request::getQueryString() const
+{
+	return (this->_query_string);
 }
 
 int	Request::getSysCallVerif() const

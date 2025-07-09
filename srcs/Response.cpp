@@ -37,6 +37,11 @@ void	Response::setStatusName(const std::string status_name)
 	this->_status_name = status_name;
 }
 
+void	Response::setRessourcePath(const std::string requested_ressource_path)
+{
+	this->_ressource_path = requested_ressource_path;
+}
+
 void	Response::setContentLength(const std::string length)
 {
 	_headers.push_back(std::make_pair("content-length", length));
@@ -65,6 +70,24 @@ int	Response::getStatusCode() const
 std::string	Response::getStatusName() const
 {
 	return (this->_status_name);
+}
+
+std::string Response::getRessourcePath() const
+{
+	return (this->_ressource_path);
+}
+
+std::string Response::getExtension(const std::string& Uri) const
+{
+	std::size_t dot_pos = Uri.find_last_of('.');
+	
+	if (dot_pos == std::string::npos)
+		return ("");
+	else
+	{
+		std::string extension = Uri.substr(dot_pos + 1);
+		return (extension);
+	}
 }
 
 std::string	Response::getDate() const
@@ -104,6 +127,22 @@ const std::string	Response::getSerializedResponse()
 	response += toString(this->_status_code) + " " + this->_status_name + "\r\n";
 	response += getSerializedHeaders() + "\r\n" + getBody() + "\n";
 	return (response);
+}
+
+void	Response::defineContentType()
+{
+	std::string extension = getExtension(this->getRessourcePath());
+	if (extension.empty())
+		throw InternalServerErrorException();
+	else
+	{
+		std::map<std::string, std::string>::const_iterator it;
+		it = _content_types.find(extension);
+		if (it != _content_types.end())
+			addHeader("content-type", it->second);
+		else
+			addHeader("content-type", "application/octet-stream");
+	}
 }
 
 std::string	Response::createJsonError(const std::string& error, const std::string& message)

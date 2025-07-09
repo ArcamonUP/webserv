@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   UtilsGet.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
 /*   Updated: 2025/07/08 18:45:24 by kbaridon         ###   ########.fr       */
@@ -49,6 +49,7 @@ Response* handle_directory_request(ServerConfig& conf, const std::string& file_p
 	if (access(index_file.c_str(), F_OK) == 0) {
 		std::string body = get_file_content(index_file);
 		Response* response = new Response(200, "OK");
+		response->setContentType("text/html");
 		response->setBody(body);
 		return response;
 	} else {
@@ -60,21 +61,25 @@ Response* handle_directory_request(ServerConfig& conf, const std::string& file_p
 		if (autoindex_enabled) {
 			std::string body = generate_autoindex(file_path, uri);
 			Response* response = new Response(200, "OK");
+			response->setContentType("text/html");
 			response->setBody(body);
 			return response;
 		} else {
 			Response* response = new Response(403, "Forbidden");
 			std::string error_body = get_custom_error_page(conf, 403);
+			response->setContentType("text/html");
 			response->setBody(error_body);
 			return response;
 		}
 	}
 }
 
-Response* handle_file_request(const std::string& file_path)
+Response* handle_file_request(const std::string& ressource_path)
 {
-	std::string body = get_file_content(file_path);
+	std::string body = get_file_content(ressource_path);
 	Response* response = new Response(200, "OK");
+	response->setRessourcePath(ressource_path);
+	response->defineContentType();
 	response->setBody(body);
 	return response;
 }

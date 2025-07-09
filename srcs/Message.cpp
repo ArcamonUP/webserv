@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:12:36 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/09 01:09:37 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	Message::setError(const bool error)
 	this->_error = error;
 }
 
-double	Message::getHttpVersion() const {
+const double&	Message::getHttpVersion() const {
 	return (this->_http_version);
 }
 

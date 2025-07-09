@@ -19,6 +19,7 @@ class Response : public Message
 	private:
 		int _status_code;
 		std::string _status_name;
+		std::string	_ressource_path;
 		std::string	_error_json;
 		typedef void (Response::*ResponseFunction)();
 		static std::map<int, ResponseFunction> _builders;
@@ -35,6 +36,7 @@ class Response : public Message
 
 		void				setStatusCode(const int status_code);
 		void				setStatusName(const std::string status_name);
+		void				setRessourcePath(const std::string requested_ressource_path);
 		void				setContentLength(const std::string length);
 		void				setContentType(const std::string type);
 		void				setDate(); // Using getDate()
@@ -42,11 +44,13 @@ class Response : public Message
 		
 		int					getStatusCode() const;
 		std::string			getStatusName() const;
+		std::string			getRessourcePath() const;
 		std::string 		getDate() const; //Get UTC by strftime()
-		std::string			getExtension(const std::string& Uri) const;
+		std::string			getExtension(const std::string& Uri) const; 
 		const std::string	getSerializedHeaders() const;
 		const std::string	getSerializedResponse();
 
+		void				defineContentType();
 		void		FindContentType(const std::string& Uri);
 		std::string 		createJsonError(const std::string& error, const std::string& message);
 

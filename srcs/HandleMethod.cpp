@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   HandleMethod.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
 /*   Updated: 2025/07/09 14:28:17 by kbaridon         ###   ########.fr       */
@@ -50,7 +50,7 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 			if (S_ISDIR(path_stat.st_mode))
 				response = handle_directory_request(conf, file_path, uri, location_index);
 			else
-				response = handle_file_request(file_path);
+				response = handle_file_request(request.getRessourcePath());
 		}
 		else
 			throw Response::ResourceNotFoundException();
