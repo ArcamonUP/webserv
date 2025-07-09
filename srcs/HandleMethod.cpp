@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 15:50:46 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 16:37:50 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,35 +20,34 @@ Response*	HandleHEAD(ServerConfig conf __attribute_maybe_unused__, const Request
 
 Response*	HandleGET(ServerConfig conf, const Request& request)
 {
-	std::string body, file_path;
-	Response* response = NULL;
+	std::string body, file_path, uri, query_string = "";
+	size_t		query_pos, location_index;
+	struct stat	path_stat;
+	Response	*response = NULL;
 
 	try
 	{
-		std::string uri = request.getUri();
+		uri = request.getUri();
+		query_pos = uri.find('?');
 		
-		if (uri == "/stopserv")
-			return handle_stopserv_request(conf);
-		std::string query_string = "";
-		size_t query_pos = uri.find('?');
 		if (query_pos != std::string::npos) {
 			query_string = uri.substr(query_pos + 1);
 			uri = uri.substr(0, query_pos);
 		}
+		
+		if (uri == "/stopserv")
+			return (handle_stopserv_request(conf));
 		if (query_string.find("download=1") != std::string::npos)
-		{
-			Request download_request = request;
-			download_request.setUri(uri);
-			return handle_download_request(conf, download_request);
-		}
-		int location_index = find_matching_location_index(conf, uri);
+			return (handle_download_request(conf, uri));
+
+		location_index = find_matching_location_index(conf, uri);
 		file_path = build_file_path(conf, uri);
-		struct stat path_stat;
-		if (stat(file_path.c_str(), &path_stat) == 0) {
+		if (stat(file_path.c_str(), &path_stat) == 0)
+		{
 			if (S_ISDIR(path_stat.st_mode))
-				response = handle_directory_request(conf, file_path, uri, location_index);
+				return (handle_directory_request(conf, file_path, uri, location_index));
 			else
-				response = handle_file_request(file_path);
+				return (handle_file_request(file_path));
 		}
 		else
 			throw Response::ResourceNotFoundException();

@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/09 14:08:40 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 16:37:55 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,7 @@ Response*	handle_stopserv_request(ServerConfig& conf);
 std::string build_file_path(ServerConfig& conf, const std::string& uri);
 Response*	handle_directory_request(ServerConfig& conf, const std::string& file_path, const std::string& uri, int location_index);
 Response*	handle_file_request(const std::string& file_path);
-Response*	handle_download_request(ServerConfig conf, const Request& request);
-std::string get_mime_type(const std::string& filename);
+Response*	handle_download_request(ServerConfig conf, std::string uri);
 
 //Traductor.cpp
 std::string ft_traductor(const std::string& encoded_str);

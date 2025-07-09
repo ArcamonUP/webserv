@@ -6,7 +6,7 @@
 #    By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/24 08:18:44 by kbaridon          #+#    #+#              #
-#    Updated: 2025/07/09 14:08:20 by kbaridon         ###   ########.fr        #
+#    Updated: 2025/07/09 16:17:51 by kbaridon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ $(SRCDIR)/include/Message.hpp $(SRCDIR)/include/Request.hpp $(SRCDIR)/include/Re
 
 SRC = main.cpp Utils.cpp ServerConfig.cpp Config.cpp LocationConfig.cpp Message.cpp Request.cpp \
 		RequestUtils.cpp Response.cpp ResponseStatus.cpp ResponseUtils.cpp WaitRequest.cpp HandleMethod.cpp \
-        InitServers.cpp HandleRequest.cpp AutoIndex.cpp UtilsGet.cpp Download.cpp Traductor.cpp
+        InitServers.cpp HandleRequest.cpp AutoIndex.cpp UtilsGet.cpp Traductor.cpp
 
 OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 

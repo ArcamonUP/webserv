@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UtilsGet.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/08 18:45:24 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 16:37:40 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,21 @@ Response* handle_stopserv_request(ServerConfig& conf)
 	return response;
 }
 
-std::string build_file_path(ServerConfig& conf, const std::string& uri)
+Response* handle_download_request(ServerConfig conf, std::string uri)
 {
-	if (uri == "/")
-		return conf.getRoot() + "/" + conf.getIndex();
-	else
-		return conf.getRoot() + uri;
+	std::string path = conf.getRoot() + ft_traductor(uri);
+	Response* response = NULL;
+
+	if (access(path.c_str(), F_OK) != 0)
+		throw (Response::ResourceNotFoundException());
+	if (access(path.c_str(), R_OK) != 0)
+		throw(Response::InternalServerErrorException());
+	response = handle_file_request(path);
+	size_t last_slash = path.find_last_of('/');
+	if (last_slash != std::string::npos)
+		path = path.substr(last_slash + 1);
+	response->addHeader("Content-Disposition", "attachment; filename=\"" + path + "\"");
+	return response;
 }
 
 Response* handle_directory_request(ServerConfig& conf, const std::string& file_path, const std::string& uri, int location_index)
@@ -82,4 +91,12 @@ Response* handle_file_request(const std::string& ressource_path)
 	response->defineContentType();
 	response->setBody(body);
 	return response;
+}
+
+std::string build_file_path(ServerConfig& conf, const std::string& uri)
+{
+	if (uri == "/")
+		return conf.getRoot() + "/" + conf.getIndex();
+	else
+		return conf.getRoot() + uri;
 }
