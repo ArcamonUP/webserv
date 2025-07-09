@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 15:04:43 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 15:30:49 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ class Response : public Message
 
 		static	void		initBuilders();
 		static	void		initContentTypes();
-		static	std::string	getMimeType(const std::string& extension);
 
 		//BUILDERS STATUS FUNCTIONS
 		//2xx : SUCCESS RESPONSE

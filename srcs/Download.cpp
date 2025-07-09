@@ -6,21 +6,12 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 17:59:36 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/09 14:10:11 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 15:32:26 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
 #include <sys/stat.h>
-
-std::string get_mime_type(const std::string& filename)
-{
-	size_t dot_pos = filename.find_last_of('.');
-	if (dot_pos == std::string::npos)
-		return "application/octet-stream";
-	std::string ext = filename.substr(dot_pos + 1);
-	return Response::getMimeType(ext);
-}
 
 Response* handle_download_request(ServerConfig conf, const Request& request)
 {
@@ -52,8 +43,8 @@ Response* handle_download_request(ServerConfig conf, const Request& request)
 		if (last_slash != std::string::npos)
 			filename = filename.substr(last_slash + 1);
 		response->addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-		std::string content_type = get_mime_type(filename);
-		response->addHeader("Content-Type", content_type);
+		response->setRessourcePath(ft_traductor(request.getUri()));
+		response->defineContentType();
 		std::ostringstream content_length;
 		content_length << body.length();
 		response->addHeader("Content-Length", content_length.str());

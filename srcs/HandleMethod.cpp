@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandleMethod.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 14:28:17 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 15:50:46 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,12 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 		
 		if (uri == "/stopserv")
 			return handle_stopserv_request(conf);
-
 		std::string query_string = "";
 		size_t query_pos = uri.find('?');
 		if (query_pos != std::string::npos) {
 			query_string = uri.substr(query_pos + 1);
 			uri = uri.substr(0, query_pos);
 		}
-
 		if (query_string.find("download=1") != std::string::npos)
 		{
 			Request download_request = request;
@@ -50,7 +48,7 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 			if (S_ISDIR(path_stat.st_mode))
 				response = handle_directory_request(conf, file_path, uri, location_index);
 			else
-				response = handle_file_request(request.getRessourcePath());
+				response = handle_file_request(file_path);
 		}
 		else
 			throw Response::ResourceNotFoundException();

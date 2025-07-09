@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 19:02:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 13:59:02 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 15:30:43 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,13 +184,4 @@ Response&	Response::operator=(const Response& src)
 		this->_status_name = src._status_name;
 	}
 	return (*this);
-}
-
-std::string Response::getMimeType(const std::string& extension)
-{
-	initContentTypes();
-	std::map<std::string, std::string>::const_iterator it = _content_types.find(extension);
-	if (it != _content_types.end())
-		return it->second;
-	return "application/octet-stream";
 }
