@@ -76,7 +76,7 @@ def create_response(title, message, color="#667eea"):
     <div class="container">
         {message}
         <div>
-            <a href="/index.html" class="btn">🏠 Accueil</a>
+            <a href="/" class="btn">🏠 Accueil</a>
             <a href="/list.py" class="btn">📂 Fichiers</a>
         </div>
     </div>

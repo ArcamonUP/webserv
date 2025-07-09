@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:37:59 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 15:04:57 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:13:56 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,8 @@ void	Response::BadRequest()
 	this->_status_name = "Bad Request";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
-	addHeader("content-type", "application/json");
 	std::string error = "Bad request";
 	std::string message = "Request body could not be read properly.";
-	setBody(createJsonError(error, message));
 	addHeader("content-length", toString(getBody().length()));
 }
 //Generic response is certainly insufficient
@@ -78,10 +76,8 @@ void	Response::Forbidden()
 	this->_status_name = "Forbidden";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
-	addHeader("content-type", "application/json");
 	std::string error = "InsufficientPermissions";
 	std::string message = "Insufficient permissions for this request.";
-	setBody(createJsonError(error, message));
 	addHeader("content-length", toString(getBody().length()));
 }
 
@@ -113,10 +109,8 @@ void	Response::LengthRequired()
 	this->_status_name = "Length Required";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
-	addHeader("content-type", "application/json");
 	std::string error = "LengthRequired";
 	std::string message = "Requests must have a content length header";
-	setBody(createJsonError(error, message));
 	addHeader("content-length", toString(getBody().length()));
 }
 
@@ -126,10 +120,8 @@ void	Response::UriTooLong()
 	this->_status_name = "URI Too Long";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
-	addHeader("content-type", "application/json");
 	std::string error = "URI Too Long";
 	std::string message = "The URI provided was too long for the server to process";
-	setBody(createJsonError(error, message));
 	addHeader("content-length", toString(getBody().length()));
 }
 
@@ -139,10 +131,8 @@ void	Response::ImATeapot()
 	this->_status_name = "I'm a teapot";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
-	addHeader("content-type", "application/json");
 	std::string error = "I'mATeapot";
 	std::string message = "Seriously ? Did u just tried to make a gad damn coffee with a fucking teapot ?";
-	setBody(createJsonError(error, message));
 	addHeader("content-length", toString(getBody().length()));
 }
 //Need a "Retry-After" header 
@@ -152,11 +142,9 @@ void	Response::TooManyRequest()
 	this->_status_name = "Too Many Request";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
-	addHeader("content-type", "application/json");
 	addHeader("retry-after", "1800");
 	std::string error = "TooManyRequest";
 	std::string message = "You're doing that too often ! Are you trying to crash this server ? Try again later.";
-	setBody(createJsonError(error, message));
 	addHeader("content-length", toString(getBody().length()));
 }
 
