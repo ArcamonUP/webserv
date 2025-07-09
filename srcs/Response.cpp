@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 19:02:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 16:33:42 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:14:18 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,16 +143,6 @@ void	Response::defineContentType()
 		else
 			addHeader("content-type", "application/octet-stream");
 	}
-}
-
-std::string	Response::createJsonError(const std::string& error, const std::string& message)
-{
-	std::string json_body;
-	json_body += "{\n";
-	json_body += "	\"error\": \"" + error + "\",\n";
-	json_body += "	\"message\": \"" + message + "\",\n";
-	json_body += "}";
-	return json_body;
 }
 
 Response::Response() : Message(), _status_code(0)

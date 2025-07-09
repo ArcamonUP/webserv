@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 16:42:57 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:14:28 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ class Response : public Message
 		int _status_code;
 		std::string _status_name;
 		std::string	_ressource_path;
-		std::string	_error_json;
 		typedef void (Response::*ResponseFunction)();
 		static std::map<int, ResponseFunction> _builders;
 		static std::map<std::string, std::string> _content_types;
@@ -52,7 +51,6 @@ class Response : public Message
 
 		void				defineContentType();
 		void		FindContentType(const std::string& Uri);
-		std::string 		createJsonError(const std::string& error, const std::string& message);
 
 		static	void		initBuilders();
 		static	void		initContentTypes();

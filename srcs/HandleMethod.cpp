@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 17:27:18 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:07:45 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,5 +101,6 @@ Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, const Reque
 		catch (...) {
 			response = handle_all_exceptions(conf);
 		}
+		response->setError(false);
 		return (response);
 }
