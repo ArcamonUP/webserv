@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/09 18:10:18 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:34:43 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ Response* handle_directory_request(ServerConfig& conf, const std::string& file_p
 		return (handle_file_request(index_file));
 	bool autoindex_enabled = conf.getLocations()[location_index].getAutoIndex();
 	if (autoindex_enabled) {
-		std::string body = generate_autoindex(file_path, uri);
+		std::string body = generate_autoindex(file_path, uri); //Cette fonction pourra etre simplifie/rendu plus clean
 		Response* response = new Response(200, "OK");
 		response->setBody(body);
 		response->setRessourcePath(file_path);
