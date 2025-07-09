@@ -50,8 +50,6 @@ std::string ft_traductor(const std::string& encoded_str)
 			else
 				result += encoded_str[i];
 		}
-		else if (encoded_str[i] == '+')
-			result += ' ';
 		else
 			result += encoded_str[i];
 	}

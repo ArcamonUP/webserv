@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/09 01:19:56 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/08 18:45:24 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,4 @@ Response* handle_file_request(const std::string& ressource_path)
 	response->defineContentType();
 	response->setBody(body);
 	return response;
-}
-
-void download()
-{
-	
 }

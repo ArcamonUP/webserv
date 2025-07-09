@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 01:00:04 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/09 15:30:49 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Response : public Message
 		const std::string	getSerializedResponse();
 
 		void				defineContentType();
+		void		FindContentType(const std::string& Uri);
 		std::string 		createJsonError(const std::string& error, const std::string& message);
 
 		static	void		initBuilders();
@@ -78,8 +79,10 @@ class Response : public Message
 		//5xx : SERVER ERROR RESPONSE
 		void	InternalServerError();		//500
 		void	NotImplemented();			//501
+		void	BadGateway();				//502
 		void	ServiceUnavailable();		//503
-		void	HttpVersionNotSupported();	//504
+		void	GatewayTimeout();			//504
+		void	HttpVersionNotSupported();	//505
 
 		class ResourceNotFoundException : public std::exception {};
 		class InternalServerErrorException : public std::exception {};

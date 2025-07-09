@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:51:56 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/04 18:14:17 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/09 15:05:00 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,10 @@ void	Response::initBuilders()
 	Response::_builders[429] = &Response::TooManyRequest;
 	Response::_builders[500] = &Response::InternalServerError;
 	Response::_builders[501] = &Response::NotImplemented;
+	Response::_builders[502] = &Response::BadGateway;
 	Response::_builders[503] = &Response::ServiceUnavailable;
-	Response::_builders[504] = &Response::HttpVersionNotSupported;
+	Response::_builders[504] = &Response::GatewayTimeout;
+	Response::_builders[505] = &Response::HttpVersionNotSupported;
 }
 
 void	Response::initContentTypes()

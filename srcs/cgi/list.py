@@ -94,7 +94,7 @@ if os.path.exists(upload_dir):
             <strong>📄 {safe_name}</strong><br>
             Taille: {size}
             <div style="margin-top: 10px;">
-                <a href="/uploads/{safe_name}" class="btn" target="_blank">⬇️ Télécharger</a>
+                <a href="/uploads/{safe_name}?download=1" class="btn">⬇️ Télécharger</a>
                 <button class="btn" onclick="deleteFile('{encoded_name}')">🗑 Supprimer</button>
             </div>
         </div>""")
