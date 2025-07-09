@@ -20,12 +20,10 @@ Response*	HandleHEAD(ServerConfig conf __attribute_maybe_unused__, const Request
 
 Response* test_errors(ServerConfig conf, std::string &uri)
 {
+	Response *response = NULL;
 	if (uri.find("/error403") != std::string::npos)
 	{
 		std::string path;
-		Response *response = NULL;
-
-
 		path = "fichier_test_no_permission.txt";
 		if (access(path.c_str(), W_OK ) != 0)
 		{
@@ -33,8 +31,36 @@ Response* test_errors(ServerConfig conf, std::string &uri)
 			response->setBody(get_custom_error_page(conf, 403));
 			response->setBody(get_file_content("./srcs/www/403.html"));
 			return response;
+		} 		
+	}
+	if (uri.find("/error500") != std::string::npos)
+		{
+			response = new Response(500, "Internal Server Error");
+			response->setBody(get_custom_error_page(conf, 500));
+			response->setBody(get_file_content("./srcs/www/50x.html"));
+			return response;
+		}
+	if (uri.find("/error502") != std::string::npos)
+		{
+			response = new Response(502, "Internal Server Error");
+			response->setBody(get_custom_error_page(conf, 502));
+			response->setBody(get_file_content("./srcs/www/50x.html"));
+			return response;
+		}   
+	if (uri.find("/error503") != std::string::npos)
+		{
+			response = new Response(503, "Internal Server Error");
+			response->setBody(get_custom_error_page(conf, 503));
+			response->setBody(get_file_content("./srcs/www/50x.html"));
+			return response;
+		}   
+	if (uri.find("/error504") != std::string::npos)
+		{
+			response = new Response(504, "Internal Server Error");
+			response->setBody(get_custom_error_page(conf, 504));
+			response->setBody(get_file_content("./srcs/www/50x.html"));
+			return response;
 		}     
-	}	
 	return NULL;
 } 
 
@@ -44,7 +70,7 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 	size_t		query_pos, location_index;
 	struct stat	path_stat;
 	Response	*response = NULL;
-
+	
 	try
 	{
 		uri = request.getUri();
@@ -54,22 +80,14 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 			query_string = uri.substr(query_pos + 1);
 			uri = uri.substr(0, query_pos);
 		}
-		if (query_string.find("download=1") != std::string::npos)
-		{
-			Request download_request = request;
-			download_request.setUri(uri);
-			return handle_download_request(conf, download_request);
-		}
-		response = test_errors(conf, uri);
-		if (response)
-			return response;
-		int location_index = find_matching_location_index(conf, uri);
 		
 		if (uri == "/stopserv")
 			return (handle_stopserv_request(conf));
 		if (!query_string.empty() && query_string.find("&download=1") != std::string::npos)
 			return (handle_download_request(conf, uri));
-
+		response = test_errors(conf, uri);
+		if (response)
+			return response;
 		location_index = find_matching_location_index(conf, uri);
 		file_path = build_file_path(conf, uri);
 		if (stat(file_path.c_str(), &path_stat) != 0)
