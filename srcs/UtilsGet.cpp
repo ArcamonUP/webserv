@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/09 17:11:05 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 17:35:38 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ Response* handle_directory_request(ServerConfig& conf, const std::string& file_p
 		Response* response = new Response(200, "OK");
 		response->setBody(body);
 		response->setRessourcePath(file_path);
-		response->defineContentType();
+		response->setContentType("text/html");
 		return response;
 	} else
 		throw (Response::ResourceForbiddenException());
