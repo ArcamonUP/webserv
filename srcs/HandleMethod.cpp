@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/08 18:50:07 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 14:28:17 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,6 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 			download_request.setUri(uri);
 			return handle_download_request(conf, download_request);
 		}
-		if (uri == "/uploads")
-			return handle_download_request(conf, request);
 		int location_index = find_matching_location_index(conf, uri);
 		file_path = build_file_path(conf, uri);
 		struct stat path_stat;
@@ -105,7 +103,7 @@ Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, const Reque
 		Response *response = NULL;
 
 
-		path = conf.getRoot() + request.getUri();
+		path = conf.getRoot() + ft_traductor(request.getUri());
 		if (access(path.c_str(), F_OK) != 0)
 		{
 				response = new Response(404, "Not Found");

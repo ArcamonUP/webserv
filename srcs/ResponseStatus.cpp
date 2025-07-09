@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseStatus.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:37:59 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/04 18:37:03 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/09 15:04:57 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,19 @@ void	Response::NotImplemented()
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
 }
-//Should have a "Retry-After" header
+
+void	Response::BadGateway()
+{
+	this->_status_code = 502;
+	this->_status_name = "Bad Gateway";
+	addHeader("server", "42WebServ/1.0");
+	addHeader("connection", "close");
+	addHeader("content-type", "text/html");
+	std::string body = "<!doctype html>\n";
+	body += "<head>\n	<title>502 Bad Gateway</title>";
+	setBody(body);
+}
+
 void	Response::ServiceUnavailable()
 {
 	this->_status_code = 503;
@@ -191,7 +203,18 @@ void	Response::ServiceUnavailable()
 	std::string body = "<!doctype html>\n";
 	body += "<head>\n	<title>503 Service Unavailable</title>";
 	setBody(body);
-	// addHeader("content-length", toString(getBody().length()));
+}
+
+void	Response::GatewayTimeout()
+{
+	this->_status_code = 504;
+	this->_status_name = "Gateway Timeout";
+	addHeader("server", "42WebServ/1.0");
+	addHeader("connection", "close");
+	addHeader("content-type", "text/html");
+	std::string body = "<!doctype html>\n";
+	body += "<head>\n	<title>504 Gateway Timeout</title>";
+	setBody(body);
 }
 
 void	Response::HttpVersionNotSupported()
@@ -204,5 +227,4 @@ void	Response::HttpVersionNotSupported()
 	std::string body = "<!doctype html>\n";
 	body += "<head>\n	<title>505 HTTP Version Not Supported</title>";
 	setBody(body);
-	// addHeader("content-length", toString(getBody().length()));
 }

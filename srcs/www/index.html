@@ -124,6 +124,21 @@
       <input type="submit" value="Uploader">
     </form>
 
+    <h2>📂 Navigation AutoIndex</h2>
+    <form>
+      <a href="/autoindex" class="btn">Voir l'AutoIndex</a>
+    </form>
+
+    <h2>⚠️ Test des erreurs</h2>
+    <form style="text-align: center;">
+      <button type="button" onclick="triggerError(403)" class="btn">Erreur 403 (Forbidden)</button>
+      <button type="button" onclick="triggerError(404)" class="btn">Erreur 404 (Not Found)</button>
+      <button type="button" onclick="triggerError(500)" class="btn">Erreur 500 (Internal Server)</button>
+      <button type="button" onclick="triggerError(502)" class="btn">Erreur 502 (Bad Gateway)</button>
+      <button type="button" onclick="triggerError(503)" class="btn">Erreur 503 (Service Unavailable)</button>
+      <button type="button" onclick="triggerError(504)" class="btn">Erreur 504 (Gateway Timeout)</button>
+    </form>
+
     <h2>🛑 Contrôle serveur</h2>
     <form action="/stopserv" method="POST">
       <button type="submit" class="danger">Arrêter le serveur</button>
@@ -133,5 +148,12 @@
       <p>📁 <a href="/list.py">Voir les fichiers uploadés</a></p>
     </div>
   </div>
+  
+  <script>
+    function triggerError(errorCode) {
+      console.log('Déclenchement de l\'erreur ' + errorCode);
+      alert('Fonction triggerError(' + errorCode + ') appelée. Implémentation à venir.');
+    }
+  </script>
 </body>
 </html>

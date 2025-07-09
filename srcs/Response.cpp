@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 19:02:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/03 10:38:15 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/09 13:59:02 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,4 +145,13 @@ Response&	Response::operator=(const Response& src)
 		this->_status_name = src._status_name;
 	}
 	return (*this);
+}
+
+std::string Response::getMimeType(const std::string& extension)
+{
+	initContentTypes();
+	std::map<std::string, std::string>::const_iterator it = _content_types.find(extension);
+	if (it != _content_types.end())
+		return it->second;
+	return "application/octet-stream";
 }
