@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/08 16:58:40 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 17:01:30 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,12 @@ std::string generate_file_entry_html(const std::string& name, bool is_dir, const
 	std::ostringstream entry_html;
 	entry_html << "<tr><td>" << (is_dir ? "📁" : "📄") << " <a href=\"" << link_path << "\">" << name;
 	if (is_dir && name != "." && name != "..") entry_html << "/";
-	entry_html << "</a></td><td>" << size_str << "</td><td>" << time_str << "</td></tr>";
+	entry_html << "</a>";
+	
+	if (!is_dir && name != "." && name != "..") {
+		entry_html << " <a href=\"" << link_path << "?download=1\" style=\"margin-left: 10px; color: #28a745; text-decoration: none;\" title=\"Télécharger\">⬇️</a>";
+	}
+	entry_html << "</td><td>" << size_str << "</td><td>" << time_str << "</td></tr>";
 	return entry_html.str();
 }
 //Fin IA

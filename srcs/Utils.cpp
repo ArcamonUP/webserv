@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/08 15:11:08 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 17:17:07 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,21 +136,19 @@ std::string get_default_error_page(int error_code)
 	html << ".container{background:white;padding:40px;border-radius:15px;box-shadow:0 20px 40px rgba(0,0,0,0.1);text-align:center;max-width:500px}";
 	html << "h1{color:#e74c3c;margin-bottom:20px}p{color:#666;margin-bottom:30px}";
 	html << ".btn{background:linear-gradient(45deg,#667eea,#764ba2);color:white;padding:12px 24px;border-radius:25px;text-decoration:none;display:inline-block}</style></head>";
-	html << "<body><div class=\"container\"><h1>❌ Erreur " << error_code << "</h1>";
+	html << "<body><div class=\"container\"><h1>Error " << error_code << "</h1>";
 	
 	switch (error_code) {
-		case 400: html << "<p>Requête incorrecte.</p>"; break;
-		case 403: html << "<p>Vous n'avez pas l'autorisation d'accéder à cette ressource.</p>"; break;
-		case 404: html << "<p>La ressource demandée n'a pas été trouvée.</p>"; break;
-		case 405: html << "<p>Méthode non autorisée.</p>"; break;
-		case 500: html << "<p>Le serveur a rencontré une erreur interne.</p>"; break;
-		case 502: html << "<p>Passerelle incorrecte.</p>"; break;
-		case 503: html << "<p>Service indisponible.</p>"; break;
-		case 504: html << "<p>Délai d'attente de la passerelle dépassé.</p>"; break;
-		default: html << "<p>Une erreur s'est produite lors du traitement de votre requête.</p>"; break;
+		case 400: html << "<p>Invalid request.</p>"; break;
+		case 403: html << "<p>Resource access is forbidden.</p>"; break;
+		case 404: html << "<p>Resource not found.</p>"; break;
+		case 405: html << "<p>Unauthorized method</p>"; break;
+		case 500: html << "<p>Server encountered an intern error.</p>"; break;
+		case 502: html << "<p>Bad Gateway.</p>"; break;
+		case 503: html << "<p>Service is unavailable.</p>"; break;
+		case 504: html << "<p>Timeout gateway.</p>"; break;
+		default: html << "<p>An unknown error occured.</p>"; break;
 	}
-	
-	html << "<a href=\"/\" class=\"btn\">🏠 Retour à l'accueil</a></div></body></html>";
 	return html.str();
 }
 

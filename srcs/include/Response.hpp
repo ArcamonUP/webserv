@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 15:30:49 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 16:42:57 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ class Response : public Message
 		void	GatewayTimeout();			//504
 		void	HttpVersionNotSupported();	//505
 
+		class ResourceForbiddenException : public std::exception {};
 		class ResourceNotFoundException : public std::exception {};
 		class InternalServerErrorException : public std::exception {};
 };

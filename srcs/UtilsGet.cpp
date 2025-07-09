@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/09 16:37:40 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/09 17:11:05 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,42 +45,26 @@ Response* handle_download_request(ServerConfig conf, std::string uri)
 
 Response* handle_directory_request(ServerConfig& conf, const std::string& file_path, const std::string& uri, int location_index)
 {
-	std::string index_file = file_path;
+	std::string index_file = file_path, index_name = conf.getIndex();
+
 	if (file_path.empty() || file_path[file_path.length() - 1] != '/') 
 		index_file += "/";
-	
-	std::string index_name = "index.html";
-	if (location_index >= 0 && !conf.getLocations()[location_index].getIndex().empty()) {
+	if (location_index >= 0 && !conf.getLocations()[location_index].getIndex().empty())
 		index_name = conf.getLocations()[location_index].getIndex();
-	}
 	index_file += index_name;
-	
-	if (access(index_file.c_str(), F_OK) == 0) {
-		std::string body = get_file_content(index_file);
+
+	if (access(index_file.c_str(), F_OK) == 0)
+		return (handle_file_request(index_file));
+	bool autoindex_enabled = conf.getLocations()[location_index].getAutoIndex();
+	if (autoindex_enabled) {
+		std::string body = generate_autoindex(file_path, uri);
 		Response* response = new Response(200, "OK");
-		response->setContentType("text/html");
 		response->setBody(body);
+		response->setRessourcePath(file_path);
+		response->defineContentType();
 		return response;
-	} else {
-		bool autoindex_enabled = false;
-		if (location_index >= 0) {
-			autoindex_enabled = conf.getLocations()[location_index].getAutoIndex();
-		}
-		
-		if (autoindex_enabled) {
-			std::string body = generate_autoindex(file_path, uri);
-			Response* response = new Response(200, "OK");
-			response->setContentType("text/html");
-			response->setBody(body);
-			return response;
-		} else {
-			Response* response = new Response(403, "Forbidden");
-			std::string error_body = get_custom_error_page(conf, 403);
-			response->setContentType("text/html");
-			response->setBody(error_body);
-			return response;
-		}
-	}
+	} else
+		throw (Response::ResourceForbiddenException());
 }
 
 Response* handle_file_request(const std::string& ressource_path)
@@ -91,6 +75,34 @@ Response* handle_file_request(const std::string& ressource_path)
 	response->defineContentType();
 	response->setBody(body);
 	return response;
+}
+
+Response* handle_all_exceptions(ServerConfig conf)
+{
+	Response*	response = NULL;
+	std::string	error_body;
+	
+	try {
+		throw;
+	}
+	catch (const Response::ResourceForbiddenException&) {
+		response = new Response(403, "Forbidden");
+		error_body = get_custom_error_page(conf, 403);
+		response->setBody(error_body);
+		return (response);
+	}
+	catch (const Response::ResourceNotFoundException&) {
+		response = new Response(404, "Not Found");
+		error_body = get_custom_error_page(conf, 404);
+		response->setBody(error_body);
+		return (response);
+	}
+	catch (const Response::InternalServerErrorException&) {
+		response = new Response(500, "Internal Servor Error");
+		error_body = get_custom_error_page(conf, 500);
+		response->setBody(error_body);
+		return (response);
+	}
 }
 
 std::string build_file_path(ServerConfig& conf, const std::string& uri)

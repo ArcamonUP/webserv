@@ -57,7 +57,7 @@ def create_response(title, content):
     <div class="container">
         {content}
         <div class="navigation">
-            <a href="/index.html" class="btn">🏠 Retour à l'accueil</a>
+            <a href="/" class="btn">🏠 Retour à l'accueil</a>
         </div>
     </div>
 </body>

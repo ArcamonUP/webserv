@@ -107,7 +107,7 @@ else:
 
 print("""
         <div class="navigation">
-            <a href="/index.html" class="btn">🏠 Accueil</a>
+            <a href="/" class="btn">🏠 Accueil</a>
         </div>
     </div>
 
