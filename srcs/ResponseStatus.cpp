@@ -6,19 +6,21 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:37:59 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/10 13:38:02 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/10 14:33:53 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
 
-//For 200, 201, 202 : Body, Content-Length and Content-Type need to be set upstream
-//Date header need to be set just before the response is send to the client
+/*
+For 200, 201, 202 : Body, Content-Length and Content-Type need to be set upstream
+Date header need to be set just before the response is send to the client
 
-//No Content is missing
+No Content is missing
 
-//For the moment we assume the content-type is html but we need to define it
-//The content length need to be set after the body has been recovered
+For the moment we assume the content-type is html but we need to define it
+The content length need to be set after the body has been recovered
+*/
 void	Response::Ok()
 {
 	this->_status_code = 200;
@@ -26,7 +28,7 @@ void	Response::Ok()
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "keep-alive");
 }
-//201 need a "location" header
+/*201 need a "location" header*/
 void	Response::Created()
 {
 	this->_status_code = 201;
@@ -70,7 +72,7 @@ void	Response::BadRequest()
 	std::string message = "Request body could not be read properly.";
 	addHeader("content-length", toString(getBody().length()));
 }
-//Generic response is certainly insufficient
+
 void	Response::Forbidden()
 {
 	this->_status_code = 403;
@@ -95,6 +97,7 @@ void	Response::NotFound()
 	setBody(body);
 	// addHeader("content-length", toString(body.length()));
 }
+
 //Allow header depends ??
 void	Response::MethodNotAllowed()
 {
@@ -141,6 +144,7 @@ void	Response::ImATeapot()
 	std::string message = "Seriously ? Did u just tried to make a gad damn coffee with a fucking teapot ?";
 	addHeader("content-length", toString(getBody().length()));
 }
+
 //Need a "Retry-After" header 
 void	Response::TooManyRequest()
 {

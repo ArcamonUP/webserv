@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 14:13:53 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/10 14:51:18 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,6 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 		
 		if (child_status(pid, client_fd))
 			return (free_env(envp), close(client_fd), close(pipefd[0]), 1);
-		std::cout << output << std::endl;
 
 		std::string response =
 			"HTTP/1.1 200 OK\r\n"
@@ -214,20 +213,18 @@ bool	is_cgi(ServerConfig& conf, Request& req)
 {
 	std::string uri = req.getUri();
 	size_t pos = uri.find('?');
-	if (pos != std::string::npos) {
+	if (pos != std::string::npos)
 		uri = uri.substr(0, pos);
-	}
 
 	const std::vector<LocationConfig>& locations = conf.getLocations();
 	for (size_t i = 0; i < locations.size(); i++) {
 		const std::string& cgi_path = locations[i].getCgiPath();
 		if (!cgi_path.empty()) {
-			size_t cgi_prefix_pos = cgi_path.find("srcs/cgi");
-			if (cgi_prefix_pos != std::string::npos) {
-				std::string script_name = cgi_path.substr(cgi_prefix_pos + 8); // 8 = length of "srcs/cgi"
-				if (uri == script_name) {
+			size_t cgi_pos = cgi_path.find_last_of("/");
+			if (cgi_pos != std::string::npos) {
+				std::string script_name = cgi_path.substr(cgi_pos);
+				if (uri == script_name)
 					return true;
-				}
 			}
 		}
 	}
@@ -250,6 +247,7 @@ Response*	handle_action(ServerConfig& conf, Request& request)
 	else
 	{
 		response = new Response(501, "Not Implemented");
+		response->setBody(get_custom_error_page(conf, 501));
 		return (response);
 	}
 }
@@ -263,8 +261,6 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 	Request	request(serialized_request);
 	if (request.getError())
 		return (1);
-	std::cout << "parsed request : \n" << request << std::endl;
-
 	if (is_cgi(conf, request))
 	{
 		if (cgi(request, client_fd, conf) == 0)

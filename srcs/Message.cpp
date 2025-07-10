@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 15:12:36 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/09 01:09:37 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/10 14:33:00 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,20 @@ Message::~Message() {}
 
 void	Message::setHeaderMap(const std::string __attribute_maybe_unused__ headermap)
 {
-	// while (!headermap.empty() && headermap != "\r\n")
-	// {
-	// 	size_t mid = headermap.find(':');
-	// 	if (mid == std::string::npos) {
-	// 		line = get_next_line(request);
-	// 		continue;
-	// 	}
-	// 	std::string key = trim(line.substr(0, mid));
-	// 	std::string value = trim(line.substr(mid + 1));
-	// 	_headers.push_back(std::make_pair(key, value));+
-	// 	line = get_next_line(request);
-	// }
+	/*
+	while (!headermap.empty() && headermap != "\r\n")
+	{
+		size_t mid = headermap.find(':');
+		if (mid == std::string::npos) {
+			line = get_next_line(request);
+			continue;
+		}
+		std::string key = trim(line.substr(0, mid));
+		std::string value = trim(line.substr(mid + 1));
+		_headers.push_back(std::make_pair(key, value));+
+		line = get_next_line(request);
+	}
+	*/
 }
 //Si header non trouve ? 
 void	Message::setHeaderValue(std::string key, std::string value)

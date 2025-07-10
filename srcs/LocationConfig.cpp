@@ -14,7 +14,7 @@
 
 LocationConfig::LocationConfig() : path(""), root(""), index("index.html"), \
 redirect(""), autoindex(false), cgi_extension(""), cgi_path(""), \
-upload_status(false), upload_path(""), allowed_methods()
+upload_status(false), upload_path(""), max_size_body(1048576), allowed_methods()
 {
 	allowed_methods.push_back("GET");
 }
@@ -61,13 +61,12 @@ void	LocationConfig::setUploadPath(const std::string &up) {
 	this->upload_path = up;
 }
 
+void    LocationConfig::setMaxSizeBody(size_t max)
+{
+    this->max_size_body = max;
+}
+
 void	LocationConfig::setAllowedMethods(const std::vector<std::string> &m) {
-	for (size_t i = 0; i < m.size(); ++i)
-	{
-		const std::string &method = m[i];
-		if (method != "GET" && method != "POST" && method != "DELETE" && method != "HEAD")
-			throw (std::invalid_argument("Invalid HTTP method: " + method));
-	}
 	this->allowed_methods = m;
 }
 
@@ -105,6 +104,11 @@ bool    LocationConfig::getUploadStatus() const {
 
 const std::string	&LocationConfig::getUploadPath() const {
 	return (this->upload_path);
+}
+
+size_t LocationConfig::getMaxSizeBody() const
+{
+    return (this->max_size_body);
 }
 
 const std::vector<std::string>	&LocationConfig::getAllowedMethods() const {
