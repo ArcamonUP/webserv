@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/09 18:34:43 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/10 14:13:06 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ Response* handle_stopserv_request(ServerConfig& conf)
 
 Response* handle_download_request(ServerConfig conf, std::string uri)
 {
+	uri = uri.substr(0, uri.find('?'));
 	std::string path = conf.getRoot() + ft_traductor(uri);
 	Response* response = NULL;
 
@@ -57,7 +58,7 @@ Response* handle_directory_request(ServerConfig& conf, const std::string& file_p
 		return (handle_file_request(index_file));
 	bool autoindex_enabled = conf.getLocations()[location_index].getAutoIndex();
 	if (autoindex_enabled) {
-		std::string body = generate_autoindex(file_path, uri); //Cette fonction pourra etre simplifie/rendu plus clean
+		std::string body = generate_autoindex(file_path, uri);
 		Response* response = new Response(200, "OK");
 		response->setBody(body);
 		response->setRessourcePath(file_path);
@@ -75,34 +76,6 @@ Response* handle_file_request(const std::string& ressource_path)
 	response->defineContentType();
 	response->setBody(body);
 	return response;
-}
-
-Response* handle_all_exceptions(ServerConfig conf)
-{
-	Response*	response = NULL;
-	std::string	error_body;
-	
-	try {
-		throw;
-	}
-	catch (const Response::ResourceForbiddenException&) {
-		response = new Response(403, "Forbidden");
-		error_body = get_custom_error_page(conf, 403);
-		response->setBody(error_body);
-		return (response);
-	}
-	catch (const Response::ResourceNotFoundException&) {
-		response = new Response(404, "Not Found");
-		error_body = get_custom_error_page(conf, 404);
-		response->setBody(error_body);
-		return (response);
-	}
-	catch (const Response::InternalServerErrorException&) {
-		response = new Response(500, "Internal Servor Error");
-		error_body = get_custom_error_page(conf, 500);
-		response->setBody(error_body);
-		return (response);
-	}
 }
 
 std::string build_file_path(ServerConfig& conf, const std::string& uri)

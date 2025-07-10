@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandleMethod.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/10 02:16:45 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/10 14:04:32 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Response*	HandleHEAD(ServerConfig conf __attribute_maybe_unused__, const Request
 Response*	HandleGET(ServerConfig conf, const Request& request)
 {
 	std::string body, file_path;
-	size_t		query_pos, location_index;
+	size_t		location_index;
 	struct stat	path_stat;
 	Response	*response = NULL;
 
@@ -29,8 +29,10 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 	{
 		if (request.getUri() == "/stopserv")
 			return (handle_stopserv_request(conf));
-		if (!request.getQueryString().empty() && request.getQueryString().find("&download=1") != std::string::npos)
+		if (!request.getQueryString().empty() && request.getQueryString().find("download=1") != std::string::npos)
 			return (handle_download_request(conf, request.getUri()));
+		if (is_button_error(request))
+			return (handle_error_buttons(conf, request.getUri()));
 
 		location_index = find_matching_location_index(conf, request.getUri());
 		file_path = build_file_path(conf, request.getUri());
