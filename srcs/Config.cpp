@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/10 15:32:14 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,12 +260,16 @@ static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationCon
 			loc.setAutoIndex(true);
 		return (skipLine(raw, pos), loc);
 	}
+	if (key == "max_size_body") {
+		loc.setMaxSizeBody(ft_convert(getToken(raw, pos)));
+		return (skipLine(raw, pos), loc);
+	}
 	if (key == "cgi")
 		return (getCgi(raw, pos, loc));
 	if (key == "methods")
 		return(getMethods(raw, pos, loc));
 	if (key == "upload")
-		return (getUpload(raw, pos, loc));
+		return (getUpload(raw, pos, loc));		
 	std::cerr << "webserv: unknow directive '" << key << "'" << " inside a location block." << std::endl; 
 	throw(Config::InvalidFileException());
 }

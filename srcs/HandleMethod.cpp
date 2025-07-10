@@ -6,16 +6,44 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/10 14:04:32 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:00:39 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
 #include <sys/stat.h>
 
-Response*	HandleHEAD(ServerConfig conf __attribute_maybe_unused__, const Request& request __attribute_maybe_unused__)
+Response*	HandleHEAD(ServerConfig conf, const Request& request)
 {
-	return (NULL);
+	std::string file_path;
+	size_t		location_index;
+	struct stat	path_stat;
+	Response	*response = NULL;
+
+	try
+	{
+		location_index = find_matching_location_index(conf, request.getUri());
+		file_path = build_file_path(conf, request.getUri());
+		if (request.getUri() == "/stopserv")
+			response = handle_stopserv_request(conf);
+		else if (!request.getQueryString().empty() && request.getQueryString().find("download=1") != std::string::npos)
+			response = handle_download_request(conf, request.getUri());
+		else if (is_button_error(request))
+			response = handle_error_buttons(conf, request.getUri());
+		else if (stat(file_path.c_str(), &path_stat) != 0)
+			throw (Response::ResourceNotFoundException());
+		else if (S_ISDIR(path_stat.st_mode))
+			response = handle_directory_request(conf, file_path, request.getUri(), location_index);
+		else
+			response = handle_file_request(file_path);
+		response->setBody("");
+		return (response);
+	}
+	catch (...) {
+		response = handle_all_exceptions(conf);
+		response->setBody("");
+	}
+	return (response);
 }
 
 Response*	HandleGET(ServerConfig conf, const Request& request)

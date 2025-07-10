@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 14:26:58 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/10 14:51:18 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,6 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 		
 		if (child_status(pid, client_fd))
 			return (free_env(envp), close(client_fd), close(pipefd[0]), 1);
-		std::cout << output << std::endl;
 
 		std::string response =
 			"HTTP/1.1 200 OK\r\n"
@@ -262,8 +261,6 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 	Request	request(serialized_request);
 	if (request.getError())
 		return (1);
-	std::cout << "parsed request : \n" << request << std::endl;
-
 	if (is_cgi(conf, request))
 	{
 		if (cgi(request, client_fd, conf) == 0)
