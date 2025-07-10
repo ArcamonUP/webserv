@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/08 14:42:26 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/10 02:29:28 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ std::string get_request(int connection)
 		if (bytesRead <= 0)
 			break;
 		result.append(buffer, bytesRead);
-		if (bytesRead < (ssize_t)sizeof(buffer))
-			break ;
+		if (result.find("\r\n\r\n") != std::string::npos)
+			break;
 	}
 	return result;
 }
