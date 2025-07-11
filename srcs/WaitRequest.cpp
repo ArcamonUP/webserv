@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/11 14:16:39 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/11 15:31:57 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,14 +84,16 @@ int	pre_answer(int fd, int epoll_fd, int i, epoll_event *events, ServerConfig* s
 {
 	int result = handle_request(&events[i], *serv);
 
-	if (result == 1)
+	if (result == 0)
+		connection_handler.get_connection(fd)->reset();
+	else if (result == 1)
 	{
 		connection_handler.remove_connection(fd);
 		(*client_map).erase(fd);
 		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 		close(fd);
 	}
-	if (result == 2)
+	else if (result == 2)
 	{
 		connection_handler.remove_connection(fd);
 		(*client_map).erase(fd);
@@ -145,5 +147,5 @@ int wait_multiple_servers(std::vector<ServerConfig>& servers)
 		}
 	}
 	cleanup_all_fds(epoll_fd, server_map, client_map);
-	return (1);
+	return (130);
 }
