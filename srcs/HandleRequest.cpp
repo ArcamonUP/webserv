@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/11 15:09:23 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/11 17:42:42 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 			"Connection: close\r\n"
 			"\r\n" +  output;
 		send(client_fd, response.c_str(), response.size(), 0);
-		free_env(envp), close(client_fd), close(pipefd[0]);
+		free_env(envp), close(pipefd[0]);
 	}
 	return 0;
 }
