@@ -30,14 +30,14 @@ class ConnectionHandler
 		{
 			std::map<int, Connection*>::iterator it = connections.find(fd);
 			if (it == connections.end())
-				return (-1);
+				return (ERROR);
 			Connection* conn = it->second;
 			if (!conn->get_data())
-				return (-1);
+				return (ERROR);
 			else if (conn->is_request_complete())
-				return (1);
+				return (REQUEST_COMPLETE);
 			else
-				return (0);
+				return (REQUEST_INCOMPLETE);
 		}
 
 		Connection* get_connection(int fd)

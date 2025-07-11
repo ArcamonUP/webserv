@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/11 05:46:22 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/11 18:35:00 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,17 @@
 
 # define MAX_EVENTS 512
 # define NO_FLAGS 0
+
+# define ERROR 1
+# define FAILURE 1
+# define REQUEST_COMPLETE 0
+# define SUCCESS 0
+# define REQUEST_INCOMPLETE -1
+# define WAIT_MORE_DATA -1
+# define KEEP_ALIVE -2
+# define CLOSE_CONNECTION -3
+# define STOP_SERVER -4
+# define SIGINT 130
 
 template<typename T>
 std::string	toString(const T& value)

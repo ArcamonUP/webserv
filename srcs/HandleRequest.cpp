@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/11 15:09:23 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/11 19:46:49 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,21 +254,23 @@ Response*	handle_action(ServerConfig& conf, Request& request)
 int	handle_request(epoll_event *events, ServerConfig& conf)
 {
 	int client_fd = events->data.fd;
-	int res = connection_handler.handle_client_data(client_fd);
-	if (res == -1)
-		return (1);
-	else if (res == 0)
-		return (0);
+	int behaviour = connection_handler.handle_client_data(client_fd);
+	std::cout << "handle client data res = " << behaviour << std::endl;
+	if (behaviour == ERROR || behaviour == REQUEST_INCOMPLETE)
+		return (behaviour);
 	Connection * connection = connection_handler.get_connection(client_fd);
 	if (!connection)
-		return (1);
+		return (ERROR);
+	std::cout << "connection with " << client_fd << " is ok" << std::endl;
 	std::string serialized_request = connection->get_request();
+	std::cout << serialized_request << std::endl;
 	Request	request(serialized_request);
 	if (request.getError())
 	{
 		connection->reset();
-		return (1);
+		return (ERROR);
 	}
+	std::cout << "fd [" << client_fd << "] = " << serialized_request << std::endl;
 	Response*	response;
 	std::string serialized_response;
 	if (is_cgi(conf, request))
@@ -276,24 +278,25 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 		if (cgi(request, client_fd, conf) == 0)
 		{
 			connection->reset();
-			return (0);
+			return (SUCCESS);
 		}
 	}
 	else 
 	{
 		response = handle_action(conf, request);
 		serialized_response = response->getSerializedResponse();
+		std::cout << client_fd << std::endl;
 		send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
 		if (response->getHeaderValue("connection") == "keep-alive")
 		{
 			connection->reset();
-			return (delete (response), 0);
+			return (delete (response), KEEP_ALIVE);
 		}
 		delete (response);
 		connection->reset();
 		if (request.getUri() == "/stopserv")
-			return (2);
-		return (1);
+			return (STOP_SERVER);
+		return (CLOSE_CONNECTION);
 	}
-	return (0);
+	return (SUCCESS);
 }

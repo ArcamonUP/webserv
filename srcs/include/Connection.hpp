@@ -6,6 +6,7 @@ class Connection
 {
 private:
 	int fd;
+	// std::string ip;
 	time_t	last_activity;
 	ServerConfig* server_config;
 	std::string part_request;
