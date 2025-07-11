@@ -1,5 +1,6 @@
 #pragma once 
 
+#include "WebServ.hpp"
 
 #define TIME_OUT 30
 
@@ -17,10 +18,14 @@ class ConnectionHandler
 		{
 			for (std::map<int, Connection*>::iterator it = connections.begin(); it != connections.end(); it++)
 				delete it->second;
+			connections.clear();
 		}
 
 		void add_connection(int fd, ServerConfig* config)
 		{
+			std::map<int, Connection*>::iterator it = connections.find(fd);
+			if (it != connections.end())
+				delete it->second;
 			connections[fd] = new Connection(fd, config);
 		}
 
@@ -73,5 +78,12 @@ class ConnectionHandler
 				else
 					++it;
 			}
+		}
+
+		void	clean_up_all_connections()
+		{
+			for (std::map<int, Connection*>::iterator it = connections.begin(); it != connections.end(); it++)
+				delete it->second;
+			connections.clear();
 		}
 };

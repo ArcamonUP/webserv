@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WaitRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/11 05:31:51 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/11 14:16:39 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ void accept_new(int fd, ServerConfig* serv, \
 
 void cleanup_all_fds(int epoll_fd, std::map<int, ServerConfig*> &server_map, \
 	std::map<int, ServerConfig*> &client_map)
-{
+{	
+	connection_handler.clean_up_all_connections();
 	for (std::map<int, ServerConfig*>::iterator it = client_map.begin(); it != client_map.end(); ++it)
 	{
 		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, it->first, NULL);

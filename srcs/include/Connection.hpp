@@ -1,5 +1,7 @@
 #pragma once
 
+#include "WebServ.hpp"
+
 class Connection
 {
 private:
@@ -12,6 +14,9 @@ public:
 	Connection(int client_fd, ServerConfig* config) : fd(client_fd), last_activity(time(NULL)), server_config(config) {}
 	~Connection() {}
 
+	const ServerConfig* getServer(void) {
+		return (this->server_config);
+	}
 	bool	get_data()
 	{
 		char buffer[8196];
@@ -45,5 +50,4 @@ public:
 	{
 		return ((time(NULL) - last_activity) > timeout);
 	}
-
 };
