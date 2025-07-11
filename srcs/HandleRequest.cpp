@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/11 05:44:41 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/11 14:44:59 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,10 +284,11 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 		response = handle_action(conf, request);
 		serialized_response = response->getSerializedResponse();
 		send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
-		close(client_fd), delete (response);
+		delete (response);
 		connection->reset();
 		if (request.getUri() == "/stopserv")
 			return (2);
+		return (1);
 	}
 	return (0);
 }

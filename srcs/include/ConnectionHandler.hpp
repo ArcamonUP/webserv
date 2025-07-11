@@ -23,9 +23,6 @@ class ConnectionHandler
 
 		void add_connection(int fd, ServerConfig* config)
 		{
-			std::map<int, Connection*>::iterator it = connections.find(fd);
-			if (it != connections.end())
-				delete it->second;
 			connections[fd] = new Connection(fd, config);
 		}
 
