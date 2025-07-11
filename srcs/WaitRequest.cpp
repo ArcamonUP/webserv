@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   WaitRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/07 16:51:28 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/11 05:31:51 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
 
-# define MAX_EVENTS 512
+ConnectionHandler connection_handler;
 
 int	init_epoll(int *epoll_fd, epoll_event *ev, std::vector<ServerConfig>* servers, \
 	std::map<int, ServerConfig*> *server_map)
@@ -54,6 +54,7 @@ void accept_new(int fd, ServerConfig* serv, \
 		close(client_fd);
 		return (std::perror("epoll_ctl"), (void)0);
 	}
+	connection_handler.add_connection(client_fd, serv);
 	(*client_map)[client_fd] = serv;
 	return ;
 }
@@ -84,12 +85,14 @@ int	pre_answer(int fd, int epoll_fd, int i, epoll_event *events, ServerConfig* s
 
 	if (result == 1)
 	{
+		connection_handler.remove_connection(fd);
 		(*client_map).erase(fd);
 		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 		close(fd);
 	}
 	if (result == 2)
 	{
+		connection_handler.remove_connection(fd);
 		(*client_map).erase(fd);
 		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 		close(fd);
@@ -123,6 +126,7 @@ int wait_multiple_servers(std::vector<ServerConfig>& servers)
 			cleanup_all_fds(epoll_fd, server_map, client_map);
 			return (0);
 		}
+		connection_handler.clean_up_timed_out(epoll_fd);
 		if (nbfds == -1) {
 			std::perror("epoll_wait");
 			break ;

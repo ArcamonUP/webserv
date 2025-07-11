@@ -3,19 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   WebServ.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 14:30:18 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/11 05:46:22 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-
-#include "Config.hpp"
-#include "Message.hpp"
-#include "Request.hpp"
-#include "Response.hpp"
 
 #include <netinet/in.h>
 #include <iostream>
@@ -35,6 +30,13 @@
 #include <cstdio>
 #include <cstring>
 
+#include "Config.hpp"
+#include "Message.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+#include "Connection.hpp"
+#include "ConnectionHandler.hpp"
+
 # define MAX_EVENTS 512
 # define NO_FLAGS 0
 
@@ -48,6 +50,7 @@ std::string	toString(const T& value)
 
 typedef Response* (*MethodHandler)(ServerConfig conf, const Request& request);
 extern	std::map<std::string, MethodHandler> method_map;
+extern	ConnectionHandler connection_handler;
 
 /*AutoIndex.cpp*/
 std::string generate_autoindex(const std::string& directory_path, const std::string& uri_path);

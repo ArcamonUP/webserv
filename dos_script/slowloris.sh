@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in {1..20}; do
+for i in {1..2}; do
 	(
 		exec 3<>/dev/tcp/localhost/8080
 		echo -n "GET / HTTP/1.1" >&3
