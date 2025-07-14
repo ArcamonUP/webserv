@@ -108,7 +108,7 @@ void cgi_output(std::string &output, int client_fd, char **envp, int *pipefd, st
 		rep.setBody(output);
 		std::string response = rep.getSerializedResponse();
 		send(client_fd, response.c_str(), response.size(), 0);
-		free_tab(envp), close(client_fd), close(pipefd[0]);
+		free_tab(envp), close(pipefd[0]);
 }
 
 void cgi_child(int *input_pipe, int *pipefd, int client_fd, Request &req, \
@@ -199,8 +199,8 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 			output.append(buffer, count);	
 		cgi_delete(script_arg, upload_status_arg, upload_path_arg, args);
 		if (child_status(pid, client_fd))
-			return (free_tab(envp), close(client_fd), close(pipefd[0]), 1);
-		cgi_output(output, client_fd,envp, pipefd, script_path);
+			return (free_tab(envp), close(pipefd[0]), 1);
+		cgi_output(output, client_fd, envp, pipefd, script_path);
 	}
 	return 0;
 }
