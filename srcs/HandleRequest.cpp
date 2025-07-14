@@ -3,34 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 14:51:18 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/12 01:47:18 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
-#define NO_FLAGS 0
 
 std::map<std::string, MethodHandler> method_map;
 
-std::string get_request(int connection)
-{
-	char buffer[4096];
-	std::string result;
+// std::string get_request(int connection)
+// {
+// 	char buffer[4096];
+// 	std::string result;
 
-	while (true)
-	{
-		ssize_t bytesRead = recv(connection, buffer, sizeof(buffer), 0);
-		if (bytesRead <= 0)
-			break;
-		result.append(buffer, bytesRead);
-		if (result.find("\r\n\r\n") != std::string::npos)
-			break;
-	}
-	return result;
-}
+// 	while (true)
+// 	{
+// 		ssize_t bytesRead = recv(connection, buffer, sizeof(buffer), 0);
+// 		if (bytesRead <= 0)
+// 			break;
+// 		result.append(buffer, bytesRead);
+// 		if (result.find("\r\n\r\n") != std::string::npos)
+// 			break;
+// 	}
+// 	return result;
+// }
 
 void free_env(char **envp)
 {
@@ -204,7 +203,7 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 			"Connection: close\r\n"
 			"\r\n" +  output;
 		send(client_fd, response.c_str(), response.size(), 0);
-		free_env(envp), close(client_fd), close(pipefd[0]);
+		free_env(envp), close(pipefd[0]);
 	}
 	return 0;
 }
@@ -254,25 +253,50 @@ Response*	handle_action(ServerConfig& conf, Request& request)
 
 int	handle_request(epoll_event *events, ServerConfig& conf)
 {
-	Response*	response;
-	std::string serialized_response;
 	int client_fd = events->data.fd;
-	std::string serialized_request = get_request(client_fd);
+	int behaviour = connection_handler.handle_client_data(client_fd);
+	std::cout << "handle client data res = " << behaviour << std::endl;
+	if (behaviour == ERROR || behaviour == REQUEST_INCOMPLETE)
+		return (behaviour);
+	Connection * connection = connection_handler.get_connection(client_fd);
+	if (!connection)
+		return (ERROR);
+	std::cout << "connection with " << client_fd << " is ok" << std::endl;
+	std::string serialized_request = connection->get_request();
+	std::cout << serialized_request << std::endl;
 	Request	request(serialized_request);
 	if (request.getError())
-		return (1);
+	{
+		connection->reset();
+		return (ERROR);
+	}
+	std::cout << "fd [" << client_fd << "] = " << serialized_request << std::endl;
+	Response*	response;
+	std::string serialized_response;
 	if (is_cgi(conf, request))
 	{
 		if (cgi(request, client_fd, conf) == 0)
-			return (0);
+		{
+			connection->reset();
+			return (SUCCESS);
+		}
 	}
-	else {
+	else 
+	{
 		response = handle_action(conf, request);
 		serialized_response = response->getSerializedResponse();
+		std::cout << client_fd << std::endl;
 		send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
-		close(client_fd), delete (response);
+		if (response->getHeaderValue("connection") == "keep-alive")
+		{
+			connection->reset();
+			return (delete (response), KEEP_ALIVE);
+		}
+		delete (response);
+		connection->reset();
 		if (request.getUri() == "/stopserv")
-			return (2);
+			return (STOP_SERVER);
+		return (CLOSE_CONNECTION);
 	}
-	return (1);
+	return (SUCCESS);
 }

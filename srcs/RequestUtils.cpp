@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestUtils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 21:15:13 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 01:10:07 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/11 17:35:35 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ double str_to_double(const std::string &s)
 	}
 	return value;
 }
-
 
 double	get_http_version(std::string &message) {
 	std::string 			temp;
