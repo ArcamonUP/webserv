@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 14:42:40 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:59:06 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ bool		is_all_digit(std::string str);
 int			make_not_blocking_socket(int fd);
 std::string	trim(const std::string &s);
 bool		check_ip(const std::string &ip);
+void		free_tab(char **tab);
 
 /*UtilsGet.cpp*/
 std::string build_file_path(ServerConfig& conf, const std::string& uri);
@@ -109,9 +110,14 @@ Response*	handle_directory_request(ServerConfig& conf, const std::string& file_p
 Response*	handle_download_request(ServerConfig conf, std::string uri);
 Response*	handle_file_request(const std::string& file_path);
 Response*	handle_stopserv_request(ServerConfig& conf);
+Response*	handle_stopserv_request(ServerConfig& conf);
 
 /*WaitRequest.cpp*/
 int		wait_multiple_servers(std::vector<ServerConfig>& servers);
 
 /*Variable globale pour l'arrêt propre*/
 extern bool g_signal;
+
+/*Cgi.cpp*/
+int cgi(Request &req, int client_fd, ServerConfig& conf);
+bool	is_cgi(ServerConfig& conf, Request& req);

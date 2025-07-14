@@ -73,6 +73,7 @@ void	Response::initContentTypes()
 	Response::_content_types["ogv"] = "video/ogg";
 	Response::_content_types["ogx"] = "application/ogg";
 	Response::_content_types["otf"] = "font/otf";
+	Response::_content_types["py"] = "text/html";
 	Response::_content_types["png"] = "image/png";
 	Response::_content_types["pdf"] = "application/pdf";
 	Response::_content_types["ppt"] = "application/vnd.ms-powerpoint";

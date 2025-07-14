@@ -44,13 +44,59 @@ Response*	HandleHEAD(ServerConfig conf, const Request& request)
 	return (response);
 }
 
+Response* test_errors(ServerConfig conf, std::string &uri)
+{
+	Response *response = NULL;
+	if (uri.find("/error403") != std::string::npos)
+	{
+		std::string path;
+		path = "fichier_test_no_permission.txt";
+		if (access(path.c_str(), W_OK ) != 0)
+		{
+			response = new Response(403, "Forbidden");
+			response->setBody(get_custom_error_page(conf, 403));
+			response->setBody(get_file_content("./srcs/www/403.html"));
+			return response;
+		} 		
+	}
+	if (uri.find("/error500") != std::string::npos)
+		{
+			response = new Response(500, "Internal Server Error");
+			response->setBody(get_custom_error_page(conf, 500));
+			response->setBody(get_file_content("./srcs/www/50x.html"));
+			return response;
+		}
+	if (uri.find("/error502") != std::string::npos)
+		{
+			response = new Response(502, "Internal Server Error");
+			response->setBody(get_custom_error_page(conf, 502));
+			response->setBody(get_file_content("./srcs/www/50x.html"));
+			return response;
+		}   
+	if (uri.find("/error503") != std::string::npos)
+		{
+			response = new Response(503, "Internal Server Error");
+			response->setBody(get_custom_error_page(conf, 503));
+			response->setBody(get_file_content("./srcs/www/50x.html"));
+			return response;
+		}   
+	if (uri.find("/error504") != std::string::npos)
+		{
+			response = new Response(504, "Internal Server Error");
+			response->setBody(get_custom_error_page(conf, 504));
+			response->setBody(get_file_content("./srcs/www/50x.html"));
+			return response;
+		}     
+	return NULL;
+} 
+
 Response*	HandleGET(ServerConfig conf, const Request& request)
 {
 	std::string body, file_path;
 	size_t		location_index;
 	struct stat	path_stat;
 	Response	*response = NULL;
-
+	
 	try
 	{
 		if (!request.getQueryString().empty() && request.getQueryString().find("download=1") != std::string::npos)

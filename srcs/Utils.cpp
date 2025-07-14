@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 14:46:28 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:58:49 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,4 +146,13 @@ bool    check_ip(const std::string &ip)
             return (false);
     }
     return (nb_dot == 3);
+}
+
+void free_tab(char **tab)
+{
+    if (!tab) return;
+
+    for (size_t i = 0; tab[i]; i++)
+        delete[] tab[i];
+    delete[] tab;
 }

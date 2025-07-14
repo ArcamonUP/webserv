@@ -80,7 +80,6 @@ std::string Response::getRessourcePath() const
 std::string Response::getExtension(const std::string& Uri) const
 {
 	std::size_t dot_pos = Uri.find_last_of('.');
-	
 	if (dot_pos == std::string::npos)
 		return ("");
 	else
