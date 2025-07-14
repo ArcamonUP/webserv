@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 13:08:53 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:49:02 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ Response* handle_file_request(const std::string& ressource_path)
 std::string build_file_path(ServerConfig& conf, const std::string& uri)
 {
 	if (uri == "/")
-		return conf.getRoot() + "/" + conf.getIndex();
+		return conf.getRoot() + conf.getIndex();
 	else
 		return conf.getRoot() + uri;
 }

@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 16:04:48 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:27:13 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ int start_server(std::vector<ServerConfig>& servers)
 
     if (servers.empty())
     {
-        std::cerr << "Aucun serveur configure. Stopping the program..." << std::endl;
+        std::cerr << "\033[31mNo servers configured. Shutting down the program...\033[0m" << std::endl;
         return (1);
     }
-    std::cout << "Tous les serveurs sont démarrés. En attente de connexions..." << std::endl;
+    std::cout << "\033[32mAll servers have started. Awaiting connections...\033[0m" << std::endl;
     result = wait_multiple_servers(servers);
     for (size_t i = 0; i < servers.size(); i++)
     {
@@ -51,7 +51,7 @@ int	main(int ac, char **av)
         {
             if (sockfd != -1)
                 close(sockfd);
-            std::cerr << "Échec de l'initialisation du serveur " << i << " sur le port " << servers[i].getPort() << std::endl;
+            std::cerr << "\033[31mUnable to initialize server " << i << " on port " << servers[i].getPort() << "\033[0m" << std::endl;
             for (size_t j = 0; j < i; j++) {
                 if (servers[j].getSockfd() != -1)
                     close(servers[j].getSockfd());
@@ -61,5 +61,3 @@ int	main(int ac, char **av)
     }
     return (start_server(servers));
 }
-
-//test

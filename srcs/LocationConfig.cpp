@@ -31,6 +31,8 @@ void	LocationConfig::setRoot(const std::string &root) {
 	if (root.empty())
 		throw std::invalid_argument("Root path cannot be empty");
 	this->root = root;
+    if (root[root.length() - 1] != '/')
+        this->root += "/";
 }
 
 void	LocationConfig::setIndex(const std::string &i) {
@@ -59,6 +61,8 @@ void    LocationConfig::setUploadStatus(bool st) {
 
 void	LocationConfig::setUploadPath(const std::string &up) {
 	this->upload_path = up;
+    if (up[up.length() - 1] != '/')
+        this->upload_path += "/";
 }
 
 void    LocationConfig::setMaxSizeBody(size_t max)

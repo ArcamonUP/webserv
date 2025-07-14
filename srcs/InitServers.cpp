@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 10:35:08 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 12:29:13 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:32:14 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void signal_handler(int sig)
 {
     if (sig == SIGINT || sig == SIGTERM) {
         g_signal = true;
-        std::cout << std::endl << "Arrêt des serveurs demandé..." << std::endl;
+        std::cout << std::endl << "\033[31mArrêt des serveurs demandé...\033[0m" << std::endl;
     }
 }
 
@@ -45,15 +45,15 @@ int create_server_socket(int sockfd, ServerConfig& server_config)
     sockaddr.sin_port = htons(server_config.getPort());
     freeaddrinfo(res);
     if (bind(sockfd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) < 0) {
-        std::cerr << "Failed to bind on port " << server_config.getPort() 
-                  << ": " << strerror(errno) << std::endl;
+        std::cerr << "\033[31mFailed to bind on port " << server_config.getPort() 
+                  << ": " << strerror(errno) << ".\033[0m" << std::endl;
         return (-1);
     }
     if (listen(sockfd, SOMAXCONN) < 0)
         return (std::perror("listen"), -1);
     server_config.setSockfd(sockfd);
     server_config.setSockaddr(sockaddr);
-    std::cout << "Server listening on port " << server_config.getPort() << std::endl;
+    std::cout << "\033[32mServer listening on port " << server_config.getPort() << ".\033[0m" << std::endl;
     return (0);
 }
 
