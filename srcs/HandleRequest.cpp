@@ -100,25 +100,54 @@ int child_status(pid_t &pid, int client_fd)
 		return (0);
 }
 
-int cgi(Request &req, int client_fd, ServerConfig& conf)
+void cgi_post(Request &req, int *input_pipe, int *pipefd)
 {
-	std::string uri = req.getUri();
-	size_t pos = uri.find('?');
-	if (pos != std::string::npos) {
-		uri = uri.substr(0, pos);
-	}
-	
-	std::string script_path = "srcs/cgi" + uri;
-	char **envp = init_cgi(req);
-	
-	char *python_path = (char*)"/usr/bin/python3";
-	char *script_arg = new char[script_path.size() + 1];
-	std::strcpy(script_arg, script_path.c_str());
-	
-	char *upload_status_arg = NULL;
-	char *upload_path_arg = NULL;
-	
-	bool need_upload_args = false;
+		if (req.getMethod() == "POST") {
+		std::string body = req.getBody();
+		write(input_pipe[1], body.c_str(), body.size());
+		}
+		close(pipefd[1]), close(input_pipe[0]), close(input_pipe[1]);
+}
+
+void cgi_delete(char *script_arg, char *upload_status_arg, char *upload_path_arg, char **args)
+{
+		delete[] script_arg;
+		if (upload_status_arg)
+			delete[] upload_status_arg;
+		if (upload_path_arg)
+			delete[] upload_path_arg;
+		delete[] args;
+}
+
+void cgi_output(std::string &output, int client_fd, char **envp, int *pipefd)
+{
+		std::string response =
+		"HTTP/1.1 200 OK\r\n"
+		"Content-Type: text/html\r\n"
+		"Content-Length: " + toString(output.size()) + "\r\n"
+		"Connection: close\r\n"
+		"\r\n" +  output;
+		send(client_fd, response.c_str(), response.size(), 0);
+		free_env(envp), close(client_fd), close(pipefd[0]);
+}
+
+void cgi_child(int *input_pipe, int *pipefd, int client_fd, Request &req, \
+				char **args, char **envp)
+{
+		close(input_pipe[1]), close(pipefd[0]), close(client_fd);
+		dup2(pipefd[1], STDOUT_FILENO), dup2(input_pipe[0], STDIN_FILENO);
+		if (req.getMethod() == "POST"){
+			std::string body = req.getBody();
+			write(STDIN_FILENO, body.c_str(), body.size());
+		}
+		execve(args[0], args, envp);
+		std::perror("execve"), _exit(1);
+}
+
+char ** cgi_uploads(std::string &uri, ServerConfig &conf, char *&upload_status_arg, \
+				char *&upload_path_arg, char *python_path, char *script_arg)
+{
+		bool need_upload_args = false;
 	if (uri == "/upload.py" || uri == "/list.py") {
 		need_upload_args = true;
 		
@@ -154,7 +183,26 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 		args[1] = script_arg;
 		args[2] = NULL;
 	}
+	return args;
+}
 
+int cgi(Request &req, int client_fd, ServerConfig& conf)
+{
+	std::string uri = req.getUri();
+	size_t pos = uri.find('?');
+	if (pos != std::string::npos) 
+		uri = uri.substr(0, pos);
+	
+	std::string script_path = "srcs/cgi" + uri;
+	char **envp = init_cgi(req);
+	
+	char *python_path = (char*)"/usr/bin/python3";
+	char *script_arg = new char[script_path.size() + 1];
+	std::strcpy(script_arg, script_path.c_str());
+	
+	char *upload_status_arg = NULL;
+	char *upload_path_arg = NULL;
+	char **args = cgi_uploads(uri, conf, upload_status_arg, upload_path_arg, python_path, script_arg);
 	int pipefd[2], input_pipe[2];
 
 	if (pipe(pipefd) == -1 || pipe(input_pipe) == -1)
@@ -164,48 +212,19 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 		return std::perror("fork"), 1;
 	if (pid == 0)
 	{
-		close(input_pipe[1]), close(pipefd[0]), close(client_fd);
-		dup2(pipefd[1], STDOUT_FILENO), dup2(input_pipe[0], STDIN_FILENO);
-		if (req.getMethod() == "POST"){
-			std::string body = req.getBody();
-			write(STDIN_FILENO, body.c_str(), body.size());
-		}
-		execve(args[0], args, envp);
-		std::perror("execve"), _exit(1);
+		cgi_child(input_pipe, pipefd, client_fd, req, args, envp);
 	}
 	else {
-		if (req.getMethod() == "POST") {
-			std::string body = req.getBody();
-			write(input_pipe[1], body.c_str(), body.size());
-		}
-		close(pipefd[1]), close(input_pipe[0]), close(input_pipe[1]);
-
-		
+		cgi_post(req, input_pipe, pipefd);
 		char buffer [4096];
 		size_t count;
 		std::string output;
 		while((count = read(pipefd[0], buffer, sizeof(buffer))) > 0)
-			output.append(buffer, count);
-
-		delete[] script_arg;
-		if (upload_status_arg)
-			delete[] upload_status_arg;
-		if (upload_path_arg)
-			delete[] upload_path_arg;
-		delete[] args;
-		
+			output.append(buffer, count);	
+		cgi_delete(script_arg, upload_status_arg, upload_path_arg, args);
 		if (child_status(pid, client_fd))
 			return (free_env(envp), close(client_fd), close(pipefd[0]), 1);
-		std::cout << output << std::endl;
-
-		std::string response =
-			"HTTP/1.1 200 OK\r\n"
-			"Content-Type: text/html\r\n"
-			"Content-Length: " + toString(output.size()) + "\r\n"
-			"Connection: close\r\n"
-			"\r\n" +  output;
-		send(client_fd, response.c_str(), response.size(), 0);
-		free_env(envp), close(client_fd), close(pipefd[0]);
+		cgi_output(output, client_fd,envp, pipefd);
 	}
 	return 0;
 }
