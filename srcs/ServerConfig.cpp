@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:14:49 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 14:43:18 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:43:13 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ void ServerConfig::setRoot(const std::string &r)
     if (r.empty())
         throw std::invalid_argument("Root path cannot be empty");
     this->root = r;
+    if (r[r.length() - 1] != '/')
+        this->root += "/";
 }
 
 void ServerConfig::setIndex(const std::string &i)
