@@ -171,3 +171,12 @@ std::string get_custom_error_page(ServerConfig& conf, int error_code)
 	}
 	return get_default_error_page(error_code);
 }
+
+void free_env(char **envp)
+{
+    if (!envp) return;
+
+    for (size_t i = 0; envp[i]; i++)
+        delete[] envp[i];
+    delete[] envp;
+}

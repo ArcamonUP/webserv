@@ -101,6 +101,13 @@ Response*	handle_directory_request(ServerConfig& conf, const std::string& file_p
 Response*	handle_file_request(const std::string& file_path);
 Response*	handle_download_request(ServerConfig conf, std::string uri);
 Response*	handle_all_exceptions(ServerConfig conf);
+void		free_env(char **envp);
+
 
 //Traductor.cpp
 std::string ft_traductor(const std::string& encoded_str);
+
+//Cgi.cpp
+int cgi(Request &req, int client_fd, ServerConfig& conf);
+bool	is_cgi(ServerConfig& conf, Request& req);
+

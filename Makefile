@@ -24,7 +24,7 @@ $(SRCDIR)/include/Message.hpp $(SRCDIR)/include/Request.hpp $(SRCDIR)/include/Re
 
 SRC = main.cpp Utils.cpp ServerConfig.cpp Config.cpp LocationConfig.cpp Message.cpp Request.cpp \
 		RequestUtils.cpp Response.cpp ResponseStatus.cpp ResponseUtils.cpp WaitRequest.cpp HandleMethod.cpp \
-        InitServers.cpp HandleRequest.cpp AutoIndex.cpp UtilsGet.cpp Traductor.cpp
+        InitServers.cpp HandleRequest.cpp AutoIndex.cpp UtilsGet.cpp Traductor.cpp Cgi.cpp
 
 OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 
