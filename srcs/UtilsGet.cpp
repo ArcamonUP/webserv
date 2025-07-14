@@ -6,25 +6,12 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 14:13:06 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 13:08:53 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
 #include <sys/stat.h>
-
-Response* handle_stopserv_request(ServerConfig& conf)
-{
-	std::string stop_page_path = conf.getRoot();
-	if (!stop_page_path.empty() && stop_page_path[stop_page_path.length() - 1] != '/') {
-		stop_page_path += "/";
-	}
-	stop_page_path += conf.getStopServer();
-	std::string body = get_file_content(stop_page_path);
-	Response* response = new Response(200, "OK");
-	response->setBody(body);
-	return response;
-}
 
 Response* handle_download_request(ServerConfig conf, std::string uri)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebServ.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/11 18:35:00 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/14 14:42:40 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@
 # define WAIT_MORE_DATA -1
 # define KEEP_ALIVE -2
 # define CLOSE_CONNECTION -3
-# define STOP_SERVER -4
-# define SIGINT 130
 
 template<typename T>
 std::string	toString(const T& value)
@@ -61,7 +59,6 @@ std::string	toString(const T& value)
 
 typedef Response* (*MethodHandler)(ServerConfig conf, const Request& request);
 extern	std::map<std::string, MethodHandler> method_map;
-extern	ConnectionHandler connection_handler;
 
 /*AutoIndex.cpp*/
 std::string generate_autoindex(const std::string& directory_path, const std::string& uri_path);
@@ -104,6 +101,7 @@ void		initMethodMap();
 bool		is_all_digit(std::string str);
 int			make_not_blocking_socket(int fd);
 std::string	trim(const std::string &s);
+bool		check_ip(const std::string &ip);
 
 /*UtilsGet.cpp*/
 std::string build_file_path(ServerConfig& conf, const std::string& uri);

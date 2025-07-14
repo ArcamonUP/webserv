@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:54 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 15:32:25 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 13:05:22 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@
 class ServerConfig
 {
 	private:
+		std::string					host;
 		int							port;
-		std::string					server_name;
 		size_t						max_size_body;
 		std::string					root;
 		std::string					index;
@@ -30,11 +30,10 @@ class ServerConfig
 		std::vector<LocationConfig>	locations;
 		int							sockfd;
 		sockaddr_in					sockaddr;
-		std::string					stop_server;
 	public:
 		ServerConfig();
+		void	setHost(const std::string &ip);
 		void	setPort(int p);
-		void	setServerName(const std::string& name);
 		void	setMaxSizeBody(size_t max);
 		void	setRoot(const std::string& r);
 		void	setIndex(const std::string& i);
@@ -43,12 +42,10 @@ class ServerConfig
 		void	setLocations(const std::vector<LocationConfig>& locs);
 		void	addLocation(const LocationConfig loc);
 		void	setSockfd(int fd);
-		void	setStopServer(const std::string& i);
 		void	setSockaddr(const sockaddr_in& addr);
 
+		const std::string&					getHost() const;
 		int									getPort() const;
-		const std::string&					getServerName() const;
-		const std::string&					getStopServer() const;
 		size_t								getMaxSizeBody() const;
 		const std::string&					getRoot() const;
 		const std::string&					getIndex() const;

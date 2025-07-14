@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/10 15:00:39 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 13:11:15 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,7 @@ Response*	HandleHEAD(ServerConfig conf, const Request& request)
 	{
 		location_index = find_matching_location_index(conf, request.getUri());
 		file_path = build_file_path(conf, request.getUri());
-		if (request.getUri() == "/stopserv")
-			response = handle_stopserv_request(conf);
-		else if (!request.getQueryString().empty() && request.getQueryString().find("download=1") != std::string::npos)
+		if (!request.getQueryString().empty() && request.getQueryString().find("download=1") != std::string::npos)
 			response = handle_download_request(conf, request.getUri());
 		else if (is_button_error(request))
 			response = handle_error_buttons(conf, request.getUri());
@@ -55,8 +53,6 @@ Response*	HandleGET(ServerConfig conf, const Request& request)
 
 	try
 	{
-		if (request.getUri() == "/stopserv")
-			return (handle_stopserv_request(conf));
 		if (!request.getQueryString().empty() && request.getQueryString().find("download=1") != std::string::npos)
 			return (handle_download_request(conf, request.getUri()));
 		if (is_button_error(request))
@@ -82,10 +78,7 @@ Response*	HandlePOST(ServerConfig conf __attribute_maybe_unused__, const Request
 	Response* response = NULL;
 	try
 	{
-		if (request.getUri() == "/stopserv")
-			body = get_file_content(conf.getRoot() + "/" + conf.getStopServer());
-		else
-			body = get_file_content(conf.getRoot() + request.getUri());
+		body = get_file_content(conf.getRoot() + request.getUri());
 		response = new Response(200, "OK");
 		response->setBody(body);
 	}
