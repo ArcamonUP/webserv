@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 13:48:18 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 14:46:28 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,4 +120,30 @@ int find_matching_location_index(ServerConfig& conf, const std::string& uri)
 	}
 	
 	return best_match_index;
+}
+
+bool    check_ip(const std::string &ip)
+{
+    int nb_dot = 0;
+    size_t start = 0;
+
+    for (size_t i = 0; i <= ip.length(); i++)
+    {
+        if (i == ip.length() || ip[i] == '.')
+        {
+            if (i == start)
+                return (false);
+            std::string segment = ip.substr(start, i - start);
+            if (segment.length() > 3 || !is_all_digit(segment))
+                return (false);
+            if (ft_atoi(segment) > 255)
+                return (false);
+            if (ip[i] == '.')
+                nb_dot++;
+            start = i + 1;
+        }
+        else if (ip[i] < '0' || ip[i] > '9')
+            return (false);
+    }
+    return (nb_dot == 3);
 }

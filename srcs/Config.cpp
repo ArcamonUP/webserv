@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 15:32:14 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 14:31:58 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,9 +308,9 @@ static ServerConfig	getServerValue(std::string raw, size_t *pos, ServerConfig re
 	if (*pos >= raw.length())
 		throw(Config::InvalidFileException());
 	
-	if (key == "server_name") {
+	if (key == "host") {
 		value = getToken(raw, pos);
-		result.setServerName(value);
+		result.setHost(value);
 		return (skipLine(raw, pos), result);
 	}
 	if (key == "root") {
@@ -323,11 +323,6 @@ static ServerConfig	getServerValue(std::string raw, size_t *pos, ServerConfig re
 	if (key == "index") {
 		value = getToken(raw, pos);
 		result.setIndex(value);
-		return (skipLine(raw, pos), result);
-	}
-	if (key == "stopserver") {
-		value = getToken(raw, pos);
-		result.setStopServer(value);
 		return (skipLine(raw, pos), result);
 	}
 	if (key == "listen") {
@@ -415,12 +410,9 @@ void Config::validateConfiguration()
 	for (size_t i = 0; i < servers.size(); ++i) {
 		for (size_t j = i + 1; j < servers.size(); ++j) {
 			if (servers[i].getPort() == servers[j].getPort() && 
-				servers[i].getServerName() == servers[j].getServerName()) {
+				servers[i].getHost() == servers[j].getHost()) {
 				throw std::invalid_argument("Duplicate server configuration: same port and server_name");
 			}
-		}
-		if (servers[i].getPort() <= 0) {
-			throw std::invalid_argument("Server must have a valid port defined");
 		}
 		const std::vector<LocationConfig>& locations = servers[i].getLocations();
 		for (size_t k = 0; k < locations.size(); ++k) 

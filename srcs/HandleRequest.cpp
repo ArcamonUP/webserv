@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/12 01:47:18 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/14 14:17:08 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,8 +294,6 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 		}
 		delete (response);
 		connection->reset();
-		if (request.getUri() == "/stopserv")
-			return (STOP_SERVER);
 		return (CLOSE_CONNECTION);
 	}
 	return (SUCCESS);

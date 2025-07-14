@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+         #
+#    By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/24 08:18:44 by kbaridon          #+#    #+#              #
-#    Updated: 2025/07/11 05:33:11 by pmateo           ###   ########.fr        #
+#    Updated: 2025/07/14 12:34:46 by kbaridon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,8 @@ $(SRCDIR)/include/Connection.hpp $(SRCDIR)/include/ConnectionHandler.hpp
 
 SRC = main.cpp Utils.cpp ServerConfig.cpp Config.cpp LocationConfig.cpp Message.cpp Request.cpp \
 		RequestUtils.cpp Response.cpp ResponseStatus.cpp ResponseUtils.cpp WaitRequest.cpp HandleMethod.cpp \
-        InitServers.cpp HandleRequest.cpp AutoIndex.cpp UtilsGet.cpp Traductor.cpp Errors.cpp
+        InitServers.cpp HandleRequest.cpp AutoIndex.cpp UtilsGet.cpp Traductor.cpp Errors.cpp \
+		ConnectionHandler.cpp
 
 OBJ = $(addprefix $(SRCDIR)/, $(SRC:.cpp=.o))
 

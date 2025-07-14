@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WaitRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/11 18:33:23 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/14 14:17:49 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void cleanup_all_fds(int epoll_fd, std::map<int, ServerConfig*> &server_map, \
 }
 
 int	pre_answer(int fd, int epoll_fd, int i, epoll_event *events, ServerConfig* serv, \
-	std::map<int, ServerConfig*> *serv_map, std::map<int, ServerConfig*> *client_map)
+	std::map<int, ServerConfig*> *client_map)
 {
 	int result = handle_request(&events[i], *serv);
 
@@ -92,22 +92,6 @@ int	pre_answer(int fd, int epoll_fd, int i, epoll_event *events, ServerConfig* s
 		(*client_map).erase(fd);
 		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 		close(fd);
-	}
-	else if (result == STOP_SERVER)
-	{
-		connection_handler.remove_connection(fd);
-		(*client_map).erase(fd);
-		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
-		close(fd);
-		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, serv->getSockfd(), NULL);
-		close(serv->getSockfd());
-		(*serv_map).erase(serv->getSockfd());
-		if ((*serv_map).empty())
-		{
-			std::cout << "Tous les serveurs ont ete stoppes. Arret du programme." << std::endl;
-			cleanup_all_fds(epoll_fd, *serv_map, *client_map);
-			return (STOP_SERVER);
-		}
 	}
 	return (SUCCESS);
 }
@@ -140,10 +124,8 @@ int wait_multiple_servers(std::vector<ServerConfig>& servers)
 			curr_fd = events[i].data.fd;
 			if (server_map.find(curr_fd) != server_map.end())
 				accept_new(curr_fd, server_map[curr_fd], &client_map, &ev, epoll_fd);
-			else if (client_map.find(curr_fd) != client_map.end() && \
-				pre_answer(curr_fd, epoll_fd, i, events, client_map[curr_fd], \
-				&server_map, &client_map) == STOP_SERVER)
-				return (SUCCESS);
+			else if (client_map.find(curr_fd) != client_map.end())
+				pre_answer(curr_fd, epoll_fd, i, events, client_map[curr_fd], &client_map);
 		}
 	}
 	cleanup_all_fds(epoll_fd, server_map, client_map);
