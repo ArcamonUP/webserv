@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 16:53:24 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/14 14:31:58 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,12 +260,16 @@ static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationCon
 			loc.setAutoIndex(true);
 		return (skipLine(raw, pos), loc);
 	}
+	if (key == "max_size_body") {
+		loc.setMaxSizeBody(ft_convert(getToken(raw, pos)));
+		return (skipLine(raw, pos), loc);
+	}
 	if (key == "cgi")
 		return (getCgi(raw, pos, loc));
 	if (key == "methods")
 		return(getMethods(raw, pos, loc));
 	if (key == "upload")
-		return (getUpload(raw, pos, loc));
+		return (getUpload(raw, pos, loc));		
 	std::cerr << "webserv: unknow directive '" << key << "'" << " inside a location block." << std::endl; 
 	throw(Config::InvalidFileException());
 }
@@ -304,9 +308,9 @@ static ServerConfig	getServerValue(std::string raw, size_t *pos, ServerConfig re
 	if (*pos >= raw.length())
 		throw(Config::InvalidFileException());
 	
-	if (key == "server_name") {
+	if (key == "host") {
 		value = getToken(raw, pos);
-		result.setServerName(value);
+		result.setHost(value);
 		return (skipLine(raw, pos), result);
 	}
 	if (key == "root") {
@@ -319,11 +323,6 @@ static ServerConfig	getServerValue(std::string raw, size_t *pos, ServerConfig re
 	if (key == "index") {
 		value = getToken(raw, pos);
 		result.setIndex(value);
-		return (skipLine(raw, pos), result);
-	}
-	if (key == "stopserver") {
-		value = getToken(raw, pos);
-		result.setStopServer(value);
 		return (skipLine(raw, pos), result);
 	}
 	if (key == "listen") {
@@ -411,12 +410,9 @@ void Config::validateConfiguration()
 	for (size_t i = 0; i < servers.size(); ++i) {
 		for (size_t j = i + 1; j < servers.size(); ++j) {
 			if (servers[i].getPort() == servers[j].getPort() && 
-				servers[i].getServerName() == servers[j].getServerName()) {
+				servers[i].getHost() == servers[j].getHost()) {
 				throw std::invalid_argument("Duplicate server configuration: same port and server_name");
 			}
-		}
-		if (servers[i].getPort() <= 0) {
-			throw std::invalid_argument("Server must have a valid port defined");
 		}
 		const std::vector<LocationConfig>& locations = servers[i].getLocations();
 		for (size_t k = 0; k < locations.size(); ++k) 

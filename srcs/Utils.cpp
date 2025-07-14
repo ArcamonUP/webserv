@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/09 17:17:07 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 14:46:28 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,54 +122,30 @@ int find_matching_location_index(ServerConfig& conf, const std::string& uri)
 	return best_match_index;
 }
 
-bool has_custom_error_page(ServerConfig& conf, int error_code)
+bool    check_ip(const std::string &ip)
 {
-	const std::map<int, std::string>& error_pages = conf.getErrorPages();
-	return error_pages.find(error_code) != error_pages.end();
-}
+    int nb_dot = 0;
+    size_t start = 0;
 
-std::string get_default_error_page(int error_code)
-{
-	std::ostringstream html;
-	html << "<!DOCTYPE html><html><head><title>Error " << error_code << "</title>";
-	html << "<style>body{font-family:'Segoe UI',sans-serif;margin:0;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center}";
-	html << ".container{background:white;padding:40px;border-radius:15px;box-shadow:0 20px 40px rgba(0,0,0,0.1);text-align:center;max-width:500px}";
-	html << "h1{color:#e74c3c;margin-bottom:20px}p{color:#666;margin-bottom:30px}";
-	html << ".btn{background:linear-gradient(45deg,#667eea,#764ba2);color:white;padding:12px 24px;border-radius:25px;text-decoration:none;display:inline-block}</style></head>";
-	html << "<body><div class=\"container\"><h1>Error " << error_code << "</h1>";
-	
-	switch (error_code) {
-		case 400: html << "<p>Invalid request.</p>"; break;
-		case 403: html << "<p>Resource access is forbidden.</p>"; break;
-		case 404: html << "<p>Resource not found.</p>"; break;
-		case 405: html << "<p>Unauthorized method</p>"; break;
-		case 500: html << "<p>Server encountered an intern error.</p>"; break;
-		case 502: html << "<p>Bad Gateway.</p>"; break;
-		case 503: html << "<p>Service is unavailable.</p>"; break;
-		case 504: html << "<p>Timeout gateway.</p>"; break;
-		default: html << "<p>An unknown error occured.</p>"; break;
-	}
-	return html.str();
-}
-
-std::string get_custom_error_page(ServerConfig& conf, int error_code)
-{
-	const std::map<int, std::string>& error_pages = conf.getErrorPages();
-	std::map<int, std::string>::const_iterator it = error_pages.find(error_code);
-	
-	if (it != error_pages.end()) {
-		std::string error_page_path = conf.getRoot() + it->second;
-		try {
-			return get_file_content(error_page_path);
-		} catch (const Response::ResourceNotFoundException&) {
-			std::cerr << "Error: Custom error page not found: " << error_page_path << std::endl;
-		} catch (const Response::InternalServerErrorException&) {
-			std::cerr << "Error: Cannot read custom error page: " << error_page_path << std::endl;
-		} catch (const std::exception& e) {
-			std::cerr << "Error reading custom error page: " << e.what() << std::endl;
-		}
-	}
-	return get_default_error_page(error_code);
+    for (size_t i = 0; i <= ip.length(); i++)
+    {
+        if (i == ip.length() || ip[i] == '.')
+        {
+            if (i == start)
+                return (false);
+            std::string segment = ip.substr(start, i - start);
+            if (segment.length() > 3 || !is_all_digit(segment))
+                return (false);
+            if (ft_atoi(segment) > 255)
+                return (false);
+            if (ip[i] == '.')
+                nb_dot++;
+            start = i + 1;
+        }
+        else if (ip[i] < '0' || ip[i] > '9')
+            return (false);
+    }
+    return (nb_dot == 3);
 }
 
 void free_env(char **envp)

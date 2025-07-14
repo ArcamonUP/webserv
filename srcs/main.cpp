@@ -6,7 +6,7 @@
 /*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:31:38 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/04 18:17:47 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/11 18:29:20 by pmateo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	main(int ac, char **av)
     try {conf = init(ac, av);}
     catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
-        return (1);
+        return (FAILURE);
     }
     initMethodMap(), Response::initBuilders(), Response::initContentTypes();
     std::vector<ServerConfig> servers = conf.getServer();
@@ -56,7 +56,7 @@ int	main(int ac, char **av)
                 if (servers[j].getSockfd() != -1)
                     close(servers[j].getSockfd());
             }
-            return (1);
+            return (FAILURE);
         }
     }
     return (start_server(servers));

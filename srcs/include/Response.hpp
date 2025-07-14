@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 18:14:28 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/10 14:32:08 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,13 @@ class Response : public Message
 		void				setRessourcePath(const std::string requested_ressource_path);
 		void				setContentLength(const std::string length);
 		void				setContentType(const std::string type);
-		void				setDate(); // Using getDate()
+		void				setDate();
 		void				setLocation(const std::string location);
 		
 		int					getStatusCode() const;
 		std::string			getStatusName() const;
 		std::string			getRessourcePath() const;
-		std::string 		getDate() const; //Get UTC by strftime()
+		std::string 		getDate() const;
 		std::string			getExtension(const std::string& Uri) const; 
 		const std::string	getSerializedHeaders() const;
 		const std::string	getSerializedResponse();
@@ -55,32 +55,32 @@ class Response : public Message
 		static	void		initBuilders();
 		static	void		initContentTypes();
 
-		//BUILDERS STATUS FUNCTIONS
-		//2xx : SUCCESS RESPONSE
-		void	Ok();						//200
-		void	Created();					//201
-		void	Accepted();					//202
+		/*BUILDERS STATUS FUNCTIONS
+		2xx : SUCCESS RESPONSE*/
+		void	Ok();						/*200*/
+		void	Created();					/*201*/
+		void	Accepted();					/*202*/
 		
-		//3xx : REDIRECTION RESPONSE
-		void	MovedPermanently(); 		//301
+		/*3xx : REDIRECTION RESPONSE*/
+		void	MovedPermanently(); 		/*301*/
 		
-		//4xx : CLIENT ERROR RESPONSE
-		void	BadRequest();				//400
-		void	Forbidden();				//403
-		void	NotFound();					//404
-		void	MethodNotAllowed();			//405
-		void	LengthRequired();			//411
-		void	UriTooLong();				//414
-		void	ImATeapot();				//418
-		void	TooManyRequest();			//429
+		/*4xx : CLIENT ERROR RESPONSE*/
+		void	BadRequest();				/*400*/
+		void	Forbidden();				/*403*/
+		void	NotFound();					/*404*/
+		void	MethodNotAllowed();			/*405*/
+		void	LengthRequired();			/*411*/
+		void	UriTooLong();				/*414*/
+		void	ImATeapot();				/*418*/
+		void	TooManyRequest();			/*429*/
 
-		//5xx : SERVER ERROR RESPONSE
-		void	InternalServerError();		//500
-		void	NotImplemented();			//501
-		void	BadGateway();				//502
-		void	ServiceUnavailable();		//503
-		void	GatewayTimeout();			//504
-		void	HttpVersionNotSupported();	//505
+		/*5xx : SERVER ERROR RESPONSE*/
+		void	InternalServerError();		/*500*/
+		void	NotImplemented();			/*501*/
+		void	BadGateway();				/*502*/
+		void	ServiceUnavailable();		/*503*/
+		void	GatewayTimeout();			/*504*/
+		void	HttpVersionNotSupported();	/*505*/
 
 		class ResourceForbiddenException : public std::exception {};
 		class ResourceNotFoundException : public std::exception {};

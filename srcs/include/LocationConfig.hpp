@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:27 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/01 11:32:17 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:26:12 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class LocationConfig
 		std::string					cgi_path;
 		bool						upload_status;
 		std::string					upload_path;
+		size_t						max_size_body;
 		std::vector<std::string>	allowed_methods;
 
 	public:
@@ -41,6 +42,7 @@ class LocationConfig
 		void	setCgiPath(const std::string& cgi_p);
 		void	setUploadStatus(bool st);
 		void	setUploadPath(const std::string& up);
+		void	setMaxSizeBody(size_t max);
 		void	setAllowedMethods(const std::vector<std::string>& m);
 
 		const std::string&				getPath() const;
@@ -52,6 +54,7 @@ class LocationConfig
 		const std::string&				getCgiPath() const;
 		bool							getUploadStatus() const;
 		const std::string&				getUploadPath() const;
+		size_t							getMaxSizeBody() const;
 		const std::vector<std::string>&	getAllowedMethods() const;
 };
 

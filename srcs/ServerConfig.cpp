@@ -6,16 +6,23 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:14:49 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/03 15:32:25 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/14 14:43:18 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ServerConfig.hpp"
+#include "WebServ.hpp"
 #include <cstring>
 
-ServerConfig::ServerConfig() : port(80), server_name("localhost"), max_size_body(1048576), root("./"), index("index.html"), error_pages(), locations(), sockfd(-1)
+ServerConfig::ServerConfig() : host("127.0.0.1"), port(80), max_size_body(1048576), root("./"), index("index.html"), error_pages(), locations(), sockfd(-1)
 {
     std::memset(&sockaddr, 0, sizeof(sockaddr));
+}
+
+void ServerConfig::setHost(const std::string &ip)
+{
+    if (!check_ip(ip))
+        throw std::invalid_argument("Invalid IP address.");
+    this->host = ip;
 }
 
 void ServerConfig::setPort(int p)
@@ -23,11 +30,6 @@ void ServerConfig::setPort(int p)
     if (p <= 0 || p > 65535)
         throw std::invalid_argument("Invalid port number: must be between 1 and 65535");
     this->port = p;
-}
-
-void ServerConfig::setServerName(const std::string &n)
-{
-    this->server_name = n;
 }
 
 void ServerConfig::setMaxSizeBody(size_t max)
@@ -45,11 +47,6 @@ void ServerConfig::setRoot(const std::string &r)
 void ServerConfig::setIndex(const std::string &i)
 {
     this->index = i;
-}
-
-void ServerConfig::setStopServer(const std::string &i)
-{
-    this->stop_server = i;
 }
 
 void ServerConfig::setErrorPages(const std::map<int, std::string> &e)
@@ -82,14 +79,14 @@ void ServerConfig::setSockaddr(const sockaddr_in& addr)
     this->sockaddr = addr;
 }
 
+const std::string &ServerConfig::getHost() const
+{
+    return (this->host);
+}
+
 int ServerConfig::getPort() const
 {
     return (this->port);
-}
-
-const std::string &ServerConfig::getServerName() const
-{
-    return (this->server_name);
 }
 
 size_t ServerConfig::getMaxSizeBody() const
@@ -105,11 +102,6 @@ const std::string &ServerConfig::getRoot() const
 const std::string &ServerConfig::getIndex() const
 {
     return (this->index);
-}
-
-const std::string &ServerConfig::getStopServer() const
-{
-    return (this->stop_server);
 }
 
 const std::map<int, std::string> &ServerConfig::getErrorPages() const
@@ -140,10 +132,10 @@ std::ostream &operator<<(std::ostream &stream, const ServerConfig &src)
         stream << "Port: [NOT SET]" << std::endl;
     }
     
-    if (!src.getServerName().empty()) {
-        stream << "Server Name: " << src.getServerName() << std::endl;
+    if (!src.getHost().empty()) {
+        stream << "Host : " << src.getHost() << std::endl;
     } else {
-        stream << "Server Name: [NOT SET]" << std::endl;
+        stream << "Host : [NOT SET]" << std::endl;
     }
     
     if (!src.getRoot().empty()) {

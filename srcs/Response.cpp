@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 19:02:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 18:14:18 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/10 14:50:54 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,6 @@ const std::string	Response::getSerializedHeaders() const
 //Need to check if adding header date here is ok
 const std::string	Response::getSerializedResponse()
 {
-	std::cout << this->_http_version << std::endl;
-	std::cout << this->_status_code << std::endl;
 	std::string response;
 	addHeader("date", getDate());
 	response += "HTTP/";
