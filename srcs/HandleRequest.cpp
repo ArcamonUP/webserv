@@ -6,30 +6,14 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 15:28:52 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/15 13:20:29 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
+#include <sys/stat.h>
 
 std::map<std::string, MethodHandler> method_map;
-
-// std::string get_request(int connection)
-// {
-// 	char buffer[4096];
-// 	std::string result;
-
-// 	while (true)
-// 	{
-// 		ssize_t bytesRead = recv(connection, buffer, sizeof(buffer), 0);
-// 		if (bytesRead <= 0)
-// 			break;
-// 		result.append(buffer, bytesRead);
-// 		if (result.find("\r\n\r\n") != std::string::npos)
-// 			break;
-// 	}
-// 	return result;
-// }
 
 Response*	handle_action(ServerConfig& conf, Request& request)
 {
@@ -52,6 +36,32 @@ Response*	handle_action(ServerConfig& conf, Request& request)
 	}
 }
 
+int	handle_redir(ServerConfig& conf, Connection* connection, Request request, int client_fd)
+{
+	Response	*response;
+	std::string	serialized_response;
+
+	if (request.getUri().length() > 1 && request.getUri()[request.getUri().length() - 1] == '/')
+	{
+		std::string redirect_uri = request.getUri().substr(0, request.getUri().length() - 1);
+		
+		struct stat file_stat;
+		std::string file_path = conf.getRoot() + redirect_uri.substr(1);
+		if (stat(file_path.c_str(), &file_stat) == 0 && S_ISREG(file_stat.st_mode))
+		{
+			response = new Response(301, "MOVED PERMANENTLY");
+			response->setLocation(redirect_uri);
+			serialized_response = response->getSerializedResponse();
+			send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+			connection->reset();
+			std::cout << "\033[36mRedirection 301 sent to client " << client_fd - 5 << " from " << request.getUri() << " to " << redirect_uri << ".\033[0m" << std::endl;
+			std::cout << "\033[33mConnection with client " << client_fd - 5 << " has been closed.\033[0m" << std::endl;
+			return (delete (response), true);
+		}
+	}
+	return (false);
+}
+
 int	handle_request(epoll_event *events, ServerConfig& conf)
 {
 	int client_fd = events->data.fd;
@@ -61,26 +71,27 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 	Connection * connection = connection_handler.get_connection(client_fd);
 	if (!connection)
 		return (ERROR);
-	std::string serialized_request = connection->get_request();
-	Request	request(serialized_request);
+	Request	request(connection->get_request());
 	if (request.getError())
 	{
 		connection->reset();
 		return (ERROR);
 	}
-
-	Response*	response;
-	std::string serialized_response;
-	if (is_cgi(conf, request))
+	
+	if (handle_redir(conf, connection, request, client_fd))
+		return (CLOSE_CONNECTION);
+	else if (is_cgi(conf, request))
 	{
 		connection->reset();
 		if (cgi(request, client_fd, conf) != 0)
 			return (ERROR);
+		std::cout << "\033[34mA CGI response has been sent to client " << client_fd - 5 << ".\033[0m" << std::endl;
+		return (SUCCESS);
 	}
 	else 
 	{
-		response = handle_action(conf, request);
-		serialized_response = response->getSerializedResponse();
+		Response *response = handle_action(conf, request);
+		std::string serialized_response = response->getSerializedResponse();
 		send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
 		connection->reset();
 		std::cout << "\033[35mA response has been sent to client " << client_fd - 5 << ".\033[0m" << std::endl;
@@ -89,6 +100,4 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 		std::cout << "\033[33mConnection with client " << client_fd - 5 << " has been closed.\033[0m" << std::endl;
 		return (delete (response), CLOSE_CONNECTION);
 	}
-	std::cout << "\033[34mA CGI response has been sent to client " << client_fd - 5 << ".\033[0m" << std::endl;
-	return (SUCCESS);
 }
