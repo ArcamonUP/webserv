@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/15 12:23:25 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/15 13:20:29 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ int	handle_redir(ServerConfig& conf, Connection* connection, Request request, in
 		
 		struct stat file_stat;
 		std::string file_path = conf.getRoot() + redirect_uri.substr(1);
-		std::cout << file_path << std::endl;
 		if (stat(file_path.c_str(), &file_stat) == 0 && S_ISREG(file_stat.st_mode))
 		{
 			response = new Response(301, "MOVED PERMANENTLY");
