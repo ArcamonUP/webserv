@@ -1,0 +1,21 @@
+_id: req_3c5a384d956b4804a277385bac6bfd4b
+type: Request
+parentId: wrk_3e59709945424cd5b6474da8d6967da1
+modified: 1752852223213
+created: 1752852190605
+url: http://localhost:8080/
+name: DELETE ROOT
+description: ""
+method: DELETE
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1752852190605
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

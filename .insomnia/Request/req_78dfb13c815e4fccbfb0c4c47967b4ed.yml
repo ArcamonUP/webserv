@@ -1,0 +1,21 @@
+_id: req_78dfb13c815e4fccbfb0c4c47967b4ed
+type: Request
+parentId: wrk_3e59709945424cd5b6474da8d6967da1
+modified: 1752852271694
+created: 1752852228710
+url: http://localhost:8080/doesntexist.xml
+name: DELETE NON EXISTANT
+description: ""
+method: DELETE
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1752852228710
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

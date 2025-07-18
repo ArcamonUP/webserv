@@ -1,0 +1,23 @@
+_id: req_d8b2211e1fb34c45955586647d2e58c0
+type: Request
+parentId: wrk_3e59709945424cd5b6474da8d6967da1
+modified: 1752853409800
+created: 1752853371478
+url: http://localhost:8080/cgi/method.py
+name: GET SCRIPT.PY EMPTY QUERY
+description: ""
+method: GET
+body: {}
+parameters:
+  - name: empty
+    value: ""
+headers: []
+authentication: {}
+metaSortKey: -1752851925170
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,10 @@
+_id: ut_57bb094bb0824e26b2defb624eff5ad1
+type: UnitTest
+parentId: uts_861e04538e724304bee1a8d574b9a027
+modified: 1752852602995
+created: 1752852582625
+requestId: req_3c5a384d956b4804a277385bac6bfd4b
+name: DELETE ROOT
+code: |-
+  const response1 = await insomnia.send();
+  expect(response1.status).to.equal(200);

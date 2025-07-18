@@ -1,0 +1,21 @@
+_id: req_748efc0e84ad4f83a031a0c13ff516dd
+type: Request
+parentId: wrk_3e59709945424cd5b6474da8d6967da1
+modified: 1752849216731
+created: 1752849091127
+url: http://localhost:8080/rfc2616.pdf
+name: GET BIG PDF (RFC2616)
+description: ""
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1752849091127
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,21 @@
+_id: req_570da38f42934152b609f7b93f5e316d
+type: Request
+parentId: wrk_3e59709945424cd5b6474da8d6967da1
+modified: 1752852157654
+created: 1752852027695
+url: http://localhost:8080/uploads/PmergeMe.hpp
+name: DELETE PMERGE_ME.HPP
+description: ""
+method: DELETE
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1752852027695
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

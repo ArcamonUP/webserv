@@ -1,0 +1,10 @@
+_id: ut_d9da22e58b434d0fa6eea04eba7214e0
+type: UnitTest
+parentId: uts_861e04538e724304bee1a8d574b9a027
+modified: 1752849290921
+created: 1752849289207
+requestId: req_1e7b117c376145b387f4dc9527c18bc1
+name: GET BIGFILE PNG
+code: |-
+  const response1 = await insomnia.send();
+  expect(response1.status).to.equal(200);

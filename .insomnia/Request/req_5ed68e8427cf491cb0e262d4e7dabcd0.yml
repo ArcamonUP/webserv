@@ -1,0 +1,21 @@
+_id: req_5ed68e8427cf491cb0e262d4e7dabcd0
+type: Request
+parentId: wrk_3e59709945424cd5b6474da8d6967da1
+modified: 1752852704261
+created: 1752852649220
+url: http://localhost:8080/autoindex/
+name: GET TRAILINGSLASH ON DIR
+description: ""
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1752850454593.5
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

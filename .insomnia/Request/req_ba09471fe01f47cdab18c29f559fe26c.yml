@@ -1,0 +1,26 @@
+_id: req_ba09471fe01f47cdab18c29f559fe26c
+type: Request
+parentId: wrk_3e59709945424cd5b6474da8d6967da1
+modified: 1752851612187
+created: 1752851244402
+url: http://localhost:8080/cgi/upload.py
+name: POST UPLOAD FILE
+description: ""
+method: POST
+body:
+  mimeType: application/octet-stream
+  fileName: /home/pmateo/Downloads/pixelart-textures-n-sprites-pack-v10/Pixelart
+    Textures n Sprites Pack v10/PNG/_skydomes/skydome5.png
+parameters: []
+headers:
+  - name: Content-Type
+    value: image/png
+authentication: {}
+metaSortKey: -1752851244402
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

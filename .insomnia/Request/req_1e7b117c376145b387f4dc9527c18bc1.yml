@@ -1,0 +1,21 @@
+_id: req_1e7b117c376145b387f4dc9527c18bc1
+type: Request
+parentId: wrk_3e59709945424cd5b6474da8d6967da1
+modified: 1752849199251
+created: 1752847875383
+url: http://localhost:8080/images/wallpaper4k.jpg
+name: GET BIGFILE (WALLPAPER4K)
+description: ""
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1752847875383
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
