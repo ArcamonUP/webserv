@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/18 11:38:25 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:24:06 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,8 @@ Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, const Reque
 		std::string path, dir;
 		std::size_t	pos;
 		Response *response = NULL;
-
-
 		path = conf.getRoot() + ft_traductor(request.getUri());
+		
 		try
 		{
 			if (access(path.c_str(), F_OK) != 0)

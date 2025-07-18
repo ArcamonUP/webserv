@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:25:27 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 15:26:12 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 12:48:38 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ class LocationConfig
 		std::string					root;
 		std::string					index;
 		std::string					redirect;
+		int							redirect_code;
 		bool						autoindex;
 		std::string					cgi_extension;
 		std::string					cgi_path;
@@ -37,6 +38,7 @@ class LocationConfig
 		void	setRoot(const std::string& root);
 		void	setIndex(const std::string& i);
 		void	setRedirect(const std::string& redir);
+		void	setRedirectCode(int code);
 		void	setAutoIndex(const bool autoi);
 		void	setCgiExtension(const std::string& cgi_e);
 		void	setCgiPath(const std::string& cgi_p);
@@ -49,6 +51,7 @@ class LocationConfig
 		const std::string&				getRoot() const;
 		const std::string&				getIndex() const;
 		const std::string&				getRedirect() const;
+		int								getRedirectCode() const;
 		bool							getAutoIndex() const;
 		const std::string&				getCgiExtension() const;
 		const std::string&				getCgiPath() const;

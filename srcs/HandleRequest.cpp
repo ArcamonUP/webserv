@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/15 13:20:29 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 13:09:57 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,9 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 		return (ERROR);
 	}
 	
+	int special_case = handle_location_block(conf, connection, &request, client_fd);
+	if (special_case != -1)
+		return (special_case);
 	if (handle_redir(conf, connection, request, client_fd))
 		return (CLOSE_CONNECTION);
 	else if (is_cgi(conf, request))

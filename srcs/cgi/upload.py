@@ -28,7 +28,7 @@ def get_upload_status_and_path():
 
 def get_upload_path():
     status, path = get_upload_status_and_path()
-    return path if path else "./srcs/www/uploads/"
+    return path if path else "./srcs/www/upload/"
 
 
 def create_response(title, message, color="#667eea"):
@@ -77,7 +77,7 @@ def create_response(title, message, color="#667eea"):
         {message}
         <div>
             <a href="/" class="btn">🏠 Accueil</a>
-            <a href="/list.py" class="btn">📂 Fichiers</a>
+            <a href="/list" class="btn">📂 Fichiers</a>
         </div>
     </div>
 </body>

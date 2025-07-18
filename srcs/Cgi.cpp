@@ -1,25 +1,15 @@
 #include "WebServ.hpp"
 
-bool    is_cgi(ServerConfig& conf, Request& req)
+bool is_cgi(ServerConfig &conf, Request &req)
 {
-    std::string uri = req.getUri();
-    size_t pos = uri.find('?');
-    if (pos != std::string::npos)
-        uri.resize(pos);
-
-    const std::vector<LocationConfig>& locations = conf.getLocations();
-    for (size_t i = 0; i < locations.size(); i++) {
-        const std::string& cgi_path = locations[i].getCgiPath();
-        if (!cgi_path.empty()) {
-            size_t cgi_pos = cgi_path.find_last_of("/");
-            if (cgi_pos != std::string::npos) {
-                std::string script_name = cgi_path.substr(cgi_pos);
-                if (uri == script_name)
-                    return true;
-            }
-        }
-    }
-    return false;
+	std::string uri = req.getUri();
+	size_t pos = uri.find('?');
+	if (pos != std::string::npos)
+		uri.resize(pos);
+	int l_index = find_matching_location_index(conf, uri);
+	if (l_index == -1 || conf.getLocations()[l_index].getCgiPath().empty())
+		return (false);
+	return (true);
 }
 
 char **init_cgi(Request &req)
@@ -172,7 +162,15 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 	size_t pos = uri.find('?');
 	if (pos != std::string::npos) 
 		uri.resize(pos);
-	
+	int	l_index = find_matching_location_index(conf, uri);
+	if (l_index == -1) {
+		Response response(500, "Internal Server Error");
+		std::string error_response = response.getSerializedResponse();
+		send(client_fd, error_response.c_str(), error_response.size(), 0);
+		return 1;
+	}
+	if (req.getMethod() != "DELETE")
+		uri += conf.getLocations()[l_index].getCgiExtension();
 	std::string script_path = "srcs/cgi" + uri;
 	char **envp = init_cgi(req);
 	char *python_path = (char *)"/usr/bin/python3";

@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:57:23 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/10 14:32:08 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 13:14:57 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ class Response : public Message
 		void	NotFound();					/*404*/
 		void	MethodNotAllowed();			/*405*/
 		void	LengthRequired();			/*411*/
+		void	PayLoadTooLarge();			/*413*/
 		void	UriTooLong();				/*414*/
 		void	ImATeapot();				/*418*/
 		void	TooManyRequest();			/*429*/

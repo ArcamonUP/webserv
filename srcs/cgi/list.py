@@ -15,9 +15,9 @@ def get_upload_path():
         with open("./default.conf", 'r') as f:
             content = f.read()
         match = re.search(r'upload\s+on\s+([^;]+);', content)
-        return match.group(1).strip() if match else "./srcs/www/uploads/"
+        return match.group(1).strip() if match else "./srcs/www/upload/"
     except:
-        return "./srcs/www/uploads/"
+        return "./srcs/www/upload/"
 
 def format_size(size):
     for unit in ['B', 'KB', 'MB', 'GB']:
@@ -94,7 +94,7 @@ if os.path.exists(upload_dir):
             <strong>📄 {safe_name}</strong><br>
             Taille: {size}
             <div style="margin-top: 10px;">
-                <a href="/uploads/{safe_name}?download=1" class="btn">⬇️ Télécharger</a>
+                <a href="/upload/{safe_name}?download=1" class="btn">⬇️ Télécharger</a>
                 <button class="btn" onclick="deleteFile('{encoded_name}')">🗑 Supprimer</button>
             </div>
         </div>""")
@@ -115,7 +115,7 @@ print("""
         function deleteFile(filename) {
             if (!confirm("❌ Supprimer ce fichier ?")) return;
 
-            fetch("/uploads/" + encodeURIComponent(filename), {
+            fetch("/upload/" + encodeURIComponent(filename), {
                 method: "DELETE"
             })
             .then(res => {

@@ -13,7 +13,7 @@
 #include "LocationConfig.hpp"
 
 LocationConfig::LocationConfig() : path(""), root(""), index("index.html"), \
-redirect(""), autoindex(false), cgi_extension(""), cgi_path(""), \
+redirect(""), redirect_code(0), autoindex(false), cgi_extension(""), cgi_path(""), \
 upload_status(false), upload_path(""), max_size_body(1048576), allowed_methods()
 {
 	allowed_methods.push_back("GET");
@@ -41,6 +41,10 @@ void	LocationConfig::setIndex(const std::string &i) {
 
 void	LocationConfig::setRedirect(const std::string &redir) {
 	this->redirect = redir;
+}
+
+void	LocationConfig::setRedirectCode(int code) {
+	this->redirect_code = code;
 }
 
 void	LocationConfig::setAutoIndex(const bool value) {
@@ -88,6 +92,10 @@ const std::string	&LocationConfig::getIndex() const {
 
 const std::string	&LocationConfig::getRedirect() const {
 	return (this->redirect);
+}
+
+int	LocationConfig::getRedirectCode() const {
+	return (this->redirect_code);
 }
 
 bool	LocationConfig::getAutoIndex() const {
@@ -156,7 +164,7 @@ std::ostream &operator<<(std::ostream &stream, const LocationConfig &src) {
         stream << "    CGI: [NOT SET]" << std::endl;
     }
     if (!src.getRedirect().empty()) {
-        stream << "    Redirect: " << src.getRedirect() << std::endl;
+        stream << "    Redirect: " << src.getRedirectCode() << " " << src.getRedirect() << std::endl;
     } else {
         stream << "    Redirect: [NOT SET]" << std::endl;
     }

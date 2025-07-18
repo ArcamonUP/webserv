@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:37:59 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/18 11:43:25 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:56:19 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,16 @@ void	Response::LengthRequired()
 {
 	this->_status_code = 411;
 	this->_status_name = "Length Required";
+	addHeader("server", "42WebServ/1.0");
+	addHeader("connection", "close");
+	addHeader("content-type", "text/html ; charset=utf-8");
+	addHeader("content-length", toString(getBody().length()));
+}
+
+void	Response::PayLoadTooLarge()
+{
+	this->_status_code = 413;
+	this->_status_name = "Payload Too Large";
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
 	addHeader("content-type", "text/html ; charset=utf-8");

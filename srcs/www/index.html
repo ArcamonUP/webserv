@@ -107,7 +107,7 @@
     <p style="text-align: center; color: #666;">Si tu vois cette page, c'est que ton serveur fonctionne !</p>
 
     <h2>📝 Test CGI (POST)</h2>
-    <form action="/method.py" method="POST">
+    <form action="/form" method="POST">
       <input type="text" name="prenom" placeholder="Prénom" required>
       <input type="text" name="ville" placeholder="Ville" required>
       <input type="submit" value="Envoyer">
@@ -115,11 +115,11 @@
 
     <h2>🔎 Test CGI (GET)</h2>
     <form>
-      <a href="/method.py" class="btn">Test GET</a>
+      <a href="/form" class="btn">Test GET</a>
     </form>
 
     <h2>📤 Upload de fichier</h2>
-    <form action="/upload.py" method="POST" enctype="multipart/form-data">
+    <form action="/upload" method="POST" enctype="multipart/form-data">
       <input type="file" name="file_upload" required>
       <input type="submit" value="Uploader">
     </form>
@@ -137,6 +137,7 @@
       <a href="/error404" class="btn">Error 404</a>
       <a href="/error405" class="btn">Error 405</a>
       <a href="/error411" class="btn">Error 411</a>
+      <a href="/error413" class="btn">Error 413</a>
       <a href="/error414" class="btn">Error 414</a>
       <a href="/error418" class="btn">Error 418</a>
       <a href="/error429" class="btn">Error 429</a>
@@ -148,7 +149,7 @@
       <a href="/error505" class="btn">Error 505</a>
     </form>
     <div class="links">
-      <p>📁 <a href="/list.py">Voir les fichiers uploadés</a></p>
+      <p>📁 <a href="/list">Voir les fichiers uploadés</a></p>
     </div>
   </div>
   

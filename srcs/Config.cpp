@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/18 11:34:03 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 16:30:33 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,6 +231,37 @@ static LocationConfig	getUpload(const std::string& raw, size_t *pos, LocationCon
 	return (loc);
 }
 
+static LocationConfig	getReturn(const std::string& raw, size_t *pos, LocationConfig loc)
+{
+	std::string redirect_code_str;
+	std::string	redirect_url;
+
+	skipSpacesComments(raw, pos);
+	if (*pos >= raw.length())
+		throw(Config::InvalidFileException());
+	
+	redirect_code_str = getToken(raw, pos);
+	if (redirect_code_str.empty() || redirect_code_str == ";")
+		throw std::invalid_argument("Missing redirect code in return directive.");
+	
+	int redirect_code = ft_atoi(redirect_code_str);
+	if (redirect_code < 300 || redirect_code > 399)
+		throw std::invalid_argument("Invalid redirect code in return directive: " + redirect_code_str);
+	
+	skipSpacesComments(raw, pos);
+	if (*pos >= raw.length())
+		throw(Config::InvalidFileException());
+	
+	redirect_url = getToken(raw, pos);
+	if (redirect_url.empty() || redirect_url == ";")
+		throw std::invalid_argument("Missing redirect URL in return directive.");
+	
+	loc.setRedirectCode(redirect_code);
+	loc.setRedirect(redirect_url);
+	skipLine(raw, pos);
+	return (loc);
+}
+
 static LocationConfig	getLocationValue(const std::string& raw, size_t *pos, LocationConfig loc, const std::string& key)
 {
 	std::string	value;
@@ -250,11 +281,8 @@ static LocationConfig	getLocationValue(const std::string& raw, size_t *pos, Loca
 		loc.setIndex(value);
 		return (skipLine(raw, pos), loc);
 	}
-	if (key == "redirect") {
-		value = getToken(raw, pos);
-		loc.setRedirect(value);
-		return (skipLine(raw, pos), loc);
-	}
+	if (key == "return")
+		return (getReturn(raw, pos, loc));
 	if (key == "autoindex") {
 		if (getToken(raw, pos) == "on")
 			loc.setAutoIndex(true);
@@ -286,6 +314,8 @@ ServerConfig	getLocationBlock(const std::string& raw, size_t *pos, ServerConfig 
 		throw (Config::InvalidFileException());
 	(*pos)++;
 	LocationConfig location;
+	if (path[path.length() - 1] == '/' && path.length() > 1)
+		path.resize(path.length() - 1);
 	location.setPath(path);
 	while (*pos < raw.length())
 	{
