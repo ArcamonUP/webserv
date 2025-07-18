@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 12:05:33 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/18 14:14:31 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 17:34:14 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,10 @@ bool	handle_authorized_methods(ServerConfig& conf, Request *request, Connection*
 	std::vector<std::string>	allow = conf.getLocations()[l_index].getAllowedMethods();
 	std::string					used_method = request->getMethod();
 
-	std::cout << "Method:" << used_method << std::endl;
 	if (allow.empty())
 		return (false);
 	for (size_t i = 0; i < allow.size(); ++i)
 	{
-		std::cout << "Test:" << allow[i] << ", diff:" << used_method.compare(allow[i]) << std::endl;
 		if (allow[i] == used_method)
 			return (false);
 	}
