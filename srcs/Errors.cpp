@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 13:47:11 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 13:49:06 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:36:37 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ std::string get_default_error_page(int error_code)
 	html << "<body><div class=\"container\"><h1>Error " << error_code << "</h1>";
 	
 	switch (error_code) {
-		case 301: html << "<p> Moved Permanently.</p>"; break;
+		case 301: html << "<p>Moved Permanently.</p>"; break;
 		case 400: html << "<p>Invalid request.</p>"; break;
 		case 403: html << "<p>Resource access is forbidden.</p>"; break;
 		case 404: html << "<p>Resource not found.</p>"; break;

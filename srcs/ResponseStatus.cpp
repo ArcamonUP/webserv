@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:37:59 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/10 14:33:53 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:43:25 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,6 @@ void	Response::BadRequest()
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
 	addHeader("content-type", "text/html ; charset=utf-8");
-	std::string error = "Bad request";
-	std::string message = "Request body could not be read properly.";
 	addHeader("content-length", toString(getBody().length()));
 }
 
@@ -80,8 +78,6 @@ void	Response::Forbidden()
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
 	addHeader("content-type", "text/html ; charset=utf-8");
-	std::string error = "InsufficientPermissions";
-	std::string message = "Insufficient permissions for this request.";
 	addHeader("content-length", toString(getBody().length()));
 }
 
@@ -116,8 +112,6 @@ void	Response::LengthRequired()
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
 	addHeader("content-type", "text/html ; charset=utf-8");
-	std::string error = "LengthRequired";
-	std::string message = "Requests must have a content length header";
 	addHeader("content-length", toString(getBody().length()));
 }
 
@@ -128,8 +122,6 @@ void	Response::UriTooLong()
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
 	addHeader("content-type", "text/html ; charset=utf-8");
-	std::string error = "URI Too Long";
-	std::string message = "The URI provided was too long for the server to process";
 	addHeader("content-length", toString(getBody().length()));
 }
 
@@ -140,8 +132,6 @@ void	Response::ImATeapot()
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "close");
 	addHeader("content-type", "text/html ; charset=utf-8");
-	std::string error = "I'mATeapot";
-	std::string message = "Seriously ? Did u just tried to make a gad damn coffee with a fucking teapot ?";
 	addHeader("content-length", toString(getBody().length()));
 }
 
@@ -154,8 +144,6 @@ void	Response::TooManyRequest()
 	addHeader("connection", "close");
 	addHeader("retry-after", "1800");
 	addHeader("content-type", "text/html ; charset=utf-8");
-	std::string error = "TooManyRequest";
-	std::string message = "You're doing that too often ! Are you trying to crash this server ? Try again later.";
 	addHeader("content-length", toString(getBody().length()));
 }
 

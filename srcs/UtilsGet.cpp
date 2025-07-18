@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 15:49:02 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:45:48 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 Response* handle_download_request(ServerConfig conf, std::string uri)
 {
-	uri = uri.substr(0, uri.find('?'));
+	uri.resize(uri.find('?'));
 	std::string path = conf.getRoot() + ft_traductor(uri);
 	Response* response = NULL;
 

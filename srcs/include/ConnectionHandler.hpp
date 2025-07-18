@@ -21,7 +21,6 @@ class ConnectionHandler
 		Connection* get_connection(int fd);
 		void	remove_connection(int fd);
 		void	clean_up_timed_out(int epoll_fd);
-		void	clean_up_all_connections();
 };
 
 extern	ConnectionHandler connection_handler;

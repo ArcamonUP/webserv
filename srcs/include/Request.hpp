@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmateo <pmateo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:42:58 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 01:05:20 by pmateo           ###   ########.fr       */
+/*   Updated: 2025/07/18 11:47:24 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,6 @@ inline std::ostream &operator<<(std::ostream &stream, Request const &request)
 std::string 	get_first_word(std::string &message);
 double 			str_to_double(const std::string &s);
 double			get_http_version(std::string &message);
-std::string		find_ressource_path(std::string uri);
-std::string		find_query_string(std::string uri);
+std::string		find_ressource_path(const std::string& uri);
+std::string		find_query_string(const std::string& uri);
 std::string 	get_next_line(std::string &message);

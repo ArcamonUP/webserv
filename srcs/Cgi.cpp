@@ -5,7 +5,7 @@ bool    is_cgi(ServerConfig& conf, Request& req)
     std::string uri = req.getUri();
     size_t pos = uri.find('?');
     if (pos != std::string::npos)
-        uri = uri.substr(0, pos);
+        uri.resize(pos);
 
     const std::vector<LocationConfig>& locations = conf.getLocations();
     for (size_t i = 0; i < locations.size(); i++) {
@@ -124,7 +124,7 @@ void cgi_child(int *input_pipe, int *pipefd, int client_fd, Request &req, \
 		std::perror("execve"), _exit(1);
 }
 
-char ** cgi_uploads(std::string &uri, ServerConfig &conf, char *&upload_status_arg, \
+char ** cgi_uploads(const std::string &uri, ServerConfig &conf, char *&upload_status_arg, \
 				char *&upload_path_arg, char *python_path, char *script_arg)
 {
 		bool need_upload_args = false;
@@ -171,11 +171,11 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 	std::string uri = req.getUri();
 	size_t pos = uri.find('?');
 	if (pos != std::string::npos) 
-		uri = uri.substr(0, pos);
+		uri.resize(pos);
 	
 	std::string script_path = "srcs/cgi" + uri;
 	char **envp = init_cgi(req);
-	char *python_path = (char*)"/usr/bin/python3";
+	char *python_path = (char *)"/usr/bin/python3";
 	char *script_arg = new char[script_path.size() + 1];
 	std::strcpy(script_arg, script_path.c_str());
 	char *upload_status_arg = NULL;

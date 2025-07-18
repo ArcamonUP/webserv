@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 12:31:15 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 12:33:56 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:36:03 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,4 @@ void	ConnectionHandler::clean_up_timed_out(int epoll_fd) {
 		else
 			++it;
 	}
-}
-
-void	ConnectionHandler::clean_up_all_connections() {
-	for (std::map<int, Connection*>::iterator it = connections.begin(); it != connections.end(); it++)
-		delete it->second;
-	connections.clear();
 }

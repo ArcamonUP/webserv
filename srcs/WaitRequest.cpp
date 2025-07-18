@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 14:17:49 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:35:56 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void accept_new(int fd, ServerConfig* serv, \
 void cleanup_all_fds(int epoll_fd, std::map<int, ServerConfig*> &server_map, \
 	std::map<int, ServerConfig*> &client_map)
 {	
-	connection_handler.clean_up_all_connections();
+	connection_handler.~ConnectionHandler();
 	for (std::map<int, ServerConfig*>::iterator it = client_map.begin(); it != client_map.end(); ++it)
 	{
 		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, it->first, NULL);

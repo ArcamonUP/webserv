@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 15:58:49 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:45:08 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	ft_atoi(const std::string value)
 	return (static_cast<int>(sign * result));
 }
 
-bool	is_all_digit(std::string str)
+bool	is_all_digit(const std::string str)
 {
 	for (size_t i = 0; i < str.size(); i++)
 	{
