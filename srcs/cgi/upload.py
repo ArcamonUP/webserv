@@ -6,9 +6,6 @@ import html
 import sys
 import re
 
-
-
-
 def get_upload_status_and_path():
     default_status = "off"
     default_path = os.getenv("UPLOAD_PATH", None)

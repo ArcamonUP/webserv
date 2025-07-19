@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/18 16:30:33 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 15:57:35 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -441,7 +441,7 @@ void Config::validateConfiguration()
 		for (size_t j = i + 1; j < servers.size(); ++j) {
 			if (servers[i].getPort() == servers[j].getPort() && 
 				servers[i].getHost() == servers[j].getHost()) {
-				throw std::invalid_argument("Duplicate server configuration: same port and server_name");
+				throw std::invalid_argument("Duplicate server configuration: same port");
 			}
 		}
 		const std::vector<LocationConfig>& locations = servers[i].getLocations();

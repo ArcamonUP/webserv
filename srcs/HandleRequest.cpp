@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 11:05:12 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/18 13:09:57 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 17:03:01 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,9 @@ int	handle_redir(ServerConfig& conf, Connection* connection, Request request, in
 			response = new Response(301, "MOVED PERMANENTLY");
 			response->setLocation(redirect_uri);
 			serialized_response = response->getSerializedResponse();
-			send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+			int temp = send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+			if (temp <= 0)
+				return (delete(response), false);
 			connection->reset();
 			std::cout << "\033[36mRedirection 301 sent to client " << client_fd - 5 << " from " << request.getUri() << " to " << redirect_uri << ".\033[0m" << std::endl;
 			std::cout << "\033[33mConnection with client " << client_fd - 5 << " has been closed.\033[0m" << std::endl;
@@ -95,8 +97,14 @@ int	handle_request(epoll_event *events, ServerConfig& conf)
 	{
 		Response *response = handle_action(conf, request);
 		std::string serialized_response = response->getSerializedResponse();
-		send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+		int temp = send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
 		connection->reset();
+		if (temp <= 0)
+		{
+			std::cout << "\033[31mSystem Error: can't send a response. Servers shutdown requested...\033[0m" << std::endl;
+			g_signal = true;
+			return (delete(response), CLOSE_CONNECTION);
+		}
 		std::cout << "\033[35mA response has been sent to client " << client_fd - 5 << ".\033[0m" << std::endl;
 		if (response->getHeaderValue("connection") == "keep-alive")
 			return (delete (response), KEEP_ALIVE);
