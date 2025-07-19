@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/19 10:43:31 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 11:00:28 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,11 @@ Response* handle_directory_request(ServerConfig& conf, const std::string& file_p
 
 Response* handle_file_request(const std::string& ressource_path)
 {
-	std::cout << "Salut 1: " << ressource_path << std::endl;
 	std::string body = get_file_content(ressource_path);
-	std::cout << "Salut 1.5" << std::endl;
 	Response* response = new Response(200, "OK");
-	std::cout << "Salut 2" << std::endl;
 	response->setRessourcePath(ressource_path);
-	std::cout << "Salut 3" << std::endl;
 	response->defineContentType();
-	std::cout << "Salut 4" << std::endl;
 	response->setBody(body);
-	std::cout << "Salut 5" << std::endl;
 	return response;
 }
 
