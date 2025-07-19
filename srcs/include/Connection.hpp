@@ -2,11 +2,12 @@
 
 #include "WebServ.hpp"
 
+int	ft_atoi(std::string value);
+
 class Connection
 {
 private:
 	int fd;
-	// std::string ip;
 	time_t	last_activity;
 	ServerConfig* server_config;
 	std::string part_request;
@@ -21,8 +22,10 @@ public:
 	bool	get_data()
 	{
 		char buffer[8196];
+		memset(buffer, 0, sizeof(buffer));
 		ssize_t bytes = recv(fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-		if (bytes < 0)
+		
+		if (bytes <= 0)
 			return false;
 		part_request.append(buffer, bytes);
 		last_activity = time(NULL);

@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 13:47:11 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/18 11:59:09 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 13:41:20 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,8 @@ std::string get_custom_error_page(ServerConfig& conf, int error_code)
 	std::map<int, std::string>::const_iterator it = error_pages.find(error_code);
 	
 	if (it != error_pages.end()) {
-		std::string error_page_path = conf.getRoot() + it->second;
+		std::string error_page_path = build_file_path(conf, it->second);
+		if (access(error_page_path.c_str(), F_OK | R_OK) == 0)
 		try {
 			return get_file_content(error_page_path);
 		} catch (const Response::ResourceNotFoundException&) {
