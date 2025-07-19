@@ -9,19 +9,12 @@ bool is_cgi(ServerConfig &conf, Request &req)
 	int l_index = find_matching_location_index(conf, uri);
 	if (l_index == -1 || conf.getLocations()[l_index].getCgiPath().empty())
 		return (false);
-	std::string tempUri = uri + conf.getLocations()[l_index].getCgiExtension();
-	std::string	endCgiPath = conf.getLocations()[l_index].getCgiPath();
-	if (endCgiPath.length() >= tempUri.length()) {
-		endCgiPath = endCgiPath.substr(endCgiPath.length() - tempUri.length());
-		if (tempUri == endCgiPath)
-			return (true);
-	}
-	return (false);
+	return (true);
 }
 
-char **init_cgi(Request &req)
+char **init_cgi(Request &req, ServerConfig &conf)
 {
-    char **envp = new char*[6];
+    char **envp = new char*[7];
     int env_count = 0;
     
     std::string method = "REQUEST_METHOD=" + req.getMethod();
@@ -53,8 +46,18 @@ char **init_cgi(Request &req)
     envp[env_count] = new char[query_string.size() + 1];
     std::strcpy(envp[env_count], query_string.c_str());
     env_count++;
-    
-    envp[env_count] = NULL;
+
+	int l_index = find_matching_location_index(conf, "/upload/");
+	if (l_index == -1)
+		envp[env_count] = NULL, env_count++;
+	else
+	{
+		std::string upload_name = "UPLOAD_NAME=" + conf.getLocations()[l_index].getPath();
+		envp[env_count] = new char[upload_name.size() + 1];
+		std::strcpy(envp[env_count], upload_name.c_str());
+		env_count++;
+	}
+	envp[env_count] = NULL;
     return envp;
 }
 
@@ -128,12 +131,16 @@ char ** cgi_uploads(const std::string &uri, ServerConfig &conf, char *&upload_st
 	if (uri == "/upload.py" || uri == "/list.py") {
 		need_upload_args = true;
 		
-		for (size_t i = 0; i < conf.getLocations().size(); i++) {
-			if (conf.getLocations()[i].getPath() == "/upload/") {
-				if (conf.getLocations()[i].getUploadStatus()) {
+		for (size_t i = 0; i < conf.getLocations().size(); i++) 
+		{
+			if (conf.getLocations()[i].getPath() == "/upload/") 
+			{
+				if (conf.getLocations()[i].getUploadStatus()) 
+				{
 					upload_status_arg = new char[3];
 					std::strcpy(upload_status_arg, "on");
-				} else {
+				} else 
+				{
 					upload_status_arg = new char[4];
 					std::strcpy(upload_status_arg, "off");
 				}
@@ -178,9 +185,15 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 		send(client_fd, error_response.c_str(), error_response.size(), 0);
 		return 1;
 	}
-	uri+= conf.getLocations()[l_index].getCgiExtension();
+	std::string tempUri = uri + conf.getLocations()[l_index].getCgiExtension();
+	std::string	endCgiPath = conf.getLocations()[l_index].getCgiPath();
+	if (endCgiPath.length() >= tempUri.length()) {
+		endCgiPath = endCgiPath.substr(endCgiPath.length() - tempUri.length());
+		if (tempUri == endCgiPath)
+			uri = tempUri;
+	}
 	std::string script_path = "srcs/cgi" + uri;
-	char **envp = init_cgi(req);
+	char **envp = init_cgi(req, conf);
 	if (!envp) {
 		Response response(500, "Internal Server Error");
 		std::string error_response = response.getSerializedResponse();

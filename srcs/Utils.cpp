@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/19 10:46:14 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:45:08 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,12 @@ std::string get_file_content(const std::string& file_path)
 {
 	std::ifstream file(file_path.c_str());
 	if (!file.is_open() || file.fail())
-		throw Response::InternalServerErrorException();	
+	{
+		if (errno == ENOENT)
+			throw Response::ResourceNotFoundException(); 
+		else
+			throw Response::InternalServerErrorException();	
+	}
 	std::stringstream	buffer;
 	std::string file_content;
 

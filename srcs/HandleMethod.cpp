@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/19 10:36:36 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 17:34:05 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, const Reque
 		std::string path, dir;
 		std::size_t	pos;
 		Response *response = NULL;
-		path = build_file_path(conf, request.getUri());
+		path = conf.getRoot() + ft_traductor(request.getUri());
 		
 		try
 		{
@@ -107,7 +107,7 @@ Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, const Reque
 			dir = path.substr(0, pos);
 			if (access(dir.c_str(), W_OK | X_OK) || remove(path.c_str()) != 0)
 				throw (Response::ResourceForbiddenException());
-			return (handle_file_request(path));
+			response = new Response(200, "OK");
 		}
 		catch (...) {
 			response = handle_all_exceptions(conf);
