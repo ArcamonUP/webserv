@@ -11,6 +11,7 @@ def get_upload_status_and_path():
     if len(sys.argv) >= 4:
         upload_status = sys.argv[2]
         upload_path = sys.argv[3]
+        env_path   = os.getenv("UPLOAD_PATH")
         return upload_status, upload_path if upload_status == "on" else None
     
     try:
@@ -28,7 +29,7 @@ def get_upload_status_and_path():
 
 def get_upload_path():
     status, path = get_upload_status_and_path()
-    return path if path else "./srcs/www/upload/"
+    return path if path else env_path
 
 
 def create_response(title, message, color="#667eea"):

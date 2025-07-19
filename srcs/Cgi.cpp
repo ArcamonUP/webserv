@@ -19,9 +19,9 @@ bool is_cgi(ServerConfig &conf, Request &req)
 	return (false);
 }
 
-char **init_cgi(Request &req)
+char **init_cgi(Request &req, ServerConfig &conf)
 {
-    char **envp = new char*[6];
+    char **envp = new char*[7];
     int env_count = 0;
     
     std::string method = "REQUEST_METHOD=" + req.getMethod();
@@ -53,6 +53,18 @@ char **init_cgi(Request &req)
     envp[env_count] = new char[query_string.size() + 1];
     std::strcpy(envp[env_count], query_string.c_str());
     env_count++;
+
+	int l_index = find_matching_location_index(conf, "/upload/");
+	if (l_index == -1)
+		envp[env_count] = NULL, env_count++;
+	else
+	{
+		std::string upload_name = "UPLOAD_NAME=" + build_file_path(conf, req.getUri());
+		envp[env_count] = new char[upload_name.size() + 1];
+		std::strcpy(envp[env_count], upload_name.c_str());
+		std::cout << upload_name << std::endl;
+		env_count++;
+	}
     
     envp[env_count] = NULL;
     return envp;
@@ -180,7 +192,7 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 	}
 	uri+= conf.getLocations()[l_index].getCgiExtension();
 	std::string script_path = "srcs/cgi" + uri;
-	char **envp = init_cgi(req);
+	char **envp = init_cgi(req, conf);
 	if (!envp) {
 		Response response(500, "Internal Server Error");
 		std::string error_response = response.getSerializedResponse();

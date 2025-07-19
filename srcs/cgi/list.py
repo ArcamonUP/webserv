@@ -9,15 +9,16 @@ def get_upload_path():
     if len(sys.argv) >= 4:
         upload_status = sys.argv[2]
         upload_path = sys.argv[3]
+        env_path   = os.getenv("UPLOAD_PATH")
         if upload_status == "on":
             return upload_path
     try:
         with open("./default.conf", 'r') as f:
             content = f.read()
         match = re.search(r'upload\s+on\s+([^;]+);', content)
-        return match.group(1).strip() if match else "./srcs/www/upload/"
+        return match.group(1).strip() if match else env_path
     except:
-        return "./srcs/www/upload/"
+        return env_path
 
 def format_size(size):
     for unit in ['B', 'KB', 'MB', 'GB']:
