@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Cgi.cpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/19 17:31:47 by kbaridon          #+#    #+#             */
+/*   Updated: 2025/07/19 17:44:39 by kbaridon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "WebServ.hpp"
 
 bool is_cgi(ServerConfig &conf, Request &req)
@@ -89,13 +101,25 @@ int child_status(pid_t &pid, int client_fd)
 		return (0);
 }
 
-void cgi_post(Request &req, int *input_pipe, int *pipefd)
+int  cgi_post(Request &req, int *input_pipe, int *pipefd)
 {
-		if (req.getMethod() == "POST") {
-		std::string body = req.getBody();
-		write(input_pipe[1], body.c_str(), body.size());
+		ssize_t written = 0;
+		if (req.getMethod() == "POST") 
+		{
+			std::string body = req.getBody();
+			written = write(input_pipe[1], body.c_str(), body.size());
+			if (written == -1)
+				std::perror("write");
 		}
-		close(pipefd[1]), close(input_pipe[0]), close(input_pipe[1]);
+		if (close(pipefd[1]) == -1)
+			std::perror("close pipefd[1] failed");
+		if (close(input_pipe[0]) == -1)
+			std::perror("close input_pipe[0] failed");
+		if (close(input_pipe[1]) == -1)
+			std::perror("close input_pipe[1] failed");
+		if (written == -1)
+			return 1;
+		return 0;
 }
 
 void cgi_delete(char *script_arg, char *upload_status_arg, char *upload_path_arg, char **args)
@@ -115,20 +139,30 @@ void cgi_output(std::string &output, int client_fd, char **envp, int *pipefd, st
 		rep.defineContentType();
 		rep.setBody(output);
 		std::string response = rep.getSerializedResponse();
-		send(client_fd, response.c_str(), response.size(), 0);
-		free_tab(envp), close(pipefd[0]);
+		if (send(client_fd, response.c_str(), response.size(), 0) == -1)
+			std::perror("send to client failed");
+		free_tab(envp);
+		if (close(pipefd[0]) == -1)
+			std::perror("close pipefd[0] failed");
 }
 
-void cgi_child(int *input_pipe, int *pipefd, int client_fd, Request &req, \
-				char **args, char **envp)
+void cgi_child(int *input_pipe, int *pipefd, int client_fd, char **args, char **envp)
 {
-		close(input_pipe[1]), close(pipefd[0]), close(client_fd);
-		dup2(pipefd[1], STDOUT_FILENO), dup2(input_pipe[0], STDIN_FILENO);
-		if (req.getMethod() == "POST"){
-			std::string body = req.getBody();
-			write(STDIN_FILENO, body.c_str(), body.size());
+		close(input_pipe[1]), close(pipefd[0]);
+		if (dup2(pipefd[1], STDOUT_FILENO) == -1) {
+			std::perror("dup2 STDOUT_FILENO failed");
+        	_exit(EXIT_FAILURE);
+    	}
+		if (dup2(input_pipe[0], STDIN_FILENO) == -1) {
+        	std::perror("dup2 STDIN_FILENO failed");
+        	_exit(EXIT_FAILURE);
 		}
+		close(pipefd[1]);
+    	close(input_pipe[0]);
 		execve(args[0], args, envp);
+		delete[] args;
+		free_tab(envp);
+		close(client_fd);
 		std::perror("execve"), _exit(1);
 }
 
@@ -136,6 +170,7 @@ char ** cgi_uploads(const std::string &uri, ServerConfig &conf, char *&upload_st
 				char *&upload_path_arg, char *python_path, char *script_arg)
 {
 	bool need_upload_args = false;
+
 	if (uri == "/upload.py" || uri == "/list.py") 
 	{
 		need_upload_args = true;
@@ -160,6 +195,7 @@ char ** cgi_uploads(const std::string &uri, ServerConfig &conf, char *&upload_st
 				}
 		}
 	}
+
 	char **args;
 	if (need_upload_args && upload_status_arg && upload_path_arg) 
 	{
@@ -205,7 +241,9 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 	std::strcpy(script_arg, script_path.c_str());
 	char *upload_status_arg = NULL;
 	char *upload_path_arg = NULL;
+
 	char **args = cgi_uploads(uri, conf, upload_status_arg, upload_path_arg, python_path, script_arg);
+
 	int pipefd[2], input_pipe[2];
 
 	if (pipe(pipefd) == -1 || pipe(input_pipe) == -1)
@@ -214,18 +252,30 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 	if (pid == -1)
 		return std::perror("fork"), 1;
 	if (pid == 0)
-		cgi_child(input_pipe, pipefd, client_fd, req, args, envp);
+		cgi_child(input_pipe, pipefd, client_fd, args, envp);
 	else {
-		cgi_post(req, input_pipe, pipefd);
+		if (cgi_post(req, input_pipe, pipefd))
+		{
+			cgi_delete(script_arg, upload_status_arg, upload_path_arg, args);
+			return (free_tab(envp), close(pipefd[0]), 1);
+		}
 		char buffer [4096];
-		size_t count;
+		int count;
 		std::string output;
 		while((count = read(pipefd[0], buffer, sizeof(buffer))) > 0)
-			output.append(buffer, count);	
+			output.append(buffer, count);
+		if (count == -1)
+		{
+			std::perror("read from pipefd[0] failed");
+			Response response(500, "Internal Server Error");
+			std::string		error_response = response.getSerializedResponse();
+			send(client_fd, error_response.c_str(), error_response.size(), 0);
+		}
 		cgi_delete(script_arg, upload_status_arg, upload_path_arg, args);
 		if (child_status(pid, client_fd))
 			return (free_tab(envp), close(pipefd[0]), 1);
-		cgi_output(output, client_fd, envp, pipefd, uri);
+		if (count != -1)
+			cgi_output(output, client_fd, envp, pipefd, uri);
 	}
 	return 0;
 }
