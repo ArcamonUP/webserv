@@ -9,7 +9,14 @@ bool is_cgi(ServerConfig &conf, Request &req)
 	int l_index = find_matching_location_index(conf, uri);
 	if (l_index == -1 || conf.getLocations()[l_index].getCgiPath().empty())
 		return (false);
-	return (true);
+	std::string tempUri = uri + conf.getLocations()[l_index].getCgiExtension();
+	std::string	endCgiPath = conf.getLocations()[l_index].getCgiPath();
+	if (endCgiPath.length() >= tempUri.length()) {
+		endCgiPath = endCgiPath.substr(endCgiPath.length() - tempUri.length());
+		if (tempUri == endCgiPath)
+			return (true);
+	}
+	return (false);
 }
 
 char **init_cgi(Request &req)
@@ -171,13 +178,7 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 		send(client_fd, error_response.c_str(), error_response.size(), 0);
 		return 1;
 	}
-	std::string tempUri = uri + conf.getLocations()[l_index].getCgiExtension();
-	std::string	endCgiPath = conf.getLocations()[l_index].getCgiPath();
-	if (endCgiPath.length() >= tempUri.length()) {
-		endCgiPath = endCgiPath.substr(endCgiPath.length() - tempUri.length());
-		if (tempUri == endCgiPath)
-			uri = tempUri;
-	}
+	uri+= conf.getLocations()[l_index].getCgiExtension();
 	std::string script_path = "srcs/cgi" + uri;
 	char **envp = init_cgi(req);
 	if (!envp) {
