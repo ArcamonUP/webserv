@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 12:05:33 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/18 17:34:14 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 17:07:06 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@ bool	handle_authorized_methods(ServerConfig& conf, Request *request, Connection*
 	std::string error_body = get_custom_error_page(conf, 405);
 	response.setBody(error_body);
 	std::string serialized_response = response.getSerializedResponse();
-	send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+	int temp =send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+	if (temp <= 0)
+		return (false);
 	connection->reset();
 	return (true);
 }
@@ -46,7 +48,9 @@ bool	handle_max_size_body(ServerConfig& conf, Request *request, Connection* conn
 	std::string error_body = get_custom_error_page(conf, 413);
 	response.setBody(error_body);
 	std::string serialized_response = response.getSerializedResponse();
-	send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+	int temp = send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+	if (temp <= 0)
+		return (false);
 	connection->reset();
 	return (true);
 }
@@ -70,7 +74,10 @@ bool	handle_location_redirect(ServerConfig& conf, Connection* connection, int l_
 	body += "</body></html>";
 	response.setBody(body);
 	std::string serialized_response = response.getSerializedResponse();
-	send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+	(void)client_fd;
+	int temp = send(client_fd, serialized_response.c_str(), serialized_response.size(), NO_FLAGS);
+	if (temp <= 0)
+		return (false);
 	connection->reset();
 	return (true);
 }

@@ -6,21 +6,12 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 18:37:59 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/18 11:56:19 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 16:52:27 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
 
-/*
-For 200, 201, 202 : Body, Content-Length and Content-Type need to be set upstream
-Date header need to be set just before the response is send to the client
-
-No Content is missing
-
-For the moment we assume the content-type is html but we need to define it
-The content length need to be set after the body has been recovered
-*/
 void	Response::Ok()
 {
 	this->_status_code = 200;
@@ -28,7 +19,7 @@ void	Response::Ok()
 	addHeader("server", "42WebServ/1.0");
 	addHeader("connection", "keep-alive");
 }
-/*201 need a "location" header*/
+
 void	Response::Created()
 {
 	this->_status_code = 201;
@@ -58,7 +49,6 @@ void	Response::MovedPermanently()
 	addHeader("content-type", "text/html ; charset=utf-8");
 	body = "Moved Permanently. Redirecting to " + location + "\n";
 	setBody(body);
-	// addHeader("content-length", toString(getBody().length()));
 }
 
 void	Response::BadRequest()
@@ -91,10 +81,8 @@ void	Response::NotFound()
 	std::string body = "<!doctype html>\n";
 	body += "<head>\n	<title>404 not found !</title>";
 	setBody(body);
-	// addHeader("content-length", toString(body.length()));
 }
 
-//Allow header depends ??
 void	Response::MethodNotAllowed()
 {
 	this->_status_code = 405;
@@ -145,7 +133,6 @@ void	Response::ImATeapot()
 	addHeader("content-length", toString(getBody().length()));
 }
 
-//Need a "Retry-After" header 
 void	Response::TooManyRequest()
 {
 	this->_status_code = 429;
@@ -167,7 +154,6 @@ void	Response::InternalServerError()
 	std::string body = "<!doctype html>\n";
 	body += "<head>\n	<title>500 Internal Server Error !</title>";
 	setBody(body);
-	// addHeader("content-length", toString(getBody().length()));
 }
 
 void	Response::NotImplemented()
