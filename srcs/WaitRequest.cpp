@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:39:47 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/18 11:35:56 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 14:16:56 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,24 +38,27 @@ int	init_epoll(int *epoll_fd, epoll_event *ev, std::vector<ServerConfig>* server
 void accept_new(int fd, ServerConfig* serv, \
 	std::map<int, ServerConfig*> *client_map, epoll_event *ev, int epoll_fd)
 {
-	sockaddr_in	serv_addr = serv->getSockaddr();
-	socklen_t	addrlen = sizeof(serv_addr);
-	int			client_fd = accept(fd, (struct sockaddr*)&serv_addr, &addrlen);
+	while (true) {
+		sockaddr_in	serv_addr = serv->getSockaddr();
+		socklen_t	addrlen = sizeof(serv_addr);
+		int			client_fd = accept(fd, (struct sockaddr*)&serv_addr, &addrlen);
 
-	if (client_fd == -1)
-		return (std::perror("accept"), (void)0);
-	if (make_not_blocking_socket(client_fd) == -1) {
-		close(client_fd);
-		return (std::perror("make_not_blocking_socket"), (void)0);
+		if (client_fd == -1) {
+			break;
+		}
+		if (make_not_blocking_socket(client_fd) == -1) {
+			close(client_fd);
+			continue;
+		}
+		ev->events = EPOLLIN | EPOLLET;
+		ev->data.fd = client_fd;
+		if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, ev) == -1) {
+			close(client_fd);
+			continue;
+		}
+		connection_handler.add_connection(client_fd, serv);
+		(*client_map)[client_fd] = serv;
 	}
-	ev->events = EPOLLIN | EPOLLET;
-	ev->data.fd = client_fd;
-	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, ev) == -1) {
-		close(client_fd);
-		return (std::perror("epoll_ctl"), (void)0);
-	}
-	connection_handler.add_connection(client_fd, serv);
-	(*client_map)[client_fd] = serv;
 	return ;
 }
 

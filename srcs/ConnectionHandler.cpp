@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 12:31:15 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/18 11:36:03 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 14:17:41 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@ ConnectionHandler::~ConnectionHandler() {
 }
 
 void ConnectionHandler::add_connection(int fd, ServerConfig* config) {
+	if (connections.size() >= MAX_CONNECTIONS) {
+		close(fd);
+		return;
+	}
 	connections[fd] = new Connection(fd, config);
 }
 
@@ -69,4 +73,8 @@ void	ConnectionHandler::clean_up_timed_out(int epoll_fd) {
 		else
 			++it;
 	}
+}
+
+size_t ConnectionHandler::get_connection_count() const {
+	return connections.size();
 }

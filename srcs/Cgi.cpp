@@ -62,7 +62,6 @@ char **init_cgi(Request &req, ServerConfig &conf)
 		std::string upload_name = "UPLOAD_NAME=" + build_file_path(conf, req.getUri());
 		envp[env_count] = new char[upload_name.size() + 1];
 		std::strcpy(envp[env_count], upload_name.c_str());
-		std::cout << upload_name << std::endl;
 		env_count++;
 	}
     
