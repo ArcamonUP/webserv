@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 13:47:11 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/10 13:49:06 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:59:09 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 Response*	handle_error_buttons(ServerConfig conf, std::string uri)
 {
 	Response *response = NULL;
-	std::string error_codes[] = {"301", "400", "403", "404", "405", "411", "414", \
+	std::string error_codes[] = {"301", "400", "403", "404", "405", "411", "413", "414", \
 	"418", "429", "500", "501", "502", "503", "504", "505", ""};
 	std::string error_messages[] = {"Moved Permanently", "Bad Request", "Forbidden", \
-	"Not Found", "Method Not Allowed", "Lenght Required", "URI Too Long", "I'm a teapot", \
+	"Not Found", "Method Not Allowed", "Lenght Required", "Payload Too Large", "URI Too Long", "I'm a teapot", \
 	"Too Many Requests", "Internal Server Error", "Not Implemented", "Bad Gateway", \
 	"Service Unavailable", "Gateway Timeout", "HTTP Version Not Supported", ""};
 	std::string basicinput = "/errorxxx";
@@ -68,7 +68,7 @@ bool	is_button_error(const Request &request)
 {
 	std::string	uri = request.getUri();
 	std::string	basicinput = "/errorxxx";
-	std::string possibles[] = {"301", "400", "403", "404", "405", "411", "414", \
+	std::string possibles[] = {"301", "400", "403", "404", "405", "411", "413", "414", \
 	"418", "429", "500", "501", "502", "503", "504", "505", ""};
 
 	if (uri.length() != basicinput.length() || uri.find("/error") != 0)
@@ -93,12 +93,13 @@ std::string get_default_error_page(int error_code)
 	html << "<body><div class=\"container\"><h1>Error " << error_code << "</h1>";
 	
 	switch (error_code) {
-		case 301: html << "<p> Moved Permanently.</p>"; break;
+		case 301: html << "<p>Moved Permanently.</p>"; break;
 		case 400: html << "<p>Invalid request.</p>"; break;
 		case 403: html << "<p>Resource access is forbidden.</p>"; break;
 		case 404: html << "<p>Resource not found.</p>"; break;
 		case 405: html << "<p>Unauthorized method</p>"; break;
 		case 411: html << "<p>Lenght Required.</p>"; break;
+		case 413: html << "<p>Payload Too Large.</p>"; break;
 		case 414: html << "<p>URI Too Long.</p>"; break;
 		case 418: html << "<p>I'm a teapot.</p>"; break;
 		case 429: html << "<p>Too Many Requests</p>"; break;

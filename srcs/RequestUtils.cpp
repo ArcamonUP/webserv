@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 21:15:13 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/11 17:35:35 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:41:43 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ double	get_http_version(std::string &message) {
 	return (result);	
 }
 
-std::string	find_ressource_path(std::string uri)
+std::string	find_ressource_path(const std::string& uri)
 {
 	std::string result;
 	
@@ -87,7 +87,7 @@ std::string	find_ressource_path(std::string uri)
 	}
 }
 
-std::string	find_query_string(std::string uri)
+std::string	find_query_string(const std::string& uri)
 {
 	std::string result;
 	

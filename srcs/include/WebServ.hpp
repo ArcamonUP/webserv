@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:16:53 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 15:59:06 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 13:09:53 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ std::string ft_traductor(const std::string& encoded_str);
 
 /*Utils.cpp*/
 bool		endsWith(const std::string &str, const std::string &suffix);
-int find_matching_location_index(ServerConfig& conf, const std::string& uri);
+int 		find_matching_location_index(ServerConfig& conf, const std::string& uri);
 int			ft_atoi(const std::string value);
 std::string get_file_content(const std::string& file_path);
 void		initMethodMap();
@@ -121,3 +121,6 @@ extern bool g_signal;
 /*Cgi.cpp*/
 int cgi(Request &req, int client_fd, ServerConfig& conf);
 bool	is_cgi(ServerConfig& conf, Request& req);
+
+/*HandleLocationBlock.cpp*/
+int	handle_location_block(ServerConfig& conf, Connection* connection, Request *request, int client_fd);

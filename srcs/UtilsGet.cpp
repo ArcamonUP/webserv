@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 15:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 15:49:02 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 11:00:28 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 Response* handle_download_request(ServerConfig conf, std::string uri)
 {
-	uri = uri.substr(0, uri.find('?'));
+	uri.resize(uri.find('?'));
 	std::string path = conf.getRoot() + ft_traductor(uri);
 	Response* response = NULL;
 
@@ -70,5 +70,5 @@ std::string build_file_path(ServerConfig& conf, const std::string& uri)
 	if (uri == "/")
 		return conf.getRoot() + conf.getIndex();
 	else
-		return conf.getRoot() + uri;
+		return conf.getRoot() + uri.substr(1);
 }

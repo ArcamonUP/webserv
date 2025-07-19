@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:51:24 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 14:31:58 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 16:30:33 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static std::string readFile(const std::string& path)
 	return (out);
 }
 
-static std::string	getToken(std::string file, size_t *pos)
+static std::string	getToken(const std::string& file, size_t *pos)
 {
 	std::string	result;
 
@@ -52,7 +52,7 @@ static std::string	getToken(std::string file, size_t *pos)
 	return (result);
 }
 
-static void	skipSpacesComments(std::string raw, size_t *pos)
+static void	skipSpacesComments(const std::string& raw, size_t *pos)
 {
 	while (*pos < raw.length() && (std::isspace(raw[*pos]) || raw[*pos] == '#'))
 	{
@@ -68,7 +68,7 @@ static void	skipSpacesComments(std::string raw, size_t *pos)
 	}
 }
 
-static void	skipLine(std::string raw, size_t *pos)
+static void	skipLine(const std::string& raw, size_t *pos)
 {
 	while (*pos < raw.length() && (std::isspace(raw[*pos])))
 		(*pos)++;
@@ -106,7 +106,7 @@ static size_t	ft_convert(std::string str)
 	return (result);
 }
 
-static ServerConfig getPages(std::string raw, size_t *pos, ServerConfig result)
+static ServerConfig getPages(const std::string& raw, size_t *pos, ServerConfig result)
 {
 	std::vector<int>			code_list;
 	std::map<int, std::string>	error_pages = result.getErrorPages();
@@ -145,7 +145,7 @@ static ServerConfig getPages(std::string raw, size_t *pos, ServerConfig result)
 	}
 	throw (std::invalid_argument("Missing URL for error_page directive."));
 }
-static LocationConfig	getCgi(std::string raw, size_t *pos, LocationConfig loc)
+static LocationConfig	getCgi(const std::string& raw, size_t *pos, LocationConfig loc)
 {
 	std::string	extension;
 	std::string	path;
@@ -174,7 +174,7 @@ static LocationConfig	getCgi(std::string raw, size_t *pos, LocationConfig loc)
 	return (loc);
 }
 
-static LocationConfig	getMethods(std::string raw, size_t *pos, LocationConfig loc)
+static LocationConfig	getMethods(const std::string &raw, size_t *pos, LocationConfig loc)
 {
 	std::vector<std::string> methods;
 
@@ -200,7 +200,7 @@ static LocationConfig	getMethods(std::string raw, size_t *pos, LocationConfig lo
 	return (loc);
 }
 
-static LocationConfig	getUpload(std::string raw, size_t *pos, LocationConfig loc)
+static LocationConfig	getUpload(const std::string& raw, size_t *pos, LocationConfig loc)
 {
 	std::string status;
 	std::string	path;
@@ -231,7 +231,38 @@ static LocationConfig	getUpload(std::string raw, size_t *pos, LocationConfig loc
 	return (loc);
 }
 
-static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationConfig loc, std::string key)
+static LocationConfig	getReturn(const std::string& raw, size_t *pos, LocationConfig loc)
+{
+	std::string redirect_code_str;
+	std::string	redirect_url;
+
+	skipSpacesComments(raw, pos);
+	if (*pos >= raw.length())
+		throw(Config::InvalidFileException());
+	
+	redirect_code_str = getToken(raw, pos);
+	if (redirect_code_str.empty() || redirect_code_str == ";")
+		throw std::invalid_argument("Missing redirect code in return directive.");
+	
+	int redirect_code = ft_atoi(redirect_code_str);
+	if (redirect_code < 300 || redirect_code > 399)
+		throw std::invalid_argument("Invalid redirect code in return directive: " + redirect_code_str);
+	
+	skipSpacesComments(raw, pos);
+	if (*pos >= raw.length())
+		throw(Config::InvalidFileException());
+	
+	redirect_url = getToken(raw, pos);
+	if (redirect_url.empty() || redirect_url == ";")
+		throw std::invalid_argument("Missing redirect URL in return directive.");
+	
+	loc.setRedirectCode(redirect_code);
+	loc.setRedirect(redirect_url);
+	skipLine(raw, pos);
+	return (loc);
+}
+
+static LocationConfig	getLocationValue(const std::string& raw, size_t *pos, LocationConfig loc, const std::string& key)
 {
 	std::string	value;
 
@@ -250,11 +281,8 @@ static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationCon
 		loc.setIndex(value);
 		return (skipLine(raw, pos), loc);
 	}
-	if (key == "redirect") {
-		value = getToken(raw, pos);
-		loc.setRedirect(value);
-		return (skipLine(raw, pos), loc);
-	}
+	if (key == "return")
+		return (getReturn(raw, pos, loc));
 	if (key == "autoindex") {
 		if (getToken(raw, pos) == "on")
 			loc.setAutoIndex(true);
@@ -274,7 +302,7 @@ static LocationConfig	getLocationValue(std::string raw, size_t *pos, LocationCon
 	throw(Config::InvalidFileException());
 }
 
-ServerConfig	getLocationBlock(std::string raw, size_t *pos, ServerConfig result)
+ServerConfig	getLocationBlock(const std::string& raw, size_t *pos, ServerConfig result)
 {
 	skipSpacesComments(raw, pos);
 	if (*pos >= raw.length())
@@ -286,6 +314,8 @@ ServerConfig	getLocationBlock(std::string raw, size_t *pos, ServerConfig result)
 		throw (Config::InvalidFileException());
 	(*pos)++;
 	LocationConfig location;
+	if (path[path.length() - 1] == '/' && path.length() > 1)
+		path.resize(path.length() - 1);
 	location.setPath(path);
 	while (*pos < raw.length())
 	{
@@ -300,7 +330,7 @@ ServerConfig	getLocationBlock(std::string raw, size_t *pos, ServerConfig result)
 	return (result);
 }
 
-static ServerConfig	getServerValue(std::string raw, size_t *pos, ServerConfig result, const std::string& key)
+static ServerConfig	getServerValue(const std::string &raw, size_t *pos, ServerConfig result, const std::string& key)
 {
 	std::string	value;
 	
@@ -341,7 +371,7 @@ static ServerConfig	getServerValue(std::string raw, size_t *pos, ServerConfig re
 	throw(Config::InvalidFileException());
 }
 
-static ServerConfig	getServerConfig(std::string raw, size_t *pos)
+static ServerConfig	getServerConfig(const std::string& raw, size_t *pos)
 {
 	ServerConfig	result;
 	std::string		key;

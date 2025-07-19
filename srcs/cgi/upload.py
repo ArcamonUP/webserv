@@ -28,7 +28,7 @@ def get_upload_status_and_path():
 
 def get_upload_path():
     status, path = get_upload_status_and_path()
-    return path if path else "./srcs/www/uploads/"
+    return path if path else "./srcs/www/upload/"
 
 
 def create_response(title, message, color="#667eea"):
@@ -77,7 +77,7 @@ def create_response(title, message, color="#667eea"):
         {message}
         <div>
             <a href="/" class="btn">🏠 Accueil</a>
-            <a href="/list.py" class="btn">📂 Fichiers</a>
+            <a href="/list" class="btn">📂 Fichiers</a>
         </div>
     </div>
 </body>
@@ -99,11 +99,21 @@ try:
         
     form = cgi.FieldStorage()
     
-    if 'file_upload' not in form or not form['file_upload'].filename:
-        print(create_response("Erreur", "<h1>❌ Aucun fichier reçu</h1>", "#e74c3c"))
+    if 'file_upload' not in form:
+        print(create_response("Erreur", "<h1>❌ Aucun champ file_upload trouvé</h1>", "#e74c3c"))
     else:
         fileitem = form['file_upload']
-        filename = os.path.basename(fileitem.filename)
+        if isinstance(fileitem, list):
+            if len(fileitem) > 0:
+                fileitem = fileitem[0]
+            else:
+                print(create_response("Erreur", "<h1>❌ Champ file_upload vide</h1>", "#e74c3c"))
+                sys.exit(0)
+        
+        if not hasattr(fileitem, 'filename') or not fileitem.filename:
+            print(create_response("Erreur", "<h1>❌ Aucun fichier reçu</h1>", "#e74c3c"))
+        else:
+            filename = os.path.basename(fileitem.filename)
         filepath = os.path.join(upload_dir, filename)
         
         if os.path.exists(filepath):

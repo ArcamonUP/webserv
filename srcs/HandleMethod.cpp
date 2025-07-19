@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 01:33:17 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/15 12:55:08 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 11:24:16 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,55 +44,9 @@ Response*	HandleHEAD(ServerConfig conf, const Request& request)
 	return (response);
 }
 
-Response* test_errors(ServerConfig conf, std::string &uri)
-{
-	Response *response = NULL;
-	if (uri.find("/error403") != std::string::npos)
-	{
-		std::string path;
-		path = "fichier_test_no_permission.txt";
-		if (access(path.c_str(), W_OK ) != 0)
-		{
-			response = new Response(403, "Forbidden");
-			response->setBody(get_custom_error_page(conf, 403));
-			response->setBody(get_file_content("./srcs/www/403.html"));
-			return response;
-		} 		
-	}
-	if (uri.find("/error500") != std::string::npos)
-		{
-			response = new Response(500, "Internal Server Error");
-			response->setBody(get_custom_error_page(conf, 500));
-			response->setBody(get_file_content("./srcs/www/50x.html"));
-			return response;
-		}
-	if (uri.find("/error502") != std::string::npos)
-		{
-			response = new Response(502, "Internal Server Error");
-			response->setBody(get_custom_error_page(conf, 502));
-			response->setBody(get_file_content("./srcs/www/50x.html"));
-			return response;
-		}   
-	if (uri.find("/error503") != std::string::npos)
-		{
-			response = new Response(503, "Internal Server Error");
-			response->setBody(get_custom_error_page(conf, 503));
-			response->setBody(get_file_content("./srcs/www/50x.html"));
-			return response;
-		}   
-	if (uri.find("/error504") != std::string::npos)
-		{
-			response = new Response(504, "Internal Server Error");
-			response->setBody(get_custom_error_page(conf, 504));
-			response->setBody(get_file_content("./srcs/www/50x.html"));
-			return response;
-		}     
-	return NULL;
-} 
-
 Response*	HandleGET(ServerConfig conf, const Request& request)
 {
-	std::string body, file_path;
+	std::string file_path;
 	size_t		location_index;
 	struct stat	path_stat;
 	Response	*response = NULL;
@@ -122,6 +76,7 @@ Response*	HandlePOST(ServerConfig conf __attribute_maybe_unused__, const Request
 {
 	std::string body;
 	Response* response = NULL;
+	
 	try
 	{
 		body = get_file_content(conf.getRoot() + request.getUri());
@@ -139,9 +94,8 @@ Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, const Reque
 		std::string path, dir;
 		std::size_t	pos;
 		Response *response = NULL;
-
-
-		path = conf.getRoot() + ft_traductor(request.getUri());
+		path = build_file_path(conf, request.getUri());
+		
 		try
 		{
 			if (access(path.c_str(), F_OK) != 0)
@@ -155,6 +109,7 @@ Response*	HandleDELETE(ServerConfig conf __attribute_maybe_unused__, const Reque
 			if (access(dir.c_str(), W_OK | X_OK) || remove(path.c_str()) != 0)
 				throw (Response::ResourceForbiddenException());
 			response = new Response(200, "OK");
+			response->setBody("Successfully deleted.");
 		}
 		catch (...) {
 			response = handle_all_exceptions(conf);

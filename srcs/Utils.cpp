@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 11:17:45 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/14 15:58:49 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/19 10:46:14 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	ft_atoi(const std::string value)
 	return (static_cast<int>(sign * result));
 }
 
-bool	is_all_digit(std::string str)
+bool	is_all_digit(const std::string str)
 {
 	for (size_t i = 0; i < str.size(); i++)
 	{
@@ -88,12 +88,7 @@ std::string get_file_content(const std::string& file_path)
 {
 	std::ifstream file(file_path.c_str());
 	if (!file.is_open() || file.fail())
-	{
-		if (errno == ENOENT)
-			throw Response::ResourceNotFoundException(); 
-		else
-			throw Response::InternalServerErrorException();	
-	}
+		throw Response::InternalServerErrorException();	
 	std::stringstream	buffer;
 	std::string file_content;
 

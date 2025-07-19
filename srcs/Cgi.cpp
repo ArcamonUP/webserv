@@ -1,25 +1,22 @@
 #include "WebServ.hpp"
 
-bool    is_cgi(ServerConfig& conf, Request& req)
+bool is_cgi(ServerConfig &conf, Request &req)
 {
-    std::string uri = req.getUri();
-    size_t pos = uri.find('?');
-    if (pos != std::string::npos)
-        uri = uri.substr(0, pos);
-
-    const std::vector<LocationConfig>& locations = conf.getLocations();
-    for (size_t i = 0; i < locations.size(); i++) {
-        const std::string& cgi_path = locations[i].getCgiPath();
-        if (!cgi_path.empty()) {
-            size_t cgi_pos = cgi_path.find_last_of("/");
-            if (cgi_pos != std::string::npos) {
-                std::string script_name = cgi_path.substr(cgi_pos);
-                if (uri == script_name)
-                    return true;
-            }
-        }
-    }
-    return false;
+	std::string uri = req.getUri();
+	size_t pos = uri.find('?');
+	if (pos != std::string::npos)
+		uri.resize(pos);
+	int l_index = find_matching_location_index(conf, uri);
+	if (l_index == -1 || conf.getLocations()[l_index].getCgiPath().empty())
+		return (false);
+	std::string tempUri = uri + conf.getLocations()[l_index].getCgiExtension();
+	std::string	endCgiPath = conf.getLocations()[l_index].getCgiPath();
+	if (endCgiPath.length() >= tempUri.length()) {
+		endCgiPath = endCgiPath.substr(endCgiPath.length() - tempUri.length());
+		if (tempUri == endCgiPath)
+			return (true);
+	}
+	return (false);
 }
 
 char **init_cgi(Request &req)
@@ -124,10 +121,10 @@ void cgi_child(int *input_pipe, int *pipefd, int client_fd, Request &req, \
 		std::perror("execve"), _exit(1);
 }
 
-char ** cgi_uploads(std::string &uri, ServerConfig &conf, char *&upload_status_arg, \
+char ** cgi_uploads(const std::string &uri, ServerConfig &conf, char *&upload_status_arg, \
 				char *&upload_path_arg, char *python_path, char *script_arg)
 {
-		bool need_upload_args = false;
+	bool need_upload_args = false;
 	if (uri == "/upload.py" || uri == "/list.py") {
 		need_upload_args = true;
 		
@@ -142,8 +139,10 @@ char ** cgi_uploads(std::string &uri, ServerConfig &conf, char *&upload_status_a
 				}
 				
 				std::string up_path = conf.getLocations()[i].getUploadPath();
-				upload_path_arg = new char[up_path.size() + 1];
-				std::strcpy(upload_path_arg, up_path.c_str());
+				if (!up_path.empty()) {
+					upload_path_arg = new char[up_path.size() + 1];
+					std::strcpy(upload_path_arg, up_path.c_str());
+				}
 				break;
 			}
 		}
@@ -171,11 +170,24 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 	std::string uri = req.getUri();
 	size_t pos = uri.find('?');
 	if (pos != std::string::npos) 
-		uri = uri.substr(0, pos);
-	
+		uri.resize(pos);
+	int	l_index = find_matching_location_index(conf, uri);
+	if (l_index == -1) {
+		Response response(500, "Internal Server Error");
+		std::string error_response = response.getSerializedResponse();
+		send(client_fd, error_response.c_str(), error_response.size(), 0);
+		return 1;
+	}
+	uri+= conf.getLocations()[l_index].getCgiExtension();
 	std::string script_path = "srcs/cgi" + uri;
 	char **envp = init_cgi(req);
-	char *python_path = (char*)"/usr/bin/python3";
+	if (!envp) {
+		Response response(500, "Internal Server Error");
+		std::string error_response = response.getSerializedResponse();
+		send(client_fd, error_response.c_str(), error_response.size(), 0);
+		return 1;
+	}
+	char *python_path = (char *)"/usr/bin/python3";
 	char *script_arg = new char[script_path.size() + 1];
 	std::strcpy(script_arg, script_path.c_str());
 	char *upload_status_arg = NULL;
@@ -200,7 +212,7 @@ int cgi(Request &req, int client_fd, ServerConfig& conf)
 		cgi_delete(script_arg, upload_status_arg, upload_path_arg, args);
 		if (child_status(pid, client_fd))
 			return (free_tab(envp), close(pipefd[0]), 1);
-		cgi_output(output, client_fd, envp, pipefd, script_path);
+		cgi_output(output, client_fd, envp, pipefd, uri);
 	}
 	return 0;
 }

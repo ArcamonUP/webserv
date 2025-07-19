@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:51:56 by pmateo            #+#    #+#             */
-/*   Updated: 2025/07/09 15:05:00 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:57:10 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	Response::initBuilders()
 	Response::_builders[404] = &Response::NotFound;
 	Response::_builders[405] = &Response::MethodNotAllowed;
 	Response::_builders[411] = &Response::LengthRequired;
+	Response::_builders[413] = &Response::PayLoadTooLarge;
 	Response::_builders[414] = &Response::UriTooLong;
 	Response::_builders[418] = &Response::ImATeapot;
 	Response::_builders[429] = &Response::TooManyRequest;

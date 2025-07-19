@@ -6,7 +6,7 @@
 /*   By: kbaridon <kbaridon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:30:00 by kbaridon          #+#    #+#             */
-/*   Updated: 2025/07/15 13:19:48 by kbaridon         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:19:08 by kbaridon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ std::vector<std::pair<std::string, bool> > collect_directory_entries(const std::
 	}
 
 	std::vector<std::pair<std::string, bool> > entries;
-	struct dirent *entry;
+	const struct dirent *entry;
 
 	entries.push_back(std::make_pair(".", true));
 	if (uri_path != "/")
@@ -90,9 +90,8 @@ std::string generate_entry_link_path(const std::string& name, bool is_dir, const
 		link_path = uri_path;
 	else if (name == "..") {
 		std::string parent_path = uri_path;
-		if (!parent_path.empty() && parent_path[parent_path.length() - 1] == '/') {
-			parent_path = parent_path.substr(0, parent_path.length() - 1);
-		}
+		if (!parent_path.empty() && parent_path[parent_path.length() - 1] == '/')
+			parent_path.resize(parent_path.length() - 1);
 		size_t last_slash = parent_path.find_last_of('/');
 		link_path = (last_slash != std::string::npos) ? parent_path.substr(0, last_slash + 1) : "/";
 	} else {
@@ -104,7 +103,7 @@ std::string generate_entry_link_path(const std::string& name, bool is_dir, const
 	return link_path;
 }
 
-std::string generate_file_entry_html(const std::string& name, bool is_dir, const std::string& link_path, std::string directory_path)
+std::string generate_file_entry_html(const std::string& name, bool is_dir, const std::string& link_path, const std::string *directory_path)
 {
 	std::string			fullpath, size_str = "-", time_str = "-";
 	std::ostringstream	html;
@@ -114,7 +113,7 @@ std::string generate_file_entry_html(const std::string& name, bool is_dir, const
 		html << "<tr><td> 📁 <a href=\"" << link_path << "\">" << name << "</a></td><td>-</td><td>-</td></tr>";
 	else
 	{
-		fullpath = directory_path + "/" + name;
+		fullpath = *directory_path + "/" + name;
 		if (stat(fullpath.c_str(), &fileStat) == 0)
 		{
 			off_t size = fileStat.st_size;
@@ -125,7 +124,7 @@ std::string generate_file_entry_html(const std::string& name, bool is_dir, const
 			size_str = ss.str();
 			
 			char time_buf[64];
-			struct tm *tm_info = localtime(&fileStat.st_mtime);
+			const struct tm *tm_info = localtime(&fileStat.st_mtime);
 			strftime(time_buf, sizeof(time_buf), "%Y-%m-%d %H:%M", tm_info);
 			time_str = time_buf;
 		}
@@ -147,7 +146,7 @@ std::string generate_autoindex(const std::string& directory_path, const std::str
 		bool is_dir = it->second;
 		std::string link_path = generate_entry_link_path(name, is_dir, uri_path);
 
-		html << generate_file_entry_html(name, is_dir, link_path, directory_path);
+		html << generate_file_entry_html(name, is_dir, link_path, &directory_path);
 	}
 	html << "</tbody></table></div></body></html>";
 	return html.str();
