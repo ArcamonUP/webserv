@@ -5,21 +5,6 @@ import html
 import re
 import sys
 
-def get_upload_path():
-    if len(sys.argv) >= 4:
-        upload_status = sys.argv[2]
-        upload_path = sys.argv[3]
-        env_path   = os.getenv("UPLOAD_PATH")
-        if upload_status == "on":
-            return upload_path
-    try:
-        with open("./default.conf", 'r') as f:
-            content = f.read()
-        match = re.search(r'upload\s+on\s+([^;]+);', content)
-        return match.group(1).strip() if match else env_path
-    except:
-        return env_path
-
 def format_size(size):
     for unit in ['B', 'KB', 'MB', 'GB']:
         if size < 1024:
@@ -27,7 +12,7 @@ def format_size(size):
         size /= 1024
     return f"{size:.1f} TB"
 
-upload_dir = get_upload_path()
+upload_dir = os.getenv("UPLOAD_PATH")
 
 print(f"""\n
 <!DOCTYPE html>

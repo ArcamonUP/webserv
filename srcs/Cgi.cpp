@@ -59,7 +59,7 @@ char **init_cgi(Request &req, ServerConfig &conf)
 		envp[env_count] = NULL, env_count++;
 	else
 	{
-		std::string upload_name = "UPLOAD_NAME=" + build_file_path(conf, req.getUri());
+		std::string upload_name = "UPLOAD_PATH=" + conf.getLocations()[l_index].getUploadPath();
 		envp[env_count] = new char[upload_name.size() + 1];
 		std::strcpy(envp[env_count], upload_name.c_str());
 		env_count++;
@@ -136,31 +136,33 @@ char ** cgi_uploads(const std::string &uri, ServerConfig &conf, char *&upload_st
 				char *&upload_path_arg, char *python_path, char *script_arg)
 {
 	bool need_upload_args = false;
-	if (uri == "/upload.py" || uri == "/list.py") {
+	if (uri == "/upload.py" || uri == "/list.py") 
+	{
 		need_upload_args = true;
-		
-		for (size_t i = 0; i < conf.getLocations().size(); i++) {
-			if (conf.getLocations()[i].getPath() == "/upload/") {
-				if (conf.getLocations()[i].getUploadStatus()) {
+		int l_index = find_matching_location_index(conf, "/upload/");
+		if (l_index != -1)
+		{
+				if (conf.getLocations()[l_index].getUploadStatus()) 
+				{
 					upload_status_arg = new char[3];
 					std::strcpy(upload_status_arg, "on");
-				} else {
+				} 
+				else 
+				{	
 					upload_status_arg = new char[4];
 					std::strcpy(upload_status_arg, "off");
 				}
-				
-				std::string up_path = conf.getLocations()[i].getUploadPath();
-				if (!up_path.empty()) {
+				std::string up_path = conf.getLocations()[l_index].getUploadPath();
+				if (!up_path.empty()) 
+				{
 					upload_path_arg = new char[up_path.size() + 1];
 					std::strcpy(upload_path_arg, up_path.c_str());
 				}
-				break;
-			}
 		}
 	}
-	
 	char **args;
-	if (need_upload_args && upload_status_arg && upload_path_arg) {
+	if (need_upload_args && upload_status_arg && upload_path_arg) 
+	{
 		args = new char*[5];
 		args[0] = python_path;
 		args[1] = script_arg;
